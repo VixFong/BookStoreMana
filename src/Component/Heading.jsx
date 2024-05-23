@@ -39,8 +39,6 @@ export const Heading = () => {
                     </div>
                 </div>
             </nav>
-            <div style={{ paddingTop: '70px' }}>
-            </div>
         </div>
     );
 };
