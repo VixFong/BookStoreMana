@@ -21,10 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
     private String fullName;
-
-
     private String email;
     private String password;
 
@@ -38,5 +35,5 @@ public class User {
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDateTime startedDate;
+    private Date startedDate;
 }

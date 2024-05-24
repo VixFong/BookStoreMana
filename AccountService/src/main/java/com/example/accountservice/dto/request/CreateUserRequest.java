@@ -4,6 +4,7 @@ package com.example.accountservice.dto.request;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -13,7 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class CreateUserRequest {
     private String fullName;
-
 
     private String email;
     private String password;
