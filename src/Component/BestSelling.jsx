@@ -51,15 +51,22 @@ export const BestSelling = () => {
         borderRadius: '50%',
         width: '50px',
         height: '50px'
-      };
+    };
     
       const carouselControlPrevNextStyle = {
         width: '5%'
-      };
-    
+    };
+
+      const cardStyle = {
+        transition: 'transform 0.5s ease, box-shadow 0.5s ease',
+        border: 'none',
+        boxShadow: 'none'
+    };
+
       const cardHoverStyle = {
-        transition: 'transform 0.5s ease',
-      };
+        transform: 'translateY(-10px)',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+    };
     
       return (
         <div className="container my-5">
@@ -75,7 +82,12 @@ export const BestSelling = () => {
                     {chunk.map((book, idx) => (
                       <div className="col-12 col-md-6 col-lg-3 mb-4" key={idx}>
                         <a href='#'className="link-offset-2 link-underline link-underline-opacity-0">
-                        <div className="card h-100" style={cardHoverStyle}>
+                        <div 
+                            className="card h-100" 
+                            style={cardStyle} 
+                            onMouseEnter={e => e.currentTarget.style.boxShadow = cardHoverStyle.boxShadow}
+                            onMouseLeave={e => e.currentTarget.style.boxShadow = cardStyle.boxShadow}
+                        >
                           <img src={book.imgSrc} className="card-img-top" alt={book.title}  style={{ height: '250px', objectFit: 'cover' }}  />
                           <div className="card-body">
                             <p className="card-text text-danger" style={{ fontSize: '12px' }}>{book.formats}</p>
