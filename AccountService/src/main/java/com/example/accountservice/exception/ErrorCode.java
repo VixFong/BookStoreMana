@@ -13,7 +13,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(202, "User not found", HttpStatus.NOT_FOUND),
     EMAIL_INVALID(203,"Invalid email",HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(204,"Password must be at least 6 characters",HttpStatus.BAD_REQUEST),
-
+    UNAUTHENTICATED(205,"Unauthenticated",HttpStatus.UNAUTHORIZED),
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 
     ;

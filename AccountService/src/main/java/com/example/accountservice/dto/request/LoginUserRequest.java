@@ -14,6 +14,6 @@ public class LoginUserRequest {
     @Email(message = "EMAIL_INVALID")
     private String email;
 
-    @Size(min = 6, message = "PASSWORD_INVALID")
+//    @Size(min = 6, message = "PASSWORD_INVALID")
     private String password;
 }

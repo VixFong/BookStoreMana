@@ -11,5 +11,5 @@ import java.util.Set;
 @Builder
 public class RoleResponse {
     private String name;
-    private Set<String> permissions;
+    private Set<PermissionResponse> permissions;
 }
