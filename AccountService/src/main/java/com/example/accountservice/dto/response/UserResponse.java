@@ -3,6 +3,7 @@ package com.example.accountservice.dto.response;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -20,5 +21,5 @@ public class UserResponse {
     private boolean activate;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date startedDate;
+    private LocalDateTime startedDate;
 }

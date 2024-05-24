@@ -20,6 +20,7 @@ public class UserService {
 
     public UserResponse create(CreateUserRequest request){
         User user = userMapper.toUser(request);
+        System.out.println("Service");
 
         user.setLock(true);
         user.setActivate(false);
