@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 public enum ErrorCode {
     USER_EXISTED(201,"Account has existed", HttpStatus.BAD_REQUEST),
-
+    USER_NOT_FOUND(202, "User not found", HttpStatus.NOT_FOUND),
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 
     ;

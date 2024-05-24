@@ -6,12 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Entity
+@Document(collection = "users")
 @Getter
 @Setter
 @Builder
@@ -29,9 +30,8 @@ public class User {
     private String address;
 
     private String profilePicture;
-    private boolean isLock=true;
-
-    private boolean activate=false;
+    private boolean isLock;
+    private boolean activate;
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
