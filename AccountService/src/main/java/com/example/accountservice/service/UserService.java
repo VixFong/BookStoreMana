@@ -3,6 +3,7 @@ package com.example.accountservice.service;
 import com.example.accountservice.dto.request.CreateUserRequest;
 import com.example.accountservice.dto.request.RegisterCustomerRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
+import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.exception.AppException;
 import com.example.accountservice.exception.ErrorCode;
@@ -63,6 +64,12 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+//    public ProfileResponse updateProfileUser(String id , UpdateUserRequest request){
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//        userMapper.updateUser(user, request);
+//        return userMapper.toUserResponse(userRepository.save(user));
+//    }
     public void delete(String id){
         userRepository.deleteById(id);
     }

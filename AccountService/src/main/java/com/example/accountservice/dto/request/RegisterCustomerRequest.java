@@ -1,9 +1,8 @@
-package com.example.accountservice.dto.response;
+package com.example.accountservice.dto.request;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -11,15 +10,13 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class RegisterCustomerRequest {
     private String fullName;
 
     private String email;
     private String password;
     private boolean lock;
-
     private boolean activate;
-    private String profilePicture;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date startedDate;
 }
