@@ -34,7 +34,7 @@ const books = [
       authors: "James Wallace",
       formats: "KINDLE",
       price: "$2.68",
-      imgSrc: "ZombieTheorem.jpg"
+      imgSrc: "/ZombieTheorem.jpg"
     }
 ];
 
