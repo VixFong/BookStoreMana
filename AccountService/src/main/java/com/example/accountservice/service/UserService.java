@@ -11,6 +11,7 @@ import com.example.accountservice.mapper.UserMapper;
 import com.example.accountservice.model.User;
 import com.example.accountservice.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,6 +25,9 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserResponse create(CreateUserRequest request){
         if(userRepository.existsUsersByEmail(request.getEmail())){
            throw new AppException(ErrorCode.USER_EXISTED);
@@ -31,7 +35,7 @@ public class UserService {
 
         User user = userMapper.toUser(request);
 //        System.out.println("Service");
-
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(true);
         user.setActivate(false);
         user.setStartedDate(new Date());
@@ -41,6 +45,7 @@ public class UserService {
     public UserResponse createCustomer(RegisterCustomerRequest request){
         User user = userMapper.toCustomer(request);
         System.out.println("Service");
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(false);
         user.setActivate(true);
         user.setStartedDate(new Date());
