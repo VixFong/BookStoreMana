@@ -24,15 +24,23 @@ export const WhyChooseUs = () => {
         }
     ];
 
+    const sectionStyle = {
+        backgroundColor: '#f7f6f3',
+        padding: '50px 0'
+    };
+
     return (
-        <div className="container my-5">
-            <div className="row align-items-center">
-                <div className="col-md-6">
-                    <img src="/WhyChooseUs.jpg" alt="Why Choose Us" className="img-fluid" />
-                </div>
-                <div className="col-md-6">
-                    <h3 className="text-success">About Our BookStore</h3>
-                    <h2>WHY PEOPLE CHOOSE US</h2>
+        <div style={sectionStyle}>
+        <div className="container">
+            <div className="text-center mb-4">
+                    <h3 className="text-danger">About Our BookStore</h3>
+                    <h2>Why People Choose Us?</h2>  
+            </div>
+                <div className='row align-items-center'>                
+                    <div className="col-md-6">
+                        <img src="/WhyChooseUs.jpg" alt="Why???" className="img-fluid" />
+                    </div>
+                    <div className="col-md-6">
                     {features.map((feature, index) => (
                         <div className="d-flex align-items-start mb-3" key={index}>
                             <div className="me-3" style={{ fontSize: '2rem' }}>{feature.icon}</div>
@@ -45,6 +53,7 @@ export const WhyChooseUs = () => {
                 </div>
             </div>
         </div>
+    </div>
     );
 };
 
