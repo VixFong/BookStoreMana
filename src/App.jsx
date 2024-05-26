@@ -4,6 +4,7 @@ import { BestSelling } from "./Component/BestSelling";
 import{ FeaturedBooks } from "./Component/FeaturedBooks";
 import{ Banner } from "./Component/Banner";
 import { WhyChooseUs } from "./Component/WhyChooseUs";
+import { Authors } from "./Component/Authors";
 
 
 export const App = () => {
@@ -15,6 +16,7 @@ export const App = () => {
       <FeaturedBooks/>
       <Banner/>
       <WhyChooseUs/>
+      <Authors/>
     </div>
   );
 };
