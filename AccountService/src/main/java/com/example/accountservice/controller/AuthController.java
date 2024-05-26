@@ -3,6 +3,7 @@ package com.example.accountservice.controller;
 
 import com.example.accountservice.dto.request.IntrospectRequest;
 import com.example.accountservice.dto.request.LoginUserRequest;
+import com.example.accountservice.dto.request.LogoutRequest;
 import com.example.accountservice.dto.response.ApiResponse;
 import com.example.accountservice.dto.response.IntrospectResponse;
 import com.example.accountservice.dto.response.LoginUserResponse;
@@ -38,6 +39,13 @@ public class AuthController {
 //        System.out.println(isValid);
         return ApiResponse.<IntrospectResponse>builder()
                 .data(isValid)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws JOSEException, ParseException {
+        authService.logout(request);
+        return ApiResponse.<Void>builder()
                 .build();
     }
 

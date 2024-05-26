@@ -11,6 +11,7 @@ import com.example.accountservice.dto.response.RoleResponse;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -29,7 +30,7 @@ public class RoleService {
 
     private final RoleMapper roleMapper;
 
-
+    @PreAuthorize("hasRole('Admin')")
     public RoleResponse create(RoleRequest req){
 
 
@@ -42,7 +43,7 @@ public class RoleService {
         return roleMapper.toRoleResponse(role);
 
     }
-
+    @PreAuthorize("hasRole('Admin')")
     public List<RoleResponse> getAll(){
         return roleRepository.findAll()
                 .stream()
@@ -50,7 +51,7 @@ public class RoleService {
                 .toList();
 
     }
-
+    @PreAuthorize("hasRole('Admin')")
     public void delete(String role){
         roleRepository.deleteById(role);
     }

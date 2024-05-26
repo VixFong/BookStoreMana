@@ -2,10 +2,12 @@ package com.example.accountservice.service;
 
 import com.example.accountservice.dto.request.IntrospectRequest;
 import com.example.accountservice.dto.request.LoginUserRequest;
+import com.example.accountservice.dto.request.LogoutRequest;
 import com.example.accountservice.dto.response.IntrospectResponse;
 import com.example.accountservice.dto.response.LoginUserResponse;
 import com.example.accountservice.exception.AppException;
 import com.example.accountservice.exception.ErrorCode;
+import com.example.accountservice.model.InvalidToken;
 import com.example.accountservice.model.User;
 import com.example.accountservice.repo.InvalidTokenRepository;
 import com.example.accountservice.repo.UserRepository;
@@ -134,6 +136,21 @@ public class AuthService {
         return IntrospectResponse.builder()
                 .valid(isValid)
                 .build();
+
+    }
+
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
+
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expirateTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidToken invalidToken = InvalidToken.builder()
+                .id(jit)
+                .expireTime(expirateTime)
+                .build();
+
+        invalidTokenRepository.save(invalidToken);
 
     }
 }
