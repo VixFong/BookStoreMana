@@ -2,9 +2,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const Banner = () => {
     const bannerStyle = {
-        backgroundColor: '#FFD700',
-        color: '#003366',
-        fontSize: '2rem',
+        backgroundColor: '#6bad0d',
+        color: '#ffffff',
+        fontSize: '1.5rem',
         fontWeight: 'bold',
         textAlign: 'center', 
         padding: '20px 0',
@@ -14,7 +14,7 @@ export const Banner = () => {
 
     return (
         <div style={bannerStyle}>
-            Sales Up To 70%
+            UP TO 70% OFF THE ENTIRE STORE!!!
         </div>
     );
 };
