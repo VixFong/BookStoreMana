@@ -3,6 +3,7 @@ import { Carousel } from "./Component/Carousel"
 import { BestSelling } from "./Component/BestSelling";
 import{ FeaturedBooks } from "./Component/FeaturedBooks";
 import{ Banner } from "./Component/Banner";
+import { WhyChooseUs } from "./Component/WhyChooseUs";
 
 
 export const App = () => {
@@ -13,6 +14,7 @@ export const App = () => {
       <BestSelling/>
       <FeaturedBooks/>
       <Banner/>
+      <WhyChooseUs/>
     </div>
   );
 };
