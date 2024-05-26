@@ -11,6 +11,8 @@ import com.example.accountservice.mapper.UserMapper;
 import com.example.accountservice.model.User;
 import com.example.accountservice.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
+    @PreAuthorize("hasRole('Admin')")
     public UserResponse create(CreateUserRequest request){
         if(userRepository.existsUsersByEmail(request.getEmail())){
            throw new AppException(ErrorCode.USER_EXISTED);
@@ -53,13 +57,22 @@ public class UserService {
     }
 
 
-
+    @PreAuthorize("hasRole('Admin')")
     public List<UserResponse> getUsers(){
         return (userRepository.findAll().stream().map(userMapper::toUserResponse).toList());
     }
 
     public UserResponse getUser(String id){
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    }
+
+    public UserResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateUser(String id , UpdateUserRequest request){

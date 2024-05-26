@@ -14,6 +14,9 @@ public enum ErrorCode {
     EMAIL_INVALID(203,"Invalid email",HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(204,"Password must be at least 6 characters",HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(205,"Unauthenticated",HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(206, "You do not have permission",HttpStatus.FORBIDDEN),
+    INVALID_TOKEN(207, "Invalid token",HttpStatus.BAD_REQUEST),
+    EXPIRED_TOKEN(208, "Token has been expired",HttpStatus.BAD_REQUEST),
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 
     ;

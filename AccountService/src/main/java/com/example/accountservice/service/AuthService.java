@@ -1,20 +1,26 @@
 package com.example.accountservice.service;
 
+import com.example.accountservice.dto.request.IntrospectRequest;
 import com.example.accountservice.dto.request.LoginUserRequest;
+import com.example.accountservice.dto.response.IntrospectResponse;
 import com.example.accountservice.dto.response.LoginUserResponse;
 import com.example.accountservice.exception.AppException;
 import com.example.accountservice.exception.ErrorCode;
 import com.example.accountservice.model.User;
+import com.example.accountservice.repo.InvalidTokenRepository;
 import com.example.accountservice.repo.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -26,6 +32,9 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    InvalidTokenRepository invalidTokenRepository;
+
     @Value("${jwt.secretKey}")
     protected String SECRET_KEY;
 
@@ -33,11 +42,13 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public LoginUserResponse authenticated(LoginUserRequest request){
+        System.out.println("Login");
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() ->new AppException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        System.out.println(user.getEmail());
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(),user.getPassword());
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if(!authenticated){
             throw new AppException(ErrorCode.UNAUTHENTICATED);
@@ -48,7 +59,7 @@ public class AuthService {
 
         return LoginUserResponse.builder()
                 .token(token)
-                .authenticated(authenticated)
+                .authenticated(true)
                 .build();
 
     }
@@ -90,5 +101,39 @@ public class AuthService {
             });
         }
         return stringJoiner.toString();
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SECRET_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verify =  signedJWT.verify(verifier);
+        if(!(verify && expirationTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if(invalidTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+
+        return signedJWT;
+    }
+
+    public IntrospectResponse validateToken(IntrospectRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+
+        boolean isValid = true;
+        try {
+            verifyToken(token);
+        }catch (AppException exception){
+            isValid = false;
+        }
+
+        return IntrospectResponse.builder()
+                .valid(isValid)
+                .build();
+
     }
 }
