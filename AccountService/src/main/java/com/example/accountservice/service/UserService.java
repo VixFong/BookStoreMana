@@ -8,7 +8,9 @@ import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.exception.AppException;
 import com.example.accountservice.exception.ErrorCode;
 import com.example.accountservice.mapper.UserMapper;
+import com.example.accountservice.model.Role;
 import com.example.accountservice.model.User;
+import com.example.accountservice.repo.RoleRepository;
 import com.example.accountservice.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -29,6 +32,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     @PreAuthorize("hasRole('Admin')")
@@ -53,6 +59,14 @@ public class UserService {
         user.setLock(false);
         user.setActivate(true);
         user.setStartedDate(new Date());
+
+        Role adminRole = roleRepository.save(Role.builder()
+                .name("Customer")
+                .build());
+
+        var roles = new HashSet<Role>();
+        roles.add(adminRole);
+        user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -62,6 +76,7 @@ public class UserService {
         return (userRepository.findAll().stream().map(userMapper::toUserResponse).toList());
     }
 
+    @PreAuthorize("hasRole('Admin')")
     public UserResponse getUser(String id){
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }

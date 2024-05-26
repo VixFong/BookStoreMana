@@ -4,6 +4,7 @@ package com.example.accountservice.controller;
 import com.example.accountservice.dto.request.IntrospectRequest;
 import com.example.accountservice.dto.request.LoginUserRequest;
 import com.example.accountservice.dto.request.LogoutRequest;
+import com.example.accountservice.dto.request.RefreshTokenRequest;
 import com.example.accountservice.dto.response.ApiResponse;
 import com.example.accountservice.dto.response.IntrospectResponse;
 import com.example.accountservice.dto.response.LoginUserResponse;
@@ -49,4 +50,10 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/refresh")
+    ApiResponse<LoginUserResponse> logout(@RequestBody RefreshTokenRequest request) throws JOSEException, ParseException {
+        authService.refreshToken(request);
+        return ApiResponse.<LoginUserResponse>builder()
+                .build();
+    }
 }

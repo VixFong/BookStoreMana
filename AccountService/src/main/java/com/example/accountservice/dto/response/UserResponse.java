@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,4 +23,5 @@ public class UserResponse {
     private String profilePicture;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date startedDate;
+    private Set<RoleResponse> roles;
 }

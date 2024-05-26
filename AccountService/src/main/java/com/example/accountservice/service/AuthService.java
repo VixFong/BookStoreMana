@@ -3,6 +3,7 @@ package com.example.accountservice.service;
 import com.example.accountservice.dto.request.IntrospectRequest;
 import com.example.accountservice.dto.request.LoginUserRequest;
 import com.example.accountservice.dto.request.LogoutRequest;
+import com.example.accountservice.dto.request.RefreshTokenRequest;
 import com.example.accountservice.dto.response.IntrospectResponse;
 import com.example.accountservice.dto.response.LoginUserResponse;
 import com.example.accountservice.exception.AppException;
@@ -135,6 +136,32 @@ public class AuthService {
 
         return IntrospectResponse.builder()
                 .valid(isValid)
+                .build();
+
+    }
+    public LoginUserResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
+        var signJWT = verifyToken(request.getToken());
+
+        var jit = signJWT.getJWTClaimsSet().getJWTID();
+        var expirationTime = signJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidToken invalidToken = InvalidToken.builder()
+                .id(jit)
+                .expireTime(expirationTime)
+                .build();
+
+        invalidTokenRepository.save(invalidToken);
+
+//        Create new Token
+
+        var email = signJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByEmail(email).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        var token = generateToken(user);
+
+        return LoginUserResponse.builder()
+                .token(token)
+                .authenticated(true)
                 .build();
 
     }
