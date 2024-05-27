@@ -44,8 +44,12 @@ public class UserService {
         }
 
         User user = userMapper.toUser(request);
-//        System.out.println("Service");
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        int atIndex = request.getEmail().indexOf("@");
+        String pass = request.getEmail().substring(0, atIndex);
+
+        System.out.println(pass);
+        user.setPassword(passwordEncoder.encode(pass));
         user.setLock(true);
         user.setActivate(false);
         user.setStartedDate(new Date());
@@ -87,6 +91,11 @@ public class UserService {
 
 
         User user = userRepository.findByEmail(email).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
+    }
+    public UserResponse getUserByEmail(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         return userMapper.toUserResponse(user);
     }
 

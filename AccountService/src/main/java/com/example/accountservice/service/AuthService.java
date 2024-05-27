@@ -45,13 +45,12 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public LoginUserResponse authenticated(LoginUserRequest request){
-        System.out.println("Login");
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        System.out.println(user.getEmail());
-
+        System.out.println("Login user: " + user.getEmail());
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+//        System.out.println("match "+ authenticated);
 
         if(!authenticated){
             throw new AppException(ErrorCode.UNAUTHENTICATED);

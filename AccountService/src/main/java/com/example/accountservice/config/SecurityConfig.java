@@ -25,7 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS={"/users","/auth/login", "auth/introspect","auth/logout","auth/refresh"};
+    private final String[] PUBLIC_ENDPOINTS={"/users","/auth/login", "/auth/introspect","/auth/logout","/auth/refresh", "/auth/reset-password"};
 
 //    @Value("${jwt.signerKey}")
 //    private String signerKey;
@@ -36,7 +36,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.authorizeHttpRequests(req -> req.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS ).permitAll()
+        http.authorizeHttpRequests(req -> req
+                .requestMatchers(HttpMethod.GET, "/forgot-password").permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS ).permitAll()
                 .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->

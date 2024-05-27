@@ -20,8 +20,8 @@ public class CreateUserRequest {
     @Email(message = "EMAIL_INVALID")
     private String email;
 
-    @Size(min = 6, message = "PASSWORD_INVALID")
-    private String password;
+//    @Size(min = 6, message = "PASSWORD_INVALID")
+//    private String password;
     private boolean lock;
 
     private boolean activate;
