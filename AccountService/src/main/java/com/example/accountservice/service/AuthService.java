@@ -48,6 +48,14 @@ public class AuthService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        if(!user.isActivate()){
+            throw new AppException(ErrorCode.ACCOUNT_UNACTIVATED);
+        }
+
+        if(!user.isLock()){
+            throw new AppException(ErrorCode.ACCOUNT_LOCKED);
+        }
+
         System.out.println("Login user: " + user.getEmail());
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 //        System.out.println("match "+ authenticated);

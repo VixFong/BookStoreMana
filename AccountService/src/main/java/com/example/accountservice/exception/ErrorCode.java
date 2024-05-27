@@ -18,6 +18,10 @@ public enum ErrorCode {
     INVALID_TOKEN(207, "Invalid token",HttpStatus.BAD_REQUEST),
     EXPIRED_TOKEN(208, "Token has been expired",HttpStatus.BAD_REQUEST),
     FAIL_SENDING_EMAIL(209, "Error occurred while sending reset password email",HttpStatus.BAD_REQUEST),
+    ACCOUNT_LOCKED(210, "Your account has been locked",HttpStatus.BAD_REQUEST),
+    ACCOUNT_UNACTIVATED(211, "Your account is not activate",HttpStatus.BAD_REQUEST),
+
+
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 
     ;

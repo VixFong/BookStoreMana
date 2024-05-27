@@ -50,7 +50,7 @@ public class UserService {
 
         System.out.println(pass);
         user.setPassword(passwordEncoder.encode(pass));
-        user.setLock(true);
+        user.setLock(false);
         user.setActivate(false);
         user.setStartedDate(new Date());
         return userMapper.toUserResponse(userRepository.save(user));
@@ -58,7 +58,7 @@ public class UserService {
 
     public UserResponse createCustomer(RegisterCustomerRequest request){
         User user = userMapper.toCustomer(request);
-        System.out.println("Service");
+
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(false);
         user.setActivate(true);
