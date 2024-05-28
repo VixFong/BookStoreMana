@@ -16,11 +16,13 @@ public class UserResponse {
     private String fullName;
 
     private String email;
-    private String password;
+//    private String password;
     private boolean lock;
 
     private boolean activate;
-    private String profilePicture;
+//    private String profilePicture;
+//    private String address;
+
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date startedDate;
     private Set<RoleResponse> roles;

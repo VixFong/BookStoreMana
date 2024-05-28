@@ -2,6 +2,7 @@ package com.example.accountservice.dto.request;
 
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserRequest {
+    @NotNull
     private String fullName;
 
     @Email(message = "EMAIL_INVALID")

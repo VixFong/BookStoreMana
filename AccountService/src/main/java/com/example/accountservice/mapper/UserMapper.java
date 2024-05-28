@@ -16,10 +16,10 @@ public interface UserMapper {
 
     User toCustomer(RegisterCustomerRequest request);
 
-    User toProfileUser(UpdateProfileRequest request);
 
     UserResponse toUserResponse(User user);
 
+    void updateProfileUser(@MappingTarget User user,UpdateProfileRequest request);
     void updateUser(@MappingTarget User user, UpdateUserRequest request);
 
 }

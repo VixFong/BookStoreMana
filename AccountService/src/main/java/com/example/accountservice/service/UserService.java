@@ -2,6 +2,7 @@ package com.example.accountservice.service;
 
 import com.example.accountservice.dto.request.CreateUserRequest;
 import com.example.accountservice.dto.request.RegisterCustomerRequest;
+import com.example.accountservice.dto.request.UpdateProfileRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
 import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
@@ -12,6 +13,7 @@ import com.example.accountservice.model.Role;
 import com.example.accountservice.model.User;
 import com.example.accountservice.repo.RoleRepository;
 import com.example.accountservice.repo.UserRepository;
+import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,9 +38,12 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private ResetPasswordService resetPasswordService;
+
 
     @PreAuthorize("hasRole('Admin')")
-    public UserResponse create(CreateUserRequest request){
+    public UserResponse create(CreateUserRequest request) throws JOSEException {
         if(userRepository.existsUsersByEmail(request.getEmail())){
            throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -53,6 +58,11 @@ public class UserService {
         user.setLock(false);
         user.setActivate(false);
         user.setStartedDate(new Date());
+
+
+        //Send mail
+        resetPasswordService.sendMailToUser(request.getEmail());
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -99,6 +109,24 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse updateMyInfo(UpdateProfileRequest request) {
+        System.out.println("update Info");
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        userMapper.updateProfileUser(user,request);
+        System.out.println("update user "+ user.getPhone());
+//        user.setFullName(request.getFullName());
+//        user.setPhone(request.getPhone());
+//        user.setAddress(request.getAddress());
+        // update other fields as needed
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
     public UserResponse updateUser(String id , UpdateUserRequest request){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -106,12 +134,12 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-//    public ProfileResponse updateProfileUser(String id , UpdateUserRequest request){
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-//        userMapper.updateUser(user, request);
-//        return userMapper.toUserResponse(userRepository.save(user));
-//    }
+    public List<UserResponse> searchUsers(String keyword) {
+        List<User> users = userRepository.findByFullNameOrEmail(keyword);
+        return users.stream().map(userMapper::toUserResponse).toList();
+    }
+
+
     public void delete(String id){
         userRepository.deleteById(id);
     }

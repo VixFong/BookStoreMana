@@ -20,6 +20,7 @@ public enum ErrorCode {
     FAIL_SENDING_EMAIL(209, "Error occurred while sending reset password email",HttpStatus.BAD_REQUEST),
     ACCOUNT_LOCKED(210, "Your account has been locked",HttpStatus.BAD_REQUEST),
     ACCOUNT_UNACTIVATED(211, "Your account is not activate",HttpStatus.BAD_REQUEST),
+    NOT_MATCH_PASSWORD(212, "Your confirm password is not match with password",HttpStatus.BAD_REQUEST),
 
 
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)

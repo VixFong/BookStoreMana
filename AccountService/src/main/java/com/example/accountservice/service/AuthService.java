@@ -52,7 +52,7 @@ public class AuthService {
             throw new AppException(ErrorCode.ACCOUNT_UNACTIVATED);
         }
 
-        if(!user.isLock()){
+        if(user.isLock()){
             throw new AppException(ErrorCode.ACCOUNT_LOCKED);
         }
 
