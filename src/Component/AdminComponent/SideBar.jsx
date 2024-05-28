@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaUser, FaChevronDown, FaChevronUp, FaSignOutAlt } from 'react-icons/fa';
+import {Link} from "react-router-dom";
 
 export const Sidebar = () => {
     const [UserMenu, setUserMenu] = useState(false);
@@ -24,7 +25,7 @@ export const Sidebar = () => {
                         <div className={`collapse ${UserMenu ? 'show' : ''}`}>
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item">
-                                    <a className="nav-link text-white" href="#">User Management</a>
+                                    <a className="nav-link text-white"><Link to ="/UserManagement">User Management</Link></a>
                                 </li>
                                 <li className="nav-item">
                                     <a className="nav-link text-white" href="#">Add New User</a>

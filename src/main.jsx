@@ -8,6 +8,7 @@ import{
   RouterProvider,
   Route,
 } from "react-router-dom";
+import { UserManagement } from './Component/AdminComponent/UserManagement.jsx'
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path:"AdminPage",
     element: <AdminPage/>,
+  },
+  {
+    path:"UserManagement",
+    element: <UserManagement/>,
   },
 ])
 
