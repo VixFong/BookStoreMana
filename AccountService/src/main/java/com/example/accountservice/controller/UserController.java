@@ -8,6 +8,7 @@ import com.example.accountservice.dto.response.ApiResponse;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.service.UserService;
 import com.nimbusds.jose.JOSEException;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ApiResponse<UserResponse> addUser(@Valid @RequestBody CreateUserRequest request) throws JOSEException {
+    public ApiResponse<UserResponse> addUser(@Valid @RequestBody CreateUserRequest request) throws JOSEException, MessagingException {
         System.out.println("Controller");
         return ApiResponse.<UserResponse>builder()
                 .data(userService.create(request))

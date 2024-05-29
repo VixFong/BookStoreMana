@@ -8,6 +8,7 @@ import com.example.accountservice.dto.request.UpdateUserRequest;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.model.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
@@ -20,6 +21,8 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     void updateProfileUser(@MappingTarget User user,UpdateProfileRequest request);
+
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UpdateUserRequest request);
 
 }
