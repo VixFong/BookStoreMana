@@ -14,6 +14,7 @@ import com.example.accountservice.model.User;
 import com.example.accountservice.repo.RoleRepository;
 import com.example.accountservice.repo.UserRepository;
 import com.nimbusds.jose.JOSEException;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +44,7 @@ public class UserService {
 
 
     @PreAuthorize("hasRole('Admin')")
-    public UserResponse create(CreateUserRequest request) throws JOSEException {
+    public UserResponse create(CreateUserRequest request) throws JOSEException, MessagingException {
         if(userRepository.existsUsersByEmail(request.getEmail())){
            throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -68,7 +69,7 @@ public class UserService {
 
     public UserResponse createCustomer(RegisterCustomerRequest request){
         User user = userMapper.toCustomer(request);
-
+        System.out.println("customer add");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(false);
         user.setActivate(true);
@@ -127,6 +128,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('Admin')")
     public UserResponse updateUser(String id , UpdateUserRequest request){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -134,12 +136,14 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('Admin')")
     public List<UserResponse> searchUsers(String keyword) {
         List<User> users = userRepository.findByFullNameOrEmail(keyword);
         return users.stream().map(userMapper::toUserResponse).toList();
     }
 
 
+    @PreAuthorize("hasRole('Admin')")
     public void delete(String id){
         userRepository.deleteById(id);
     }

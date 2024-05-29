@@ -9,10 +9,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class ResetPasswordRequest {
 
     @Size(min = 6, message = "PASSWORD_INVALID")
     private String password;
-
     private String confirmPassword;
+
+
+
 }

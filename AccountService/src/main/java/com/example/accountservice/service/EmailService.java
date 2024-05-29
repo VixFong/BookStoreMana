@@ -1,5 +1,7 @@
 package com.example.accountservice.service;
 
+import com.example.accountservice.exception.AppException;
+import com.example.accountservice.exception.ErrorCode;
 import com.example.accountservice.model.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -19,7 +21,7 @@ public class EmailService {
 
     @Autowired
     private TemplateEngine templateEngine;
-    public void sendEmail(String to, String subject, String url) throws MessagingException {
+    public void sendEmail(String to, String subject, String url) {
 
         Context context = new Context();
 //        context.setVariable("username", account.getUsername());
@@ -29,13 +31,19 @@ public class EmailService {
         String text = templateEngine.process("emailTemplate", context);
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setPriority(1);
-        helper.setSubject(subject);
-        helper.setTo(to);
+        MimeMessageHelper helper = null;
+        try {
+            helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setText(text, true);
-        mailSender.send(message);
+            helper.setPriority(1);
+            helper.setSubject(subject);
+            helper.setTo(to);
+
+            helper.setText(text, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
+        }
 
 
     }

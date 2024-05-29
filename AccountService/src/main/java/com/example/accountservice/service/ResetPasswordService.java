@@ -7,6 +7,7 @@ import com.example.accountservice.exception.ErrorCode;
 import com.example.accountservice.repo.UserRepository;
 import com.example.accountservice.utils.JwtUtils;
 import com.nimbusds.jose.JOSEException;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,13 +38,11 @@ public class ResetPasswordService {
     @Value("${server.servlet.context-path}")
     private String CONTEXT_PATH;
 
-    public void sendMailToUser(String email) throws JOSEException {
-        try {
-            if(!userRepository.existsUsersByEmail(email))
-                throw new AppException(ErrorCode.USER_NOT_FOUND);
+    public void sendMailToUser(String email) throws JOSEException, MessagingException {
+        System.out.println("Send mail");
 
 
-
+        if(userRepository.existsUsersByEmail(email)){
             // Generate token
             String token = jwtUtils.generateTokenEmail(email, EXPIRATION_TIME);
 
@@ -56,12 +55,8 @@ public class ResetPasswordService {
 
             // Send email
             emailService.sendEmail(email, "Reset Password", resetUrl);
-//            return "Reset password email sent";
-
-        }catch (Exception e){
-            throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
-
         }
+        else throw new AppException(ErrorCode.USER_NOT_FOUND);
     }
 
     public void resetPassword(String token, ResetPasswordRequest request) throws ParseException, JOSEException {

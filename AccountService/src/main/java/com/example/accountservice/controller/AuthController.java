@@ -14,6 +14,7 @@ import com.example.accountservice.service.ResetPasswordService;
 import com.example.accountservice.service.UserService;
 import com.example.accountservice.utils.JwtUtils;
 import com.nimbusds.jose.JOSEException;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<LoginUserResponse> login(@RequestBody LoginUserRequest request){
-
+        System.out.println("Controller");
 
         var isAuthenticated = authService.authenticated(request);
 
@@ -67,8 +68,8 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ApiResponse<String> forgotPassword(@RequestBody String email) throws JOSEException {
-        resetPasswordService.sendMailToUser(email);
+    public ApiResponse<String> forgotPassword(@RequestBody EmailRequest request) throws JOSEException, MessagingException {
+        resetPasswordService.sendMailToUser(request.getEmail());
         return ApiResponse.<String>builder()
                 .data("Reset password email sent")
                 .build();

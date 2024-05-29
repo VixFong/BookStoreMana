@@ -118,15 +118,16 @@ public class AuthService {
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        var verify =  signedJWT.verify(verifier);
-        if(!(verify && expirationTime.after(new Date())))
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date())))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        if(invalidTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+        if (invalidTokenRepository
+                .existsById(signedJWT.getJWTClaimsSet().getJWTID()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
-
 
         return signedJWT;
     }
@@ -137,7 +138,10 @@ public class AuthService {
         boolean isValid = true;
         try {
             verifyToken(token);
+            System.out.println("verify token " + verifyToken(token));
         }catch (AppException exception){
+
+
             isValid = false;
         }
 
