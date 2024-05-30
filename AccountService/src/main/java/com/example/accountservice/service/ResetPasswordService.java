@@ -42,7 +42,7 @@ public class ResetPasswordService {
         System.out.println("Send mail");
 
 
-        if(userRepository.existsUsersByEmail(email)){
+        if(!userRepository.existsUsersByEmail(email)){
             // Generate token
             String token = jwtUtils.generateTokenEmail(email, EXPIRATION_TIME);
 

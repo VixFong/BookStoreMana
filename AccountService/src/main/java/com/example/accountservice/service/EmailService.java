@@ -24,8 +24,6 @@ public class EmailService {
     public void sendEmail(String to, String subject, String url) {
 
         Context context = new Context();
-//        context.setVariable("username", account.getUsername());
-//        context.setVariable("password", account.getUsername());
         context.setVariable("url", url);
 
         String text = templateEngine.process("emailTemplate", context);

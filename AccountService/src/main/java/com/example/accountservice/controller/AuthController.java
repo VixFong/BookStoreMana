@@ -47,7 +47,6 @@ public class AuthController {
     @PostMapping("/introspect")
     ApiResponse<IntrospectResponse> validate(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
         var isValid = authService.validateToken(request);
-//        System.out.println(isValid);
         return ApiResponse.<IntrospectResponse>builder()
                 .data(isValid)
                 .build();

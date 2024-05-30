@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,8 @@ public class UserService {
     @Autowired
     private ResetPasswordService resetPasswordService;
 
+    @Autowired
+    private EmailService emailService;
 
     @PreAuthorize("hasRole('Admin')")
     public UserResponse create(CreateUserRequest request) throws JOSEException, MessagingException {
@@ -58,11 +61,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(pass));
         user.setLock(false);
         user.setActivate(false);
-        user.setStartedDate(new Date());
+        user.setStartedDate(LocalDate.now());
 
 
         //Send mail
         resetPasswordService.sendMailToUser(request.getEmail());
+
+
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -73,7 +78,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(false);
         user.setActivate(true);
-        user.setStartedDate(new Date());
+        user.setStartedDate(LocalDate.now());
 
         Role adminRole = roleRepository.save(Role.builder()
                 .name("Customer")

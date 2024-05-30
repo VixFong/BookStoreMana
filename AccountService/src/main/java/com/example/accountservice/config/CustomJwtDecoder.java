@@ -21,13 +21,12 @@ import java.util.Objects;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
-    @Value("${jwt.secretKey}")
-    private String SECRET_KEY;
-
-    @Autowired
-    private AuthService authService;
-
-    private NimbusJwtDecoder nimbusJwtDecoder = null;
+//    @Value("${jwt.secretKey}")
+//    private String SECRET_KEY;
+//
+//    @Autowired
+//    private AuthService authService;
+//
 
     @Override
     public Jwt decode(String token) throws JwtException {

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -23,5 +24,5 @@ public class RegisterCustomerRequest {
     private boolean lock;
     private boolean activate;
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date startedDate;
+    private LocalDate startedDate;
 }

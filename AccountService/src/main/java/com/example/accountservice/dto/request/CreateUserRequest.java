@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -29,5 +30,5 @@ public class CreateUserRequest {
     private boolean activate;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date startedDate;
+    private LocalDate startedDate;
 }
