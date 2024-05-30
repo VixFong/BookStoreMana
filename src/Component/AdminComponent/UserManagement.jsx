@@ -11,38 +11,56 @@ export const UserManagement = () => {
         <div className="d-flex">
             <Sidebar />
             <div className="flex-grow-1 p-3">
-                <h4 className="mb-3">Quản Lý Người Dùng</h4>
-                <button className="btn btn-danger mb-3">Thêm Người Dùng Mới +</button>
-                <table className="table table-striped">
+                <h4 className="mb-3">User Management</h4>
+                <button className="btn btn-danger mb-3">Add New User +</button>
+                <style >
+                    {`
+                        .table-bordered th, .table-bordered td{
+                            border: 1px solid #dee2e6
+                        }
+                        .table th, .table td{
+                            vertical-align: middle;
+                            text-align: center;
+                        }
+                        .form-switch {
+                            display: flex,
+                            align-items: center;
+                            justify-content: center;
+                            padding-left: 50px;
+                            height: 100%;
+                        }
+                    `}
+                </style>
+                <table className="table table-striped table-bordered" border={1} >
                     <thead>
-                        <tr>
-                            <th>ID</th>
+                        <tr className='text-center align-middle'>
                             <th>Pic</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Created Date</th>
                             <th>Blocked</th>
-                            <th>Authorization</th>
+                            <th>Activated</th>
+                            <th>Role</th>
                             <th>Operation</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
                             <tr key={user.id}>
-                                <td>{index + 1}</td>
-                                <td>
-                                    <img src={user.imgSrc} alt={user.name} style={{ width: '50px', height: '50px' }} />
+                                <td className="text-center align-middle">
+                                    <img src={user.imgSrc} alt={user.name} className="rounded-circle"style={{ width: '100px', height: '100px' }} />
                                 </td>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.date}</td>
-                                <td>
+                                <td className="text-center align-middle">{user.name}</td>
+                                <td className="text-center align-middle">{user.email}</td>
+                                <td className="text-center align-middle">{user.date}</td>
+                                <td className="text-center align-middle">
                                     <div className="form-check form-switch">
                                         <input className="form-check-input" type="checkbox" checked={user.locked} onChange={() => {}} />
                                     </div>
                                 </td>
-                                <td>{user.role}</td>
-                                <td>
+                                <td className="text-center align-middle">{user.activated ? '' : 'x'}</td>
+                                <td className="text-center align-middle">{user.role}</td>
+                                <td className="text-center align-middle">
                                     <button className="btn btn-primary btn-sm me-2">Sửa</button>
                                     <button className="btn btn-danger btn-sm">Xoá</button>
                                 </td>
