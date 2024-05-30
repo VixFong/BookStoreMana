@@ -1,6 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './SideBar';
+import {Link} from "react-router-dom";
 
 const users = [
     { id: 1, name: 'Admin', email: 'admin@gmail.com', date: '29-05-2024', role: 'Quản Trị Viên', locked: false, imgSrc: '/Henry.jpg' }
@@ -12,8 +13,8 @@ export const UserManagement = () => {
             <Sidebar />
             <div className="flex-grow-1 p-3">
                 <h4 className="mb-3">User Management</h4>
-                <button className="btn btn-danger mb-3">Add New User +</button>
-                <style >
+                <button className="btn btn-danger mb-3"><Link to ="/add"><a className='text-light'>Add New User +</a></Link> </button>
+                <style>
                     {`
                         .table-bordered th, .table-bordered td{
                             border: 1px solid #dee2e6

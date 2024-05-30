@@ -28,7 +28,7 @@ export const Sidebar = () => {
                                     <a className="nav-link text-white"><Link to ="/UserManagement">User Management</Link></a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link text-white" href="#">Add New User</a>
+                                    <a className="nav-link text-white"><Link to ="/add">Add New User</Link></a>
                                 </li>
                                 <li className="nav-item">
                                     <a className="nav-link text-white" href="#">Administrators</a>

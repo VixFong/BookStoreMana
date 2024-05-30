@@ -9,6 +9,7 @@ import{
   Route,
 } from "react-router-dom";
 import { UserManagement } from './Component/AdminComponent/UserManagement.jsx'
+import { AddUser } from './Component/AdminComponent/AddUser.jsx'
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path:"UserManagement",
     element: <UserManagement/>,
+  },
+  {
+    path:"add",
+    element: <AddUser/>,
   },
 ])
 
