@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 
 export const Login = ({ onClose }) => {
     const [email, setMail] = useState('');
@@ -20,13 +21,24 @@ export const Login = ({ onClose }) => {
         };
     }, [onClose]);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if (email === 'admin@gmail.com' && password === '123456') {
-            window.location.href = '/AdminPage';
-        } else {
-            setErr('Invalid email or password');
-        }
+
+        try{
+            const response = await axios.post('http://localhost:8888/identity/auth/login',{
+                email,
+                password,
+            })
+
+            if(response.data && response.data.data){
+                console.log(response.data.data)
+                window.location.href = '/AdminPage';
+            }
+        } catch(error) {
+            if(error.response && error.response.data && error.response.data.message){
+                setErr(error.response.data.message);
+            }
+        } 
     };
 
     return (
