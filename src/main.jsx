@@ -10,11 +10,16 @@ import{
 } from "react-router-dom";
 import { UserManagement } from './Component/AdminComponent/UserManagement.jsx'
 import { AddUser } from './Component/AdminComponent/AddUser.jsx'
+import { RegisteredPage } from './Pages/RegisteredPage.jsx'
 
 const router = createBrowserRouter([
   {
     path:"/",
     element: <App/>,
+  },
+  {
+    path:"RegisterPage",
+    element: <RegisteredPage/>,
   },
   {
     path:"AdminPage",

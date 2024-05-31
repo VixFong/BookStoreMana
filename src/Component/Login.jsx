@@ -86,7 +86,7 @@ export const Login = ({ onClose }) => {
                             </div>
                         </form>
                         <div className="text-center mt-3">
-                            <span>Not a member? <a href="#" className="link-primary">Create an account</a></span>
+                            <span>Not a member? <a href="/RegisterPage" className="link-primary">Create an account</a></span>
                         </div>
                     </div>
                 </div>
