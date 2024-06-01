@@ -30,7 +30,7 @@ export const Register = () => {
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ background: '#B3D8E2',  width: '100vw' }}>
             <div className="card shadow-sm p-4" style={{ width: '400px' }}>
                 <h2 className="text-center mb-4">CREATE AN ACCOUNT</h2>
-                {success && <div className="alert alert-success text-center">Registered Successfully</div>}
+                {success && <div className="alert alert-success text-center">Registered Successfully You Will Be Direct Back To Home Page</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="name" className="form-label">Your Name</label>

@@ -10,9 +10,10 @@ export const UserManagement = () => {
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
-    const [searchTerm, setSearchTerm] = useState('')
+   
 
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('')
 
     useEffect(() => {
         fetchUsers(page, size);
@@ -82,9 +83,6 @@ export const UserManagement = () => {
             <Sidebar />
             <div className="flex-grow-1 p-3">
                 <h4 className="mb-3">User Management</h4>
-                {/* <button className="btn btn-danger mb-3">
-                    <Link to="/add" className='text-light'>Add New User +</Link>
-                </button> */}
                 <div className='d-flex justify-content-between mb-3'>
                     <button className="btn btn-danger mb-3">
                         <Link to="/add" className='text-light'>Add New User +</Link>
@@ -94,7 +92,7 @@ export const UserManagement = () => {
                         className='form-control w-25'
                         placeholder='Search users...'
                         value={searchTerm}
-                        onChange={handleSearchInputChange} // Sự kiện thay đổi nội dung của ô tìm kiếm
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <style>
