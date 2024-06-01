@@ -84,6 +84,7 @@ import { Link } from "react-router-dom";
 export const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('')
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -105,14 +106,28 @@ export const UserManagement = () => {
         fetchUsers();
     }, []);
 
+    const filterUsers = users.filter(user => 
+        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
     return (
         <div className="d-flex">
             <Sidebar />
             <div className="flex-grow-1 p-3">
                 <h4 className="mb-3">User Management</h4>
-                <button className="btn btn-danger mb-3">
-                    <Link to="/add" className='text-light'>Add New User +</Link>
-                </button>
+                <div className='d-flex justify-content-between mb-3'>
+                    <button className="btn btn-danger mb-3">
+                        <Link to="/add" className='text-light'>Add New User +</Link>
+                    </button>
+                    <input
+                        type='text'
+                        className='form-control w-25'
+                        placeholder='Search users...'
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
                 <style>
                     {`
                         .table-bordered th, .table-bordered td {
@@ -146,7 +161,7 @@ export const UserManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user, index) => (
+                        {filterUsers.map((user) => (
                             <tr key={user.id}>
                                 <td className="text-center align-middle">
                                     <img src={user.profilePicture} alt={user.fullName} className="rounded-circle" style={{ width: '100px', height: '100px' }} />
