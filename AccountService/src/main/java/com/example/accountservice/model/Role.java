@@ -1,8 +1,10 @@
 package com.example.accountservice.model;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
@@ -12,7 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection="roles")
+//@Document(collection="roles")
+@Entity
 public class Role {
     @Id
     private String name;

@@ -5,6 +5,7 @@ import com.example.accountservice.dto.request.CreateUserRequest;
 import com.example.accountservice.dto.request.RegisterCustomerRequest;
 import com.example.accountservice.dto.request.UpdateProfileRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
+import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.model.User;
 import org.mapstruct.Mapper;
@@ -17,9 +18,11 @@ public interface UserMapper {
 
     User toCustomer(RegisterCustomerRequest request);
 
+    ProfileResponse toProfileUser(User user);
 
     UserResponse toUserResponse(User user);
 
+//    @Mapping(target = "profilePicture", ignore = true)
     void updateProfileUser(@MappingTarget User user,UpdateProfileRequest request);
 
     @Mapping(target = "roles", ignore = true)

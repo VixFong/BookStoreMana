@@ -4,7 +4,9 @@ package com.example.accountservice.config;
 import com.example.accountservice.utils.JwtAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,13 +26,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS={"/users","/users/register",
             "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/auth/forgot-password","/auth/reset-password"};
 
-//    @Value("${jwt.signerKey}")
-//    private String signerKey;
-//
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;

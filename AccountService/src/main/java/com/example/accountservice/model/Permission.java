@@ -1,7 +1,9 @@
 package com.example.accountservice.model;
 
+import jakarta.persistence.Entity;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -9,7 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection="permissions")
+@Entity
+//@Document(collection="permissions")
 public class Permission {
     @Id
     private String name;

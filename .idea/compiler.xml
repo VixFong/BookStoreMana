@@ -7,8 +7,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="AccountService" />
         <module name="DiscoveryServer" />
+        <module name="AccountService" />
+        <module name="ImageService" />
         <module name="ApiGateway" />
       </profile>
     </annotationProcessing>
@@ -18,6 +19,7 @@
       <module name="AccountService" options="-parameters" />
       <module name="ApiGateway" options="-parameters" />
       <module name="DiscoveryServer" options="-parameters" />
+      <module name="ImageService" options="-parameters" />
     </option>
   </component>
 </project>

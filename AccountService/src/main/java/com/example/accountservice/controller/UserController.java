@@ -5,13 +5,16 @@ import com.example.accountservice.dto.request.RegisterCustomerRequest;
 import com.example.accountservice.dto.request.UpdateProfileRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
 import com.example.accountservice.dto.response.ApiResponse;
+import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -50,9 +53,17 @@ public class UserController {
                 .build();
     }
 
+//    @GetMapping
+//    public ApiResponse<Page<UserResponse>> getPageUsers( @RequestParam int page,
+//                                                         @RequestParam int size){
+//        Page<UserResponse> userPage = userService.getPageUsers(page, size);
+//        return ApiResponse.<Page<UserResponse>>builder()
+//                .data(userPage)
+//                .build();
+//    }
     @GetMapping("/info")
-    public ApiResponse<UserResponse> getInfo(){
-        return ApiResponse.<UserResponse>builder()
+    public ApiResponse<ProfileResponse> getInfo(){
+        return ApiResponse.<ProfileResponse>builder()
                 .data(userService.getMyInfo())
                 .build();
 
@@ -60,8 +71,8 @@ public class UserController {
     }
 
     @PutMapping("/info")
-    public ApiResponse<UserResponse> editInfo(@RequestBody @Valid UpdateProfileRequest request){
-        return ApiResponse.<UserResponse>builder()
+    public ApiResponse<ProfileResponse> editInfo (@ModelAttribute @Valid UpdateProfileRequest request){
+        return ApiResponse.<ProfileResponse>builder()
                 .data(userService.updateMyInfo(request))
                 .build();
 
