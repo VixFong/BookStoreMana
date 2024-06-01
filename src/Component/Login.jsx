@@ -32,7 +32,14 @@ export const Login = ({ onClose }) => {
 
             if(response.data && response.data.data){
                 console.log(response.data.data)
-                window.location.href = '/AdminPage';
+
+                const { token, roles } = response.data.data;
+                localStorage.setItem('authToken', token); // Lưu token vào localStorage
+                if(roles.includes('Admin') ||roles.includes('Employee')){
+                    window.location.href = '/AdminPage';
+
+                }
+            
             }
         } catch(error) {
             if(error.response && error.response.data && error.response.data.message){
@@ -50,7 +57,7 @@ export const Login = ({ onClose }) => {
                     </div>
                     <div className="modal-body">
                         <h6 className="text-center">Great to have you back!</h6>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}> 
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email *</label>
                                 <input 
