@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -67,9 +68,14 @@ public class AuthService {
 
         var token = generateToken(user);
 
+        var roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toSet());
+
         return LoginUserResponse.builder()
                 .token(token)
                 .authenticated(true)
+                .roles(roles)
                 .build();
 
     }

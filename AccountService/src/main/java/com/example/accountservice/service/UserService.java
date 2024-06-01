@@ -141,14 +141,14 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        var apiResponse = imageServiceClient.uploadImage(request.getFile(), "profile");
+        var apiResponse = imageServiceClient.uploadImage(request.getFile(),"profile");
 
         System.out.println("Name "+user.getFullName());
-        System.out.println("image " + apiResponse.getData());
-        user.setProfilePicture(apiResponse.getData().getUrl());
+        System.out.println("image " + apiResponse.getData().getUrl());
 
         userMapper.updateProfileUser(user,request);
-
+        user.setProfilePicture(apiResponse.getData().getUrl());
+        System.out.println("profile" + user.getProfilePicture());
 
         return userMapper.toProfileUser(userRepository.save(user));
     }

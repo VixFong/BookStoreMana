@@ -22,7 +22,7 @@ public class UserResponse {
     private boolean lock;
 
     private boolean activate;
-//    private String profilePicture;
+    private String profilePicture;
 //    private String address;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
