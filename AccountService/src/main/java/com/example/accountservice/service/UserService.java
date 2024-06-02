@@ -105,14 +105,14 @@ public class UserService {
         return (userRepository.findAll().stream().map(userMapper::toUserResponse).toList());
     }
 
-//    @PreAuthorize("hasRole('Admin')")
-//    public Page<UserResponse> getPageUsers(int page, int size){
-//        Pageable pageable = PageRequest.of(page, size);
-//
-//        Page<User> userPage = userRepository.findAll(pageable);
+    @PreAuthorize("hasRole('Admin')")
+    public Page<UserResponse> getPageUsers(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> userPage = userRepository.findAll(pageable);
 //        var users = userPage.getContent();
-//        return userPage.map(userMapper::toUserResponse);
-//    }
+        return userPage.map(userMapper::toUserResponse);
+    }
 
     @PreAuthorize("hasRole('Admin')")
     public UserResponse getUser(String id){
