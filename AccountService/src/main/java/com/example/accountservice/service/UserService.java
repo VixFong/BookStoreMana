@@ -72,13 +72,25 @@ public class UserService {
         user.setActivate(false);
         user.setStartedDate(LocalDate.now());
 
+//      Set Role
+        Role employeeRole = roleRepository.save(Role.builder()
+                .name("Employee")
+                .build());
 
+        var roles = new HashSet<Role>();
+        roles.add(employeeRole);
+        user.setRoles(roles);
+
+//      Set Profile picture
+        user.setProfilePicture("http://res.cloudinary.com/dmdddwb1j/image/upload/v1717317645/profile/tcwclkd3qez4f8aygz5n.jpg");
+
+        var saveUser = userRepository.save(user);
         //Send mail
+
         resetPasswordService.sendMailToUser(request.getEmail());
 
 
-
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserResponse(saveUser);
     }
 
     public UserResponse createCustomer(RegisterCustomerRequest request){
@@ -89,13 +101,19 @@ public class UserService {
         user.setActivate(true);
         user.setStartedDate(LocalDate.now());
 
-        Role adminRole = roleRepository.save(Role.builder()
+
+//      Set role
+        Role customerRole = roleRepository.save(Role.builder()
                 .name("Customer")
                 .build());
 
         var roles = new HashSet<Role>();
-        roles.add(adminRole);
+        roles.add(customerRole);
         user.setRoles(roles);
+
+        // Set Profile picture
+        user.setProfilePicture("http://res.cloudinary.com/dmdddwb1j/image/upload/v1717317645/profile/tcwclkd3qez4f8aygz5n.jpg");
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -112,6 +130,14 @@ public class UserService {
         Page<User> userPage = userRepository.findAll(pageable);
 //        var users = userPage.getContent();
         return userPage.map(userMapper::toUserResponse);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    public void toggleUserLock(String id, boolean isLock) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setLock(isLock);
+        userRepository.save(user);
     }
 
     @PreAuthorize("hasRole('Admin')")

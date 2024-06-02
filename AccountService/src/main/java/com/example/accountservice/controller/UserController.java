@@ -70,6 +70,7 @@ public class UserController {
 
     }
 
+
     @PutMapping("/info")
     public ApiResponse<ProfileResponse> editInfo (@ModelAttribute @Valid UpdateProfileRequest request){
         return ApiResponse.<ProfileResponse>builder()
@@ -77,6 +78,15 @@ public class UserController {
                 .build();
 
 
+    }
+
+    @PutMapping("/{id}/lock")
+    public ApiResponse<String> toggleUserLock(@PathVariable String id, @RequestParam boolean isLock) {
+        System.out.println("Lock user " + isLock);
+        userService.toggleUserLock(id, isLock);
+        return ApiResponse.<String>builder()
+                .data(isLock ? "User locked successfully" : "User unlocked successfully")
+                .build();
     }
 
     @PutMapping("{id}")
