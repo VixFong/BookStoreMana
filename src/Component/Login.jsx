@@ -86,7 +86,7 @@ export const Login = ({ onClose }) => {
                                     <input type="checkbox" className="form-check-input" id="remember" />
                                     <label className="form-check-label" htmlFor="remember">Remember</label>
                                 </div>
-                                <a href="#" className="link-secondary">Forgot Password?</a>
+                                <a href="/ForgotPass" className="link-secondary">Forgot Password?</a>
                             </div>
                             <div className="d-grid mt-3">
                                 <button type="submit" className="btn btn-success">Sign in to your account</button>

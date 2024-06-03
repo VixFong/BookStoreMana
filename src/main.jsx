@@ -11,7 +11,8 @@ import{
 import { UserManagement } from './Component/AdminComponent/UserManagement.jsx'
 import { AddUser } from './Component/AdminComponent/AddUser.jsx'
 import { RegisteredPage } from './Pages/RegisteredPage.jsx'
-
+import { ForgotPass } from './Pages/ForgotPass.jsx'
+import { UpdatePass } from './Pages/UpdatePass.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
@@ -20,6 +21,14 @@ const router = createBrowserRouter([
   {
     path:"RegisterPage",
     element: <RegisteredPage/>,
+  },
+  {
+    path:"ForgotPass",
+    element: <ForgotPass/>,
+  },
+  {
+    path:"UpdatePass",
+    element: <UpdatePass/>,
   },
   {
     path:"AdminPage",
