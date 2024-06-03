@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './SideBar';
 import axios from 'axios';
 import { Link } from "react-router-dom";
+import { Modal, Button } from 'react-bootstrap';
 
 export const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -11,6 +12,10 @@ export const UserManagement = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false); 
+    const [userToDelete, setUserToDelete] = useState(null); 
+    
 
     useEffect(() => {
         fetchUsers(page, size);
@@ -83,6 +88,32 @@ export const UserManagement = () => {
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleDeleteClick = (user) => {
+        setUserToDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        const token = localStorage.getItem('authToken');
+        try {
+            await axios.delete(`http://localhost:8888/identity/users/${userToDelete.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setShowDeleteModal(false);
+            fetchUsers(page, size);
+        } catch (error) {
+            setError(error.response?.data?.message);
+        }
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false); 
+        setUserToDelete(null);
+    };
+
+
     return (
         <div className="d-flex">
             <Sidebar />
@@ -154,7 +185,7 @@ export const UserManagement = () => {
                                 <td className="text-center align-middle">{user.roles.map(role => role.name).join(', ')}</td>
                                 <td className="text-center align-middle">
                                     <button className="btn btn-primary btn-sm me-2">Edit</button>
-                                    <button className="btn btn-danger btn-sm">Delete</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(user)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -174,6 +205,22 @@ export const UserManagement = () => {
                     <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button>
                 </div>
             </div>
+            <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this user?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteConfirm}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
