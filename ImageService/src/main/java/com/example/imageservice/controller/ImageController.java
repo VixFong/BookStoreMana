@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/images")
@@ -28,15 +29,26 @@ public class ImageController {
 
     }
 
-    @PostMapping("/upload-url")
-    public ResponseEntity<ImageDTO> uploadImageFromUrl(@RequestParam("url") String url, @RequestParam("folder") String folder) {
-        try {
-            ImageDTO imageDTO = imageService.uploadImageFromUrl(url, folder);
-            return ResponseEntity.ok(imageDTO);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
-        }
+    @PostMapping("/uploads")
+    public ApiResponse<List<ImageDTO>> uploadImages(@RequestParam("files")  List<MultipartFile> files, @RequestParam("folder") String folder) throws IOException {
+
+        System.out.println("cont");
+        List<ImageDTO> imageDTOs = imageService.uploadBookImages(files, folder);
+        return ApiResponse.<List<ImageDTO>>builder()
+                .data(imageDTOs)
+                .build();
+
     }
+
+//    @PostMapping("/upload-url")
+//    public ResponseEntity<ImageDTO> uploadImageFromUrl(@RequestParam("url") String url, @RequestParam("folder") String folder) {
+//        try {
+//            ImageDTO imageDTO = imageService.uploadImageFromUrl(url, folder);
+//            return ResponseEntity.ok(imageDTO);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body(null);
+//        }
+//    }
 
     @GetMapping("/{id}")
     public ApiResponse<ImageDTO> getImageByName(@PathVariable String id) {

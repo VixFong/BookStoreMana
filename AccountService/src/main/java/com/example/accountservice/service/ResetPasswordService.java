@@ -17,7 +17,7 @@ import java.text.ParseException;
 
 @Service
 public class ResetPasswordService {
-    protected static final long EXPIRATION_TIME = 60000; // 1 minute
+    protected static final long EXPIRATION_TIME = 180000; // 3 minute
 
     @Autowired
     private UserRepository userRepository;
@@ -32,8 +32,8 @@ public class ResetPasswordService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @Value("${server.port}")
-    private String PORT_SERVER;
+    @Value("${port.frontend}")
+    private String PORT_FRONTEND;
 
     @Value("${server.servlet.context-path}")
     private String CONTEXT_PATH;
@@ -42,13 +42,14 @@ public class ResetPasswordService {
         System.out.println("Send mail");
 
 
-        if(!userRepository.existsUsersByEmail(email)){
+        if(userRepository.existsUsersByEmail(email)){
             // Generate token
             String token = jwtUtils.generateTokenEmail(email, EXPIRATION_TIME);
 
             // Create reset password URL
-            String resetUrl = "http://localhost:"+ PORT_SERVER + CONTEXT_PATH + "/reset-password?token=" + token;
+            String resetUrl = "http://localhost:"+ PORT_FRONTEND + "/UpdatePass?token=" + token;
 
+            System.out.println("reset link " + resetUrl);
 
             System.out.println("to " + email);
             System.out.println("token=" + token);
@@ -58,6 +59,7 @@ public class ResetPasswordService {
         }
         else throw new AppException(ErrorCode.USER_NOT_FOUND);
     }
+
 
     public void resetPassword(String token, ResetPasswordRequest request) throws ParseException, JOSEException {
         if(!(request.getPassword().equals(request.getConfirmPassword()))){

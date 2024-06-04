@@ -63,30 +63,51 @@ public class UserService {
 
         User user = userMapper.toUser(request);
 
+//      Set password and bcrypt by using email
         int atIndex = request.getEmail().indexOf("@");
         String pass = request.getEmail().substring(0, atIndex);
 
         System.out.println(pass);
         user.setPassword(passwordEncoder.encode(pass));
+
+//      Set lock
         user.setLock(false);
+//      Set activate
+
         user.setActivate(false);
+//      Set date
         user.setStartedDate(LocalDate.now());
 
 //      Set Role
-        Role employeeRole = roleRepository.save(Role.builder()
-                .name("Employee")
+        Role role = roleRepository.save(Role.builder()
+                .name(request.getRole())
                 .build());
 
         var roles = new HashSet<Role>();
-        roles.add(employeeRole);
+        roles.add(role);
         user.setRoles(roles);
 
 //      Set Profile picture
-        user.setProfilePicture("http://res.cloudinary.com/dmdddwb1j/image/upload/v1717317645/profile/tcwclkd3qez4f8aygz5n.jpg");
+
+//      Check File is empty, it will set default image
+        if(request.getFile() == null){
+            user.setProfilePicture("http://res.cloudinary.com/dmdddwb1j/image/upload/v1717317645/profile/tcwclkd3qez4f8aygz5n.jpg");
+        }
+//      if having file
+        else {
+            var apiResponse = imageServiceClient.uploadImage(request.getFile(), "profile");
+            if (apiResponse != null && apiResponse.getCode() == 100) {
+                var image = apiResponse.getData().getUrl();
+                user.setProfilePicture(image);
+            }
+            else{
+                throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
+            }
+        }
 
         var saveUser = userRepository.save(user);
-        //Send mail
 
+        //Send mail
         resetPasswordService.sendMailToUser(request.getEmail());
 
 
@@ -169,7 +190,10 @@ public class UserService {
 
         var apiResponse = imageServiceClient.uploadImage(request.getFile(),"profile");
 
-        System.out.println("Name "+user.getFullName());
+        if(apiResponse.getCode() != 100){
+            throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
+        }
+        System.out.println("Name " + user.getFullName());
         System.out.println("image " + apiResponse.getData().getUrl());
 
         userMapper.updateProfileUser(user,request);

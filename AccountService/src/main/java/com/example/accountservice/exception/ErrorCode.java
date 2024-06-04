@@ -21,7 +21,7 @@ public enum ErrorCode {
     ACCOUNT_LOCKED(210, "Your account has been locked",HttpStatus.BAD_REQUEST),
     ACCOUNT_UNACTIVATED(211, "Your account is not activate",HttpStatus.BAD_REQUEST),
     NOT_MATCH_PASSWORD(212, "Your confirm password is not match with password",HttpStatus.BAD_REQUEST),
-
+    FAIL_UPLOAD_IMAGE(213, "Upload image fail", HttpStatus.BAD_REQUEST),
 
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 

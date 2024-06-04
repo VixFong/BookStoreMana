@@ -13,5 +13,4 @@ public class ImageDTO {
     private String name;
     private String url;
 
-    // Constructors, getters and setters
 }

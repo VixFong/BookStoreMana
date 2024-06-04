@@ -25,7 +25,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ApiResponse<UserResponse> addUser(@Valid @RequestBody CreateUserRequest request) throws JOSEException, MessagingException {
+    public ApiResponse<UserResponse> addUser(@Valid @ModelAttribute CreateUserRequest request) throws JOSEException, MessagingException {
         System.out.println("Controller");
         return ApiResponse.<UserResponse>builder()
                 .data(userService.create(request))

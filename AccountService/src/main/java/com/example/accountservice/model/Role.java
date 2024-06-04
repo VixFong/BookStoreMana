@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//@Document(collection="roles")
 @Entity
 public class Role {
     @Id
