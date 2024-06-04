@@ -1,29 +1,87 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Spinner, Form, Modal } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 
+import axios from 'axios';
 export const Updated = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showModal, setShowModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+    
     const [errorMessage, setErrorMessage] = useState('');
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+
+    
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get('token');
+    
+   
+    // useEffect(() =>{
+    //     handleSubmit(token);
+    // },[token])
+    
+    // console.log(token)
+
+    const handleSubmit = async(e,token) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
-            setErrorMessage("Passwords do not match");
+        
+        setShowModal(true);  // Show the loading modal
+
+        // if (password !== confirmPassword) {
+        //     setErrorMessage("Passwords do not match");
+        //     setShowErrorModal(true);
+        // } else {
+        //     setShowSuccessModal(true);
+        // }
+
+        // console.log(token)
+
+        try {
+
+            const response = await axios.post(`http://localhost:8888/identity/auth/reset-password`,  
+            {
+                password,
+                confirmPassword,
+            },
+                {
+                    params: { token } 
+                }
+            );
+            console.log(response)
+            console.log(token)
+            if (response.data.code == 200) {
+                setTimeout(() => {
+                    setShowModal(false);
+                    setShowSuccessModal(true);
+                }, 5000);
+            }
+        } catch(error){
+            setShowModal(false);
+            // console.log(error.response.data.message)
+            // setError(error.response.data.message);
+            console.log(error.response?.data?.code)
+
+            console.log(error.response?.data?.message)
+            setError(error.response?.data?.message || 'An error occurred');
             setShowErrorModal(true);
-        } else {
-            setShowSuccessModal(true);
         }
+
     };
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
     };
 
-    const handleCloseErrorModal = () => setShowErrorModal(false);
+   
+    const handleCloseErrorModal = () => {
+        
+        setShowErrorModal(false);
+    }
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ background: '#B3D8E2', width: '100vw' }}>
@@ -51,6 +109,14 @@ export const Updated = () => {
                     <Button type="submit" variant="danger" block>Submit</Button>
                 </Form>
 
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className="mt-3">Sending Email, Please Wait...</p>
+                    </Modal.Body>
+                </Modal>
                 <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">
@@ -72,7 +138,7 @@ export const Updated = () => {
                             </svg>
                         </div>
                         <h4>Error</h4>
-                        <p>{errorMessage}</p>
+                        <p>{error}</p>
                         <Button variant="primary" onClick={handleCloseErrorModal}>OK</Button>
                     </Modal.Body>
                 </Modal>

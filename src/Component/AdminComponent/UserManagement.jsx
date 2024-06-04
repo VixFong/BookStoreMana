@@ -53,7 +53,9 @@ export const UserManagement = () => {
             // setUsers(users.map(user => user.id === userId ? { ...user, lock } : user));
             fetchUsers(page, size);
         } catch (error) {
-            setError(error.response?.data?.message);
+            if(error.response && error.response.data && error.response.data.message){
+                setError(error.response.data.message);
+            }
         }
     };
 
@@ -104,7 +106,9 @@ export const UserManagement = () => {
             setShowDeleteModal(false);
             fetchUsers(page, size);
         } catch (error) {
-            setError(error.response?.data?.message);
+            if(error.response && error.response.data && error.response.data.message){
+                setError(error.response.data.message);
+            }
         }
     };
 
