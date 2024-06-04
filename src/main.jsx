@@ -14,6 +14,7 @@ import { RegisteredPage } from './Pages/RegisteredPage.jsx'
 import { ForgotPass } from './Pages/ForgotPass.jsx'
 import { UpdatePass } from './Pages/UpdatePass.jsx'
 import { EditUser } from './Pages/EditUser.jsx'
+import { Administrators } from './Pages/Administrators.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path:"edit",
     element: <EditUser/>,
+  },
+  {
+    path:"administrators",
+    element: <Administrators/>,
   },
 ])
 
