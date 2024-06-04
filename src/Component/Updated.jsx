@@ -27,7 +27,7 @@ export const Updated = () => {
     
     // console.log(token)
 
-    const handleSubmit = async(e,token) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         
         setShowModal(true);  // Show the loading modal
@@ -44,13 +44,8 @@ export const Updated = () => {
         try {
 
             const response = await axios.post(`http://localhost:8888/identity/auth/reset-password`,  
-            {
-                password,
-                confirmPassword,
-            },
-                {
-                    params: { token } 
-                }
+                { password, confirmPassword },
+                { params: { token } }
             );
             console.log(response)
             console.log(token)
@@ -114,7 +109,7 @@ export const Updated = () => {
                         <Spinner animation="border" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </Spinner>
-                        <p className="mt-3">Sending Email, Please Wait...</p>
+                        <p className="mt-3">Please Wait...</p>
                     </Modal.Body>
                 </Modal>
                 <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
