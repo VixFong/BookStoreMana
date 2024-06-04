@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const Edit = () => {
     const { userId } = useParams();
@@ -66,9 +68,12 @@ export const Edit = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            navigate('/user-management'); // Redirect to user management page
+            toast.success('Updated Successfully', {
+                onClose: () => navigate('/user-management')
+            });
         } catch (error) {
             setError(error.response?.data?.message);
+            toast.error('Failed to update user');
         }
     };
 
