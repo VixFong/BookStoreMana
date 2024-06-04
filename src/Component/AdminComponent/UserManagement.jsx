@@ -188,7 +188,7 @@ export const UserManagement = () => {
                                 <td className="text-center align-middle">{user.activate ? 'x' : ''}</td>
                                 <td className="text-center align-middle">{user.roles.map(role => role.name).join(', ')}</td>
                                 <td className="text-center align-middle">
-                                    <button className="btn btn-primary btn-sm me-2">Edit</button>
+                                    <button className="btn btn-primary btn-sm me-2"><a className='link-light' href='edit'>Edit</a></button>
                                     <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(user)}>Delete</button>
                                 </td>
                             </tr>

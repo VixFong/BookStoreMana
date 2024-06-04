@@ -9,10 +9,11 @@ import{
   Route,
 } from "react-router-dom";
 import { UserManagement } from './Component/AdminComponent/UserManagement.jsx'
-import { AddUser } from './Component/AdminComponent/AddUser.jsx'
+import { AddUser } from './Pages/AddUser.jsx'
 import { RegisteredPage } from './Pages/RegisteredPage.jsx'
 import { ForgotPass } from './Pages/ForgotPass.jsx'
 import { UpdatePass } from './Pages/UpdatePass.jsx'
+import { EditUser } from './Pages/EditUser.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path:"add",
     element: <AddUser/>,
+  },
+  {
+    path:"edit",
+    element: <EditUser/>,
   },
 ])
 
