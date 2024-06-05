@@ -218,7 +218,7 @@ import { Modal, Spinner, Button } from 'react-bootstrap';
 
 import axios from 'axios';
 
-export const AddUser = () => {
+export const Add = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -490,4 +490,4 @@ export const AddUser = () => {
     );
 };
 
-export default AddUser;
+export default Add;

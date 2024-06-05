@@ -31,7 +31,7 @@ export const Sidebar = () => {
                                     <a className="nav-link text-white"><Link to ="/add">Add New User</Link></a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link text-white" href="#">Administrators</a>
+                                    <a className="nav-link text-white"><Link to ="/administrators">Administrators</Link></a>
                                 </li>
                             </ul>
                         </div>

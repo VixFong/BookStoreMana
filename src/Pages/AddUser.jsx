@@ -1,7 +1,10 @@
 import React from 'react'
+import Add from '../Component/AdminComponent/Add'
 
 export const AddUser = () => {
   return (
-    <div>AddUser</div>
+    <div>
+      <Add/>
+    </div>
   )
 }
