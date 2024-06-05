@@ -238,7 +238,7 @@ export const Add = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setShowModal(true);  // Show the loading modal
+        // setShowModal(true);  // Show the loading modal
         const updateAddress = `${address}, ${ward}, ${district}, ${city}`;
         
         const createUserRequest = new FormData();
@@ -252,7 +252,7 @@ export const Add = () => {
         }
 
         const addUser = async () => {
-            // setLoading(true);
+            setShowModal(true); 
             const token = localStorage.getItem('authToken');
 
             try {
@@ -266,25 +266,21 @@ export const Add = () => {
                         }
                     }
                 );
-                if (response.data.code == 200) {
+                if (response.data.code === 200) {
+                    setShowModal(false); 
+                    setShowSuccessModal(true);
                     setTimeout(() => {
-                        setShowModal(false);
-                        setShowSuccessModal(true);
-                    }, 5000);
+                        setShowSuccessModal(false);
+                    }, 1000);
                 }
                 console.log(response.data);
-                toast.success('Add User Successfully', {
-                    onClose: () => navigate('/UserManagement')
-                });
+                toast.success('Add User Successfully');
             } catch (error) {
                 setShowModal(false);
                 setError(error.response?.data?.message || 'An error occurred');
-                toast.error('Failed to add user');
                 setShowErrorModal(true);
             } 
-            // finally {
-            //     setLoading(false);
-            // }
+            
         };
 
         addUser();
@@ -299,7 +295,7 @@ export const Add = () => {
     
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
-        navigate('/'); 
+        // navigate('/'); 
     };
 
     const handleCloseErrorModal = () => {
@@ -307,7 +303,7 @@ export const Add = () => {
     };
 
     const handleCancel = () => {
-        navigate('/');
+        navigate('/UserManagement');
     };
 
     return (
@@ -361,19 +357,21 @@ export const Add = () => {
                             id="phone"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
+                            pattern="[0-9]*"
+                            inputMode="numeric"
                         />
                     </div>
                     <div className="row">
                         <div className="col-md-4 mb-3">
-                            <label htmlFor="city" className="form-label">Select province / city</label>
+                            <label htmlFor="city" className="form-label">Select city</label>
                             <select
                                 className="form-select"
                                 id="city"
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
                             >
-                                <option>Select province / city</option>
-                                <option>TP.Hồ Chí Minh</option>
+                                <option>Select city</option>
+                                <option value="TP.Hồ Chí Minh">TP.Hồ Chí Minh</option>
                                
                             </select>
                         </div>
@@ -386,14 +384,18 @@ export const Add = () => {
                                 onChange={(e) => setDistrict(e.target.value)}
                             >
                                 <option>Select District</option>
-                                <option>Quận 1</option>
-                                <option>Quận 2</option>
-                                <option>Quận 3</option>
-                                <option>Quận 4</option>
-                                <option>Quận 5</option>
-                                <option>Quận 6</option>
-                                <option>Quận 7</option>
-                                <option>Quận 8</option>
+                                <option value="Quận 1">Quận 1</option>
+                                <option value="Quận 2" >Quận 2</option>
+                                <option value="Quận 3">Quận 3</option>
+                                <option value="Quận 4">Quận 4</option>
+                                <option value="Quận 5">Quận 5</option>
+                                <option value="Quận 6">Quận 6</option>
+                                <option value="Quận 7">Quận 7</option>
+                                <option value="Quận 8">Quận 8</option>
+                                <option value="Quận 9">Quận 8</option>
+                                <option value="Quận 10">Quận 8</option>
+                                <option value="Quận ">Quận 8</option>
+                                <option value="Quận 8">Quận 8</option>
                                
                             </select>
                         </div>
@@ -432,27 +434,21 @@ export const Add = () => {
                         <select
                             className="form-select"
                             id="role"
-                            value={role}
+                            value="Admin"
                             onChange={(e) => setRole(e.target.value)}
                         >
-                            <option>Select Role</option>
+                            {/* <option>Select Role</option> */}
                             <option>Customer</option>
                             <option>Admin</option>
                             <option>Employee</option>
                         </select>
                     </div>
-                    <button type="submit" className="btn btn-danger">Add User</button>
+                    <div className="d-flex">
+                        <button type="submit" className="btn btn-danger">Add User</button>
+                        <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
+                    </div>
                 </div>
             </form>
-
-            {/* <Modal show={loading} backdrop="static" keyboard={false}>
-                <Modal.Body className="text-center">
-                    <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                    <div className="mt-3">Please wait...</div>
-                </Modal.Body>
-            </Modal> */}
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                     <Modal.Body className="text-center">
                         <Spinner animation="border" role="status">

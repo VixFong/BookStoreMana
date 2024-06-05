@@ -107,10 +107,10 @@ export const Forgot = () => {
             );
             console.log(response)
             if (response.data.code == 200) {
-                setTimeout(() => {
-                    setShowModal(false);
-                    setShowSuccessModal(true);
-                }, 5000);
+                setShowModal(false);
+                setShowSuccessModal(true);
+                // setTimeout(() => {
+                // }, 5000);
             }
         } catch(error){
             setShowModal(false);

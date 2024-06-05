@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Spinner, Button } from 'react-bootstrap';
+
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -18,30 +20,60 @@ export const Edit = () => {
     const [address, setAddress] = useState('');
     const [role, setRole] = useState('');
     const [profilePicture, setProfilePicture] = useState(null);
+    const [file, setFile] = useState(null);
     const [error, setError] = useState('');
+
+    const [showModal, setShowModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+
 
     useEffect(() => {
         const fetchUserDetails = async () => {
             const token = localStorage.getItem('authToken');
+          
             try {
                 const response = await axios.get(`http://localhost:8888/identity/users/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                const userData = response.data.data;
-                console.log('User data:', userData); // Debug logging
-                setFullName(userData.fullName);
-                setEmail(userData.email);
-                setPhone(userData.phone);
-                setCity(userData.city);
-                setDistrict(userData.district);
-                setWard(userData.ward);
-                setAddress(userData.address);
-                setRole(userData.role);
-                setProfilePicture(userData.profilePicture);
+
+                if(response.data.code === 200){
+                    const userData = response.data.data;
+                    console.log('User data:', userData); 
+    
+                    let extractAddress; 
+                    if(userData.address){
+                        extractAddress = userData.address.split(",");
+                        if (extractAddress.length >= 4) {
+                            setCity(extractAddress[3]);
+                        }
+                        if (extractAddress.length >= 3) {
+                            setDistrict(extractAddress[2]);
+                        }
+                        if (extractAddress.length >= 2) {
+                            setWard(extractAddress[1]);
+                        }
+                        if (extractAddress.length >= 1) {
+                            setAddress(extractAddress[0]);
+                        }
+    
+                    }
+                    if(userData.phone){
+                        setPhone(userData.phone)
+                    }
+                    
+                    setFullName(userData.fullName);
+                    setEmail(userData.email);
+    
+                    const userRoles = userData.roles.map(role => role.name);
+                    setRole(userRoles.join(', '))
+                    setProfilePicture(userData.profilePicture);
+    
+                }
             } catch (error) {
-                console.error('Error fetching user details:', error); // Debug logging
+                
                 setError(error.response?.data?.message);
             }
         };
@@ -51,47 +83,79 @@ export const Edit = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(userId)
         const token = localStorage.getItem('authToken');
-        try {
-            await axios.put(`http://localhost:8888/identity/users/${userId}`, {
-                fullName,
-                email,
-                phone,
-                city,
-                district,
-                ward,
-                address,
-                role,
-                profilePicture
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success('Updated Successfully', {
-                onClose: () => navigate('/user-management')
-            });
-        } catch (error) {
-            setError(error.response?.data?.message);
-            toast.error('Failed to update user');
+
+
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('email', email);
+        formData.append('phone', phone);
+        formData.append('address', `${address},${ward},${district},${city}`);
+        formData.append('role', role);
+        if (file) {
+            formData.append('file', file);
         }
+        try {
+            setShowModal(true); 
+            const response = await axios.put(`http://localhost:8888/identity/users/${userId}`,
+                formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+
+                    }
+                });
+               
+            if(response.data.code == 200){
+                setShowModal(false); 
+                setShowSuccessModal(true);
+                setTimeout(() => {
+                    setShowSuccessModal(false);
+                }, 1000);
+
+            }
+            
+        } catch (error) {
+            setShowModal(false);
+
+            setError(error.response?.data?.message);
+            // toast.error('Failed to update user');
+            setShowErrorModal(true);
+        }
+    };
+
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        // navigate('/'); 
+    };
+
+    const handleCloseErrorModal = () => {
+        setShowErrorModal(false);
     };
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            setProfilePicture(URL.createObjectURL(e.target.files[0]));
+            setFile(e.target.files[0]);
         }
+    };
+
+    const handleCancel = () => {
+        navigate('/UserManagement');
     };
 
     return (
         <div className="container">
+            {/* <ToastContainer /> */}
             <h3 className="mt-4 text-center">Edit User</h3>
             <form onSubmit={handleSubmit} className="row mt-4 justify-content-center">
                 <div className="col-md-3">
                     <div className="text-center">
                         <img
-                            src={profilePicture || 'https://via.placeholder.com/150'}
-                            alt="Profile"
+                            // src={ || 'https://via.placeholder.com/150'}
+                            src={file ? URL.createObjectURL(file) : profilePicture}
+                            
+                            alt="profilePicture"
                             className="img-thumbnail mb-3"
                             style={{ width: '200px', height: '200px' }}
                         />
@@ -137,14 +201,14 @@ export const Edit = () => {
                     </div>
                     <div className="row">
                         <div className="col-md-4 mb-3">
-                            <label htmlFor="city" className="form-label">Select province / city</label>
+                            <label htmlFor="city" className="form-label">City</label>
                             <select
                                 className="form-select"
                                 id="city"
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
                             >
-                                <option>Select province / city</option>
+                                <option>Select city</option>
                                 <option>TP.Hồ Chí Minh</option>
                             </select>
                         </div>
@@ -209,10 +273,45 @@ export const Edit = () => {
                             <option>Employee</option>
                         </select>
                     </div>
-                    {error && <p className="text-danger">{error}</p>}
-                    <button type="submit" className="btn btn-danger w-100">Save Changes</button>
+                    {/* {error && <p className="text-danger">{error}</p>} */}
+                    <button type="submit" className="btn btn-danger">Save Changes</button>
+                    <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
+                
                 </div>
             </form>
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className="mt-3">Updating, Please Wait...</p>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
+                    <Modal.Body className="text-center">
+                        <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="green" className="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zm3.97 4.03a.75.75 0 0 1 1.08 1.05L7.477 10.27a.75.75 0 0 1-1.08 0L4.97 8.82a.75.75 0 0 1 1.08-1.05l1.72 1.725z"/>
+                            </svg>
+                        </div>
+                        <h4>Update Successfully</h4>
+                        {/* <p>Please Check Your Email To Change The Password</p>
+                        <Button variant="primary" onClick={handleCloseSuccessModal}>OK</Button> */}
+                    </Modal.Body>
+                </Modal>
+
+                <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
+                    <Modal.Body className="text-center">
+                        <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </div>
+                        <h4>Error</h4>
+                        <p>{error}</p>
+                        <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
+                    </Modal.Body>
+                </Modal>
         </div>
     );
 };

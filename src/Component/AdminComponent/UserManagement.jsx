@@ -17,6 +17,8 @@ export const UserManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [userToDelete, setUserToDelete] = useState(null); 
     
+    const [showLockModal, setShowLockModal] = useState(false); 
+    const [userToToggleLock, setUserToToggleLock] = useState(null); 
 
     useEffect(() => {
         fetchUsers(page, size);
@@ -42,17 +44,18 @@ export const UserManagement = () => {
         console.log(userId, isLock)
         const token = localStorage.getItem('authToken');
         try {
-            await axios.put(`http://localhost:8888/identity/users/${userId}/lock`, null, {
+            const response = await axios.put(`http://localhost:8888/identity/users/${userId}/lock`, null, {
                 params: { isLock },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            if(response.data.code === 200){
+                console.log("aaaa");
+                fetchUsers(page, size);
 
-            console.log("aaaa");
-            // Update the local state immediately to reflect the change
-            // setUsers(users.map(user => user.id === userId ? { ...user, lock } : user));
-            fetchUsers(page, size);
+            }
+            
         } catch (error) {
             if(error.response && error.response.data && error.response.data.message){
                 setError(error.response.data.message);
@@ -62,6 +65,26 @@ export const UserManagement = () => {
 
     const handleLockChange = (user) => {
         toggleUserLock(user.id, !user.lock);
+    };
+
+    const handleLockModalOpen = (user) => {
+        setUserToToggleLock(user);
+        setShowLockModal(true);
+    };
+    
+    const handleLockModalClose = () => {
+        setShowLockModal(false);
+        setUserToToggleLock(null);
+    };
+    
+    const handleLockConfirm = async () => {
+        try {
+            await toggleUserLock(userToToggleLock.id, !userToToggleLock.lock);
+            setShowLockModal(false);
+        } catch (error) {
+            console.error('Error toggling user lock:', error);
+            // Handle error
+        }
     };
 
     const handlePageChange = (newPage) => {
@@ -175,7 +198,7 @@ export const UserManagement = () => {
 
                         .btn {
                             font-weight: 500;
-                            border-radius: 50px; 
+                            border-radius: 20px; 
                         }
                 
                         .btn-primary {
@@ -224,11 +247,11 @@ export const UserManagement = () => {
                             <th>Pic</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Created Date</th>
-                            <th>Blocked</th>
+                            <th>Started Date</th>
+                            <th>Lock</th>
                             <th>Activated</th>
                             <th>Role</th>
-                            <th>Operation</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -246,17 +269,21 @@ export const UserManagement = () => {
                                             className="form-check-input" 
                                             type="checkbox" 
                                             checked={user.lock} 
-                                            onChange={() => handleLockChange(user)} />
+                                            // onChange={() => handleLockChange(user)}
+                                            onChange={() => handleLockModalOpen(user)}
+                                        />
                                     </div>
                                 </td>
+
                                 <td className="text-center align-middle">
                                     {/* {user.activate ? 'x' : ''} */}
                                     {user.activate ? <i className="fas fa-check-circle text-success fa-2x"></i> : <i className="fas fa-times-circle text-danger fa-2x"></i>}
                                 </td>
                                 <td className="text-center align-middle">{user.roles.map(role => role.name).join(', ')}</td>
                                 <td className="text-center align-middle">
-                                    <button className="btn btn-primary btn-sm me-2"><a className='link-light' href='edit'>Edit</a></button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(user)}>Delete</button>
+                                   <Link to={`/edit/${user.id}`} className='btn btn-warning btn-sm me-2'><i className="fas fa-edit"></i></Link>
+                                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(user)}><i className="fas fa-trash-alt"></i></button>
+                                    
                                 </td>
                             </tr>
                         ))}
@@ -289,6 +316,26 @@ export const UserManagement = () => {
                     </Button>
                     <Button variant="danger" onClick={handleDeleteConfirm}>
                         Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
+            {/* Lock Modal */}
+            
+            <Modal show={showLockModal} onHide={handleLockModalClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Lock Status Change</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to {userToToggleLock && userToToggleLock.lock ? 'unlock' : 'lock'} this user?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleLockModalClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleLockConfirm}>
+                        Confirm
                     </Button>
                 </Modal.Footer>
             </Modal>
