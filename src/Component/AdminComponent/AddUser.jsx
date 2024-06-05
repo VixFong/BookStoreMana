@@ -435,6 +435,7 @@ export const AddUser = () => {
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                         >
+                            <option>Select Role</option>
                             <option>Customer</option>
                             <option>Admin</option>
                             <option>Employee</option>

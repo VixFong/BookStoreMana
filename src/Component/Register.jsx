@@ -1,29 +1,50 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 
 export const Register = () => {
-    const [name, setName] = useState('');
+    const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [repeatPassword, setRepeatPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const passwordReq = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-        if (password !== repeatPassword) {
+        if (password !== confirmPassword) {
             setError("Passwords do not match");
             return;
         }
         if(!passwordReq.test(password)){
             setError("Password must be at least 6 characters and include at least one uppercase letter and number")
         }
-        setSuccess(true);
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 2000);
+
+        try{
+            const response = await axios.post(`http://localhost:8888/identity/users/register`, {
+                fullName,
+                email,
+                password
+               
+            });
+
+
+            if(response.data.code === 200){
+                console.log(response.data);
+                setSuccess(true);
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        }catch(error){
+            console.log(error.response?.data?.message)
+            setError(error.response?.data?.message || 'An error occurred');
+
+        }
+
+        
     };
 
     return (
@@ -33,13 +54,13 @@ export const Register = () => {
                 {success && <div className="alert alert-success text-center">Registered Successfully You Will Be Direct Back To Home Page</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="name" className="form-label">Your Name</label>
+                        <label htmlFor="fullName" className="form-label">Your Name</label>
                         <input 
                             type="text" 
                             className="form-control" 
-                            id="name" 
-                            value={name} 
-                            onChange={(e) => setName(e.target.value)} 
+                            id="fullName" 
+                            value={fullName} 
+                            onChange={(e) => setFullName(e.target.value)} 
                             required 
                         />
                     </div>
@@ -66,13 +87,13 @@ export const Register = () => {
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="repeatPassword" className="form-label">Repeat your password</label>
+                        <label htmlFor="confirmPassword" className="form-label">Repeat your password</label>
                         <input 
                             type="password" 
                             className="form-control" 
-                            id="repeatPassword" 
-                            value={repeatPassword} 
-                            onChange={(e) => setRepeatPassword(e.target.value)} 
+                            id="confirmPassword" 
+                            value={confirmPassword} 
+                            onChange={(e) => setConfirmPassword(e.target.value)} 
                             required 
                         />
                     </div>

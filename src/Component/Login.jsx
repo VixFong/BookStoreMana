@@ -39,7 +39,9 @@ export const Login = ({ onClose }) => {
                     window.location.href = '/AdminPage';
 
                 }
-            
+                else{
+                    window.location.href = '/';
+                }
             }
         } catch(error) {
             if(error.response && error.response.data && error.response.data.message){

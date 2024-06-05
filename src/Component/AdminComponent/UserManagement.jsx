@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './SideBar';
 import axios from 'axios';
 import { Link } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Modal, Button } from 'react-bootstrap';
 
 export const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(5);
+    const [size, setSize] = useState(4);
     const [totalPages, setTotalPages] = useState(0);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -117,6 +118,14 @@ export const UserManagement = () => {
         setUserToDelete(null);
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
 
     return (
         <div className="d-flex">
@@ -137,19 +146,74 @@ export const UserManagement = () => {
                 </div>
                 <style>
                     {`
-                        .table-bordered th, .table-bordered td {
-                            border: 1px solid #dee2e6;
+                        body {
+                            font-family: 'Roboto', sans-serif;
                         }
-                        .table th, .table td {
+
+                        // .table-bordered th, .table-bordered td {
+                        //     border: 1px solid #dee2e6;
+                        // }
+                        // .table th, .table td {
+                        //     vertical-align: middle;
+                        //     text-align: center;
+                        // }
+
+                        .table {
+                            width: 100%;
+                            margin: 10px 0;
+                        }
+                
+                        .table td, .table th {
                             vertical-align: middle;
-                            text-align: center;
+                            padding: 10px;
                         }
-                        .form-switch {
+                        .table img {
+                            width: 70px;
+                            height: 70px;
+                            object-fit: cover;
+                        }
+
+                        .btn {
+                            font-weight: 500;
+                            border-radius: 50px; 
+                        }
+                
+                        .btn-primary {
+                            background-color: #0d6efd;
+                            border-color: #0d6efd;
+                        }
+                
+                        .btn-danger {
+                            background-color: #dc3545;
+                            border-color: #dc3545;
+                        }
+
+                        // .form-switch {
+                        //     display: flex;
+                        //     align-items: center;
+                        //     justify-content: center;
+                        //     padding-left: 50px;
+                        //     height: 100%;
+                        // }
+
+                        .form-check-input:checked {
+                            background-color: #dc3545;
+                            border-color: #dc3545;
+                        }
+                        
+                        .form-check-input {
+                            width: 2.25em;  
+                            height: 1.25em; 
+                            margin-left: -1em; 
+                            
+                           
+                        }
+                        
+                        .form-check {
                             display: flex;
-                            align-items: center;
                             justify-content: center;
-                            padding-left: 50px;
-                            height: 100%;
+                            align-items: center;
+                            
                         }
                     `}
                 </style>
@@ -175,7 +239,7 @@ export const UserManagement = () => {
                                 </td>
                                 <td className="text-center align-middle">{user.fullName}</td>
                                 <td className="text-center align-middle">{user.email}</td>
-                                <td className="text-center align-middle">{user.startedDate}</td>
+                                <td className="text-center align-middle">{formatDate(user.startedDate)}</td>
                                 <td className="text-center align-middle">
                                     <div className="form-check form-switch">
                                         <input 
@@ -185,7 +249,10 @@ export const UserManagement = () => {
                                             onChange={() => handleLockChange(user)} />
                                     </div>
                                 </td>
-                                <td className="text-center align-middle">{user.activate ? 'x' : ''}</td>
+                                <td className="text-center align-middle">
+                                    {/* {user.activate ? 'x' : ''} */}
+                                    {user.activate ? <i className="fas fa-check-circle text-success fa-2x"></i> : <i className="fas fa-times-circle text-danger fa-2x"></i>}
+                                </td>
                                 <td className="text-center align-middle">{user.roles.map(role => role.name).join(', ')}</td>
                                 <td className="text-center align-middle">
                                     <button className="btn btn-primary btn-sm me-2">Edit</button>
