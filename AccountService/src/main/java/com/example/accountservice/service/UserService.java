@@ -4,6 +4,7 @@ import com.example.accountservice.dto.request.CreateUserRequest;
 import com.example.accountservice.dto.request.RegisterCustomerRequest;
 import com.example.accountservice.dto.request.UpdateProfileRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
+import com.example.accountservice.dto.response.GetUserResponse;
 import com.example.accountservice.dto.response.ImageResponse;
 import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
@@ -72,9 +73,7 @@ public class UserService {
 
 //      Set lock
         user.setLock(false);
-//      Set activate
 
-        user.setActivate(false);
 //      Set date
         user.setStartedDate(LocalDate.now());
 
@@ -86,6 +85,14 @@ public class UserService {
         var roles = new HashSet<Role>();
         roles.add(role);
         user.setRoles(roles);
+
+        //Set activate
+        if(!request.getRole().equals("Employee")) {
+            user.setActivate(true);
+        } else{
+            user.setActivate(false);
+
+        }
 
 //      Set Profile picture
 
@@ -162,8 +169,8 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('Admin')")
-    public UserResponse getUser(String id){
-        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    public GetUserResponse getUser(String id){
+        return userMapper.toGetUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
 
     public ProfileResponse getMyInfo(){
@@ -207,7 +214,38 @@ public class UserService {
     public UserResponse updateUser(String id , UpdateUserRequest request){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+//      Check if user update new email and it has stored in database yet
+        if(!user.getEmail().equals(request.getEmail())){
+            if(userRepository.existsUsersByEmail(request.getEmail())){
+                throw new AppException(ErrorCode.USER_EXISTED);
+            }
+        }
+
+
+        if(request.getFile() != null){
+            var apiResponse = imageServiceClient.uploadImage(request.getFile(), "profile");
+            if (apiResponse != null && apiResponse.getCode() == 100) {
+                var image = apiResponse.getData().getUrl();
+                user.setProfilePicture(image);
+            }
+            else{
+                throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
+            }
+        }
         userMapper.updateUser(user, request);
+
+        //Set Role
+        Role role = roleRepository.save(Role.builder()
+                .name(request.getRole())
+                .build());
+
+        var roles = new HashSet<Role>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        System.out.println("UPdate success");
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

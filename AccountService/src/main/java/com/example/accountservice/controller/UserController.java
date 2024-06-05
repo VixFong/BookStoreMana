@@ -5,6 +5,7 @@ import com.example.accountservice.dto.request.RegisterCustomerRequest;
 import com.example.accountservice.dto.request.UpdateProfileRequest;
 import com.example.accountservice.dto.request.UpdateUserRequest;
 import com.example.accountservice.dto.response.ApiResponse;
+import com.example.accountservice.dto.response.GetUserResponse;
 import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
 import com.example.accountservice.service.UserService;
@@ -89,8 +90,16 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("{id}")
+    public ApiResponse<GetUserResponse> getUser(@PathVariable String id){
+        return ApiResponse.<GetUserResponse>builder()
+                .data(userService.getUser(id))
+                .build();
+    }
+
     @PutMapping("{id}")
-    public ApiResponse<UserResponse> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserRequest request){
+    public ApiResponse<UserResponse> updateUser(@PathVariable String id, @ModelAttribute @Valid UpdateUserRequest request){
+        System.out.println("Update");
         return ApiResponse.<UserResponse>builder()
                 .data(userService.updateUser(id, request))
                 .build();
