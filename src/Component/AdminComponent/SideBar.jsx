@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaUser, FaChevronDown, FaChevronUp, FaSignOutAlt } from 'react-icons/fa';
 import {Link} from "react-router-dom";
+import axios from 'axios';
 
 export const Sidebar = () => {
     const [UserMenu, setUserMenu] = useState(false);
+    const [email, setEmail] = useState('');
 
     const toggleUserMenu = () => {
         setUserMenu(!UserMenu);
     };
+
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await axios.get('http://localhost:8888/identity/users/info', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (response.data.code === 200) {
+                    const userEmail = response.data.data.email;
+                    const emailWithoutDomain = userEmail.split('@')[0];
+                    setEmail(emailWithoutDomain);
+                }
+            } catch (error) {
+                console.error('Error fetching user email:', error);
+            }
+        };
+
+        fetchUserEmail();
+    }, []);
+
     return (
         <div className="bg-dark text-white vh-100">
             <div className="p-3">
@@ -45,6 +70,7 @@ export const Sidebar = () => {
                 </ul>
             </div>
             <div className="p-3">
+                <p className="mb-1">Hello, <Link to="/administrators">{email}</Link></p>
                 <a className="nav-link text-white d-flex align-items-center" href="/">
                     <FaSignOutAlt className="me-2" /> Log Out
                 </a>
