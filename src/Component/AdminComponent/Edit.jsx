@@ -145,140 +145,164 @@ export const Edit = () => {
     };
 
     return (
-        <div className="container">
-            {/* <ToastContainer /> */}
-            <h3 className="mt-4 text-center">Edit User</h3>
-            <form onSubmit={handleSubmit} className="row mt-4 justify-content-center">
-                <div className="col-md-3">
-                    <div className="text-center">
-                        <img
-                            // src={ || 'https://via.placeholder.com/150'}
-                            src={file ? URL.createObjectURL(file) : profilePicture}
-                            
-                            alt="profilePicture"
-                            className="img-thumbnail mb-3"
-                            style={{ width: '200px', height: '200px' }}
-                        />
-                        <input
-                            type="file"
-                            className="form-control"
-                            onChange={handleImageChange}
-                        />
-                    </div>
-                </div>
-                <div className="col-md-6">
-                    <div className="mb-3">
-                        <label htmlFor="fullName" className="form-label">Full Name *</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="fullName"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email *</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="phone" className="form-label">Phone Number</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                        />
-                    </div>
-                    <div className="row">
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="city" className="form-label">City</label>
-                            <select
-                                className="form-select"
-                                id="city"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                            >
-                                <option>Select city</option>
-                                <option>TP.Hồ Chí Minh</option>
-                            </select>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="district" className="form-label">District</label>
-                            <select
-                                className="form-select"
-                                id="district"
-                                value={district}
-                                onChange={(e) => setDistrict(e.target.value)}
-                            >
-                                <option>Select District</option>
-                                <option>Quận 1</option>
-                                <option>Quận 2</option>
-                                <option>Quận 3</option>
-                                <option>Quận 4</option>
-                                <option>Quận 5</option>
-                                <option>Quận 6</option>
-                                <option>Quận 7</option>
-                                <option>Quận 8</option>
-                            </select>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="ward" className="form-label">Ward</label>
-                            <select
-                                className="form-select"
-                                id="ward"
-                                value={ward}
-                                onChange={(e) => setWard(e.target.value)}
-                            >
-                                <option>Select Ward</option>
-                                <option>Phường 1</option>
-                                <option>Phường 2</option>
-                                <option>Phường 3</option>
-                                <option>Phường 4</option>
-                                <option>Phường 5</option>
-                                <option>Phường 6</option>
-                                <option>Phường 7</option>
-                            </select>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <style>
+                {`
+                .edit-user-container {
+                    max-width: 1000px;
+                    background: #f7f7f7;
+                    margin-left: 375px;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                .edit-user-title {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
+                .img-thumbnail {
+                    border: 1px solid #ddd;
+                    padding: 5px;
+                }
+                .btn-primary, .btn-secondary {
+                    width: 100px;
+                    margin-right: 10px;
+                }
+                `}
+            </style>
+            <ToastContainer />
+            <div className="edit-user-container">
+                <h3 className="edit-user-title">Edit User</h3>
+                <form onSubmit={handleSubmit} className="row mt-4">
+                    <div className="col-md-4">
+                        <div className="text-center">
+                            <img
+                                src={file ? URL.createObjectURL(file) : profilePicture}
+                                alt="Profile"
+                                className="img-thumbnail mb-3"
+                                style={{ width: '200px', height: '200px' }}
+                            />
+                            <input
+                                type="file"
+                                className="form-control"
+                                onChange={handleImageChange}
+                            />
                         </div>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="address" className="form-label">Address Detail</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
+                    <div className="col-md-8">
+                        <div className="mb-3">
+                            <label htmlFor="fullName" className="form-label">Full Name *</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="fullName"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="email" className="form-label">Email *</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="phone" className="form-label">Phone Number</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="phone"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
+                        </div>
+                        <div className="row">
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="city" className="form-label">City</label>
+                                <select
+                                    className="form-select"
+                                    id="city"
+                                    value={city}
+                                    onChange={(e) => setCity(e.target.value)}
+                                >
+                                    <option>Select city</option>
+                                    <option>TP.Hồ Chí Minh</option>
+                                </select>
+                            </div>
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="district" className="form-label">District</label>
+                                <select
+                                    className="form-select"
+                                    id="district"
+                                    value={district}
+                                    onChange={(e) => setDistrict(e.target.value)}
+                                >
+                                    <option>Select District</option>
+                                    <option>Quận 1</option>
+                                    <option>Quận 2</option>
+                                    <option>Quận 3</option>
+                                    <option>Quận 4</option>
+                                    <option>Quận 5</option>
+                                    <option>Quận 6</option>
+                                    <option>Quận 7</option>
+                                    <option>Quận 8</option>
+                                </select>
+                            </div>
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="ward" className="form-label">Ward</label>
+                                <select
+                                    className="form-select"
+                                    id="ward"
+                                    value={ward}
+                                    onChange={(e) => setWard(e.target.value)}
+                                >
+                                    <option>Select Ward</option>
+                                    <option>Phường 1</option>
+                                    <option>Phường 2</option>
+                                    <option>Phường 3</option>
+                                    <option>Phường 4</option>
+                                    <option>Phường 5</option>
+                                    <option>Phường 6</option>
+                                    <option>Phường 7</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="address" className="form-label">Address Detail</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="address"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="role" className="form-label">Authorization</label>
+                            <select
+                                className="form-select"
+                                id="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                            >
+                                <option>Customer</option>
+                                <option>Admin</option>
+                                <option>Employee</option>
+                            </select>
+                        </div>
+                        <div className="d-flex justify-content-center">
+                            <button type="submit" className="btn btn-primary">Save</button>
+                            <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="role" className="form-label">Authorization</label>
-                        <select
-                            className="form-select"
-                            id="role"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                        >
-                            <option>Customer</option>
-                            <option>Admin</option>
-                            <option>Employee</option>
-                        </select>
-                    </div>
-                    {/* {error && <p className="text-danger">{error}</p>} */}
-                    <button type="submit" className="btn btn-danger">Save Changes</button>
-                    <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
-                
-                </div>
-            </form>
+                </form>
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                     <Modal.Body className="text-center">
                         <Spinner animation="border" role="status">
@@ -295,11 +319,8 @@ export const Edit = () => {
                             </svg>
                         </div>
                         <h4>Update Successfully</h4>
-                        {/* <p>Please Check Your Email To Change The Password</p>
-                        <Button variant="primary" onClick={handleCloseSuccessModal}>OK</Button> */}
                     </Modal.Body>
                 </Modal>
-
                 <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">
@@ -312,6 +333,7 @@ export const Edit = () => {
                         <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
                     </Modal.Body>
                 </Modal>
+            </div>
         </div>
     );
 };

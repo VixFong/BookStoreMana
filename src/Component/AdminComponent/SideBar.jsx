@@ -62,6 +62,7 @@ import axios from 'axios';
 
 export const Sidebar = () => {
     const [UserMenu, setUserMenu] = useState(false);
+    const [email, setEmail] = useState('');
     const navigate = useNavigate();
 
     const toggleUserMenu = () => {
@@ -89,6 +90,29 @@ export const Sidebar = () => {
             console.error('An error occurred during logout', error);
         }
     };
+
+
+    useEffect(() => {
+        const fetchUserEmail = async () => {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await axios.get('http://localhost:8888/identity/users/info', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (response.data.code === 200) {
+                    const userEmail = response.data.data.email;
+                    const emailWithoutDomain = userEmail.split('@')[0];
+                    setEmail(emailWithoutDomain);
+                }
+            } catch (error) {
+                console.error('Error fetching user email:', error);
+            }
+        };
+
+        fetchUserEmail();
+    }, []);
 
     return (
         <div className="bg-dark text-white vh-100">
@@ -126,6 +150,7 @@ export const Sidebar = () => {
                 </ul>
             </div>
             <div className="p-3">
+                <p className="mb-1">Hello, <Link to="/administrators">{email}</Link></p>
                 <a className="nav-link text-white d-flex align-items-center"  onClick={handleLogout}>
                     <FaSignOutAlt className="me-2" /> Log Out
                 </a>

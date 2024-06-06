@@ -307,148 +307,166 @@ export const Add = () => {
     };
 
     return (
-        <div className="container">
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <style>
+                {`
+                .add-user-container {
+                    max-width: 1000px;
+                    background: #f7f7f7;
+                    margin-left: 400px;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                .add-user-title {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
+                .img-thumbnail {
+                    border: 1px solid #ddd;
+                    padding: 5px;
+                }
+                .btn-primary, .btn-secondary {
+                    width: 100px;
+                    margin-right: 10px;
+                }
+                `}
+            </style>
             <ToastContainer />
-            <h3 className="mt-4">Add New User</h3>
-            <form onSubmit={handleSubmit} className="row mt-4">
-                <div className="col-md-4">
-                    <div className="text-center">
-                        <img
-                            src={file ? URL.createObjectURL(file) : 'https://via.placeholder.com/150'}
-                            alt="Profile"
-                            className="img-thumbnail mb-3"
-                            style={{ width: '200px', height: '200px' }}
-                        />
-                        <input
-                            type="file"
-                            className="form-control"
-                            onChange={handleImageChange}
-                        />
-                    </div>
-                </div>
-                <div className="col-md-8">
-                    <div className="mb-3">
-                        <label htmlFor="fullName" className="form-label">Full Name *</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="fullName"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email *</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="phone" className="form-label">Phone Number</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            pattern="[0-9]*"
-                            inputMode="numeric"
-                        />
-                    </div>
-                    <div className="row">
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="city" className="form-label">Select city</label>
-                            <select
-                                className="form-select"
-                                id="city"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                            >
-                                <option>Select city</option>
-                                <option value="TP.Hồ Chí Minh">TP.Hồ Chí Minh</option>
-                               
-                            </select>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="district" className="form-label">District</label>
-                            <select
-                                className="form-select"
-                                id="district"
-                                value={district}
-                                onChange={(e) => setDistrict(e.target.value)}
-                            >
-                                <option>Select District</option>
-                                <option value="Quận 1">Quận 1</option>
-                                <option value="Quận 2" >Quận 2</option>
-                                <option value="Quận 3">Quận 3</option>
-                                <option value="Quận 4">Quận 4</option>
-                                <option value="Quận 5">Quận 5</option>
-                                <option value="Quận 6">Quận 6</option>
-                                <option value="Quận 7">Quận 7</option>
-                                <option value="Quận 8">Quận 8</option>
-                                <option value="Quận 9">Quận 8</option>
-                                <option value="Quận 10">Quận 8</option>
-                                <option value="Quận ">Quận 8</option>
-                                <option value="Quận 8">Quận 8</option>
-                               
-                            </select>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <label htmlFor="ward" className="form-label">Ward</label>
-                            <select
-                                className="form-select"
-                                id="ward"
-                                value={ward}
-                                onChange={(e) => setWard(e.target.value)}
-                            >
-                                <option>Select Ward</option>
-                                <option>Phường 1</option>
-                                <option>Phường 2</option>
-                                <option>Phường 3</option>
-                                <option>Phường 4</option>
-                                <option>Phường 5</option>
-                                <option>Phường 6</option>
-                                <option>Phường 7</option>
-                           
-                            </select>
+            <div className="add-user-container">
+                <h3 className="add-user-title">Add New User</h3>
+                <form onSubmit={handleSubmit} className="row mt-4">
+                    <div className="col-md-4">
+                        <div className="text-center">
+                            <img
+                                src={file ? URL.createObjectURL(file) : 'https://via.placeholder.com/150'}
+                                alt="Profile"
+                                className="img-thumbnail mb-3"
+                                style={{ width: '200px', height: '200px' }}
+                            />
+                            <input
+                                type="file"
+                                className="form-control"
+                                onChange={handleImageChange}
+                            />
                         </div>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="address" className="form-label">Address Detail</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
+                    <div className="col-md-8">
+                        <div className="mb-3">
+                            <label htmlFor="fullName" className="form-label">Full Name *</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="fullName"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="email" className="form-label">Email *</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="phone" className="form-label">Phone Number</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="phone"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                pattern="[0-9]*"
+                                inputMode="numeric"
+                            />
+                        </div>
+                        <div className="row">
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="city" className="form-label">Select city</label>
+                                <select
+                                    className="form-select"
+                                    id="city"
+                                    value={city}
+                                    onChange={(e) => setCity(e.target.value)}
+                                >
+                                    <option>Select city</option>
+                                    <option value="TP.Hồ Chí Minh">TP.Hồ Chí Minh</option>
+                                </select>
+                            </div>
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="district" className="form-label">District</label>
+                                <select
+                                    className="form-select"
+                                    id="district"
+                                    value={district}
+                                    onChange={(e) => setDistrict(e.target.value)}
+                                >
+                                    <option>Select District</option>
+                                    <option value="Quận 1">Quận 1</option>
+                                    <option value="Quận 2">Quận 2</option>
+                                    <option value="Quận 3">Quận 3</option>
+                                    <option value="Quận 4">Quận 4</option>
+                                    <option value="Quận 5">Quận 5</option>
+                                    <option value="Quận 6">Quận 6</option>
+                                    <option value="Quận 7">Quận 7</option>
+                                    <option value="Quận 8">Quận 8</option>
+                                </select>
+                            </div>
+                            <div className="col-md-4 mb-3">
+                                <label htmlFor="ward" className="form-label">Ward</label>
+                                <select
+                                    className="form-select"
+                                    id="ward"
+                                    value={ward}
+                                    onChange={(e) => setWard(e.target.value)}
+                                >
+                                    <option>Select Ward</option>
+                                    <option>Phường 1</option>
+                                    <option>Phường 2</option>
+                                    <option>Phường 3</option>
+                                    <option>Phường 4</option>
+                                    <option>Phường 5</option>
+                                    <option>Phường 6</option>
+                                    <option>Phường 7</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="address" className="form-label">Address Detail</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="address"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="role" className="form-label">Authorization</label>
+                            <select
+                                className="form-select"
+                                id="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                            >
+                                <option>Customer</option>
+                                <option>Admin</option>
+                                <option>Employee</option>
+                            </select>
+                        </div>
+                        <div className="d-flex justify-content-center">
+                            <button type="submit" className="btn btn-primary">Add User</button>
+                            <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="role" className="form-label">Authorization</label>
-                        <select
-                            className="form-select"
-                            id="role"
-                            value="Admin"
-                            onChange={(e) => setRole(e.target.value)}
-                        >
-                            {/* <option>Select Role</option> */}
-                            <option>Customer</option>
-                            <option>Admin</option>
-                            <option>Employee</option>
-                        </select>
-                    </div>
-                    <div className="d-flex">
-                        <button type="submit" className="btn btn-danger">Add User</button>
-                        <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
-                    </div>
-                </div>
-            </form>
+                </form>
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                     <Modal.Body className="text-center">
                         <Spinner animation="border" role="status">
@@ -469,7 +487,6 @@ export const Add = () => {
                         <Button variant="primary" onClick={handleCloseSuccessModal}>OK</Button>
                     </Modal.Body>
                 </Modal>
-
                 <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">
@@ -482,6 +499,7 @@ export const Add = () => {
                         <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
                     </Modal.Body>
                 </Modal>
+            </div>
         </div>
     );
 };
