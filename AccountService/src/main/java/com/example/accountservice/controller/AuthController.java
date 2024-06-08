@@ -66,9 +66,11 @@ public class AuthController {
                 .build();
     }
 
+
+
     @PostMapping("/forgot-password")
     public ApiResponse<String> forgotPassword(@RequestBody EmailRequest request) throws JOSEException, MessagingException {
-        resetPasswordService.sendMailToUser(request.getEmail());
+        resetPasswordService.checkIsUserActivate(request.getEmail());
         return ApiResponse.<String>builder()
                 .data("Reset password email sent")
                 .build();

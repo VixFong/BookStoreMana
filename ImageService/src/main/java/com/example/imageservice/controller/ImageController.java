@@ -50,11 +50,11 @@ public class ImageController {
 //        }
 //    }
 
-    @GetMapping("/{id}")
-    public ApiResponse<ImageDTO> getImageByName(@PathVariable String id) {
-        return ApiResponse.<ImageDTO>builder()
-                .data(imageService.getImage(id))
-                .build();
-    }
+//    @GetMapping("/{id}")
+//    public ApiResponse<ImageDTO> getImageByName(@PathVariable String id) {
+//        return ApiResponse.<ImageDTO>builder()
+//                .data(imageService.getImage(id))
+//                .build();
+//    }
 }
 

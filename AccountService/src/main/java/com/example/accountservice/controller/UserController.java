@@ -1,13 +1,11 @@
 package com.example.accountservice.controller;
 
-import com.example.accountservice.dto.request.CreateUserRequest;
-import com.example.accountservice.dto.request.RegisterCustomerRequest;
-import com.example.accountservice.dto.request.UpdateProfileRequest;
-import com.example.accountservice.dto.request.UpdateUserRequest;
+import com.example.accountservice.dto.request.*;
 import com.example.accountservice.dto.response.ApiResponse;
 import com.example.accountservice.dto.response.GetUserResponse;
 import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
+import com.example.accountservice.service.ResetPasswordService;
 import com.example.accountservice.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.mail.MessagingException;
@@ -25,6 +23,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ResetPasswordService resetPasswordService;
+
     @PostMapping
     public ApiResponse<UserResponse> addUser(@Valid @ModelAttribute CreateUserRequest request) throws JOSEException, MessagingException {
         System.out.println("Controller");
@@ -40,10 +41,21 @@ public class UserController {
                 .build();
     }
 
+
     @GetMapping("/search")
-    public ApiResponse<List<UserResponse>> searchUsers(@RequestParam String keyword) {
-        return ApiResponse.<List<UserResponse>>builder()
-                .data(userService.searchUsers(keyword))
+    public ApiResponse<Page<UserResponse>> searchUsers(@RequestParam String keyword,
+                                          @RequestParam int page,
+                                          @RequestParam int size) {
+        System.out.println("Search");
+        return ApiResponse.<Page<UserResponse>>builder()
+                .data(userService.searchUsers(keyword, page, size))
+                .build();
+    }
+    @PostMapping("/activate")
+    public ApiResponse<String> activateAccount(@RequestBody EmailRequest request) throws JOSEException, MessagingException {
+        resetPasswordService.activateAccount(request.getEmail());
+        return ApiResponse.<String>builder()
+                .data("Reset password email sent")
                 .build();
     }
 
@@ -54,14 +66,14 @@ public class UserController {
 //                .build();
 //    }
 
-    @GetMapping
-    public ApiResponse<Page<UserResponse>> getPageUsers( @RequestParam int page,
-                                                         @RequestParam int size){
-        Page<UserResponse> userPage = userService.getPageUsers(page, size);
-        return ApiResponse.<Page<UserResponse>>builder()
-                .data(userPage)
-                .build();
-    }
+//    @GetMapping
+//    public ApiResponse<Page<UserResponse>> getPageUsers( @RequestParam int page,
+//                                                         @RequestParam int size){
+//        Page<UserResponse> userPage = userService.getPageUsers(page, size);
+//        return ApiResponse.<Page<UserResponse>>builder()
+//                .data(userPage)
+//                .build();
+//    }
     @GetMapping("/info")
     public ApiResponse<ProfileResponse> getInfo(){
         return ApiResponse.<ProfileResponse>builder()
@@ -74,6 +86,7 @@ public class UserController {
 
     @PutMapping("/info")
     public ApiResponse<ProfileResponse> editInfo (@ModelAttribute @Valid UpdateProfileRequest request){
+        System.out.println("Update Info");
         return ApiResponse.<ProfileResponse>builder()
                 .data(userService.updateMyInfo(request))
                 .build();

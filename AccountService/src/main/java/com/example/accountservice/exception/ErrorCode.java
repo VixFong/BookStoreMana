@@ -19,9 +19,11 @@ public enum ErrorCode {
     EXPIRED_TOKEN(208, "Token has been expired",HttpStatus.BAD_REQUEST),
     FAIL_SENDING_EMAIL(209, "Error occurred while sending reset password email",HttpStatus.BAD_REQUEST),
     ACCOUNT_LOCKED(210, "Your account has been locked",HttpStatus.BAD_REQUEST),
-    ACCOUNT_UNACTIVATED(211, "Your account is not activate",HttpStatus.BAD_REQUEST),
-    NOT_MATCH_PASSWORD(212, "Your confirm password is not match with password",HttpStatus.BAD_REQUEST),
-    FAIL_UPLOAD_IMAGE(213, "Upload image fail", HttpStatus.BAD_REQUEST),
+    ACCOUNT_UNACTIVATED(211, "Your account is not activate. Please contact to admin",HttpStatus.BAD_REQUEST),
+    ACCOUNT_ACTIVATED(212, "This account has activated",HttpStatus.BAD_REQUEST),
+
+    NOT_MATCH_PASSWORD(213, "Your confirm password is not match with password",HttpStatus.BAD_REQUEST),
+    FAIL_UPLOAD_IMAGE(214, "Upload image fail", HttpStatus.BAD_REQUEST),
 
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)
 

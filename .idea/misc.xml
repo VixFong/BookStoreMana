@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/ApiGateway/pom.xml" />
         <option value="$PROJECT_DIR$/AccountService/pom.xml" />
         <option value="$PROJECT_DIR$/ImageService/pom.xml" />
+        <option value="$PROJECT_DIR$/ProductService/pom.xml" />
       </list>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

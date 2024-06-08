@@ -29,7 +29,6 @@ public class User {
     private boolean isLock;
     private boolean activate;
 
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate startedDate;
 

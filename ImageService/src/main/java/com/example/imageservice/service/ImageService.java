@@ -48,12 +48,6 @@ public class ImageService {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", folder));
             String imageUrl = uploadResult.get("url").toString();
 
-//            Image image = new Image();
-//            image.setName(file.getOriginalFilename());
-//            image.setUrl(imageUrl);
-//            Image savedImage = imageRepository.save(image);
-//
-//            ImageDTO imageDTO = imageMapper.toImageDTO(savedImage);
 
             String originalFileName = file.getOriginalFilename();
             ImageDTO imageDTO = updateOrSaveImage(originalFileName, imageUrl);
@@ -99,20 +93,21 @@ public class ImageService {
         image.setName(file.getOriginalFilename());
         image.setUrl(imageUrl);
         Image savedImage = imageRepository.save(image);
+//        String originalFileName = file.getOriginalFilename();
+
+
 
         return imageMapper.toImageDTO(savedImage);
     }
 
-//    public ImageDTO updateImage(String name, ImageDTO imageDTO){
-//        var image =
-//    }
 
-    public ImageDTO getImage(String id) {
-        Optional<Image> imageOptional = imageRepository.findById(id);
-        if (imageOptional.isPresent()) {
-            return imageMapper.toImageDTO(imageOptional.get());
-        } else {
-            throw new AppException(ErrorCode.IMAGE_NOT_FOUND);
-        }
-    }
+
+//    public ImageDTO getImage(String id) {
+//        Optional<Image> imageOptional = imageRepository.findById(id);
+//        if (imageOptional.isPresent()) {
+//            return imageMapper.toImageDTO(imageOptional.get());
+//        } else {
+//            throw new AppException(ErrorCode.IMAGE_NOT_FOUND);
+//        }
+//    }
 }

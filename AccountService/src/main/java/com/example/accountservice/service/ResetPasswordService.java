@@ -10,6 +10,7 @@ import com.nimbusds.jose.JOSEException;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +39,36 @@ public class ResetPasswordService {
     @Value("${server.servlet.context-path}")
     private String CONTEXT_PATH;
 
-    public void sendMailToUser(String email) throws JOSEException, MessagingException {
+    @PreAuthorize("hasRole('Admin')")
+    public void activateAccount(String email) throws JOSEException, MessagingException {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if(user.isActivate()){
+            throw new AppException(ErrorCode.ACCOUNT_ACTIVATED);
+        }
+        sendMailToUser(email);
+
+    }
+
+    public void checkIsUserActivate(String email)throws JOSEException, MessagingException{
+        var user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Check if the user is inactive and does not have the 'admin' role
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> "Admin".equals(role.getName()));
+
+        if(!user.isActivate() && !isAdmin){
+            throw new AppException(ErrorCode.ACCOUNT_UNACTIVATED);
+        }
+        else{
+            sendMailToUser(email);
+        }
+    }
+
+    public void sendMailToUser(String email) throws JOSEException {
         System.out.println("Send mail");
 
-
-        if(userRepository.existsUsersByEmail(email)){
             // Generate token
             String token = jwtUtils.generateTokenEmail(email, EXPIRATION_TIME);
 
@@ -56,8 +82,7 @@ public class ResetPasswordService {
 
             // Send email
             emailService.sendEmail(email, "Reset Password", resetUrl);
-        }
-        else throw new AppException(ErrorCode.USER_NOT_FOUND);
+
     }
 
 

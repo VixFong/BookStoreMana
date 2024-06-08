@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -102,6 +103,7 @@ public class UserService {
         }
 //      if having file
         else {
+            System.out.println("having file"+ request.getFile());
             var apiResponse = imageServiceClient.uploadImage(request.getFile(), "profile");
             if (apiResponse != null && apiResponse.getCode() == 100) {
                 var image = apiResponse.getData().getUrl();
@@ -115,7 +117,10 @@ public class UserService {
         var saveUser = userRepository.save(user);
 
         //Send mail
-        resetPasswordService.sendMailToUser(request.getEmail());
+        if(!user.getRoles().stream()
+                .anyMatch(r -> "Customer".equals(r.getName()))){
+            resetPasswordService.sendMailToUser(request.getEmail());
+        }
 
 
         return userMapper.toUserResponse(saveUser);
@@ -173,6 +178,8 @@ public class UserService {
         return userMapper.toGetUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
 
+
+
     public ProfileResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
         String email = context.getAuthentication().getName();
@@ -195,16 +202,21 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        var apiResponse = imageServiceClient.uploadImage(request.getFile(),"profile");
-
-        if(apiResponse.getCode() != 100){
-            throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
+        if(request.getFile() != null){
+            var apiResponse = imageServiceClient.uploadImage(request.getFile(), "profile");
+            if (apiResponse != null && apiResponse.getCode() == 100) {
+                var image = apiResponse.getData().getUrl();
+                user.setProfilePicture(image);
+            }
+            else{
+                throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
+            }
         }
-        System.out.println("Name " + user.getFullName());
-        System.out.println("image " + apiResponse.getData().getUrl());
+//        System.out.println("Name " + user.getFullName());
+//        System.out.println("image " + apiResponse.getData().getUrl());
 
         userMapper.updateProfileUser(user,request);
-        user.setProfilePicture(apiResponse.getData().getUrl());
+
         System.out.println("profile" + user.getProfilePicture());
 
         return userMapper.toProfileUser(userRepository.save(user));
@@ -230,7 +242,7 @@ public class UserService {
                 user.setProfilePicture(image);
             }
             else{
-                throw new AppException(ErrorCode.FAIL_SENDING_EMAIL);
+                throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
             }
         }
         userMapper.updateUser(user, request);
@@ -249,10 +261,17 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+//    @PreAuthorize("hasRole('Admin')")
+//    public List<UserResponse> searchUsers(String keyword) {
+//        List<User> users = userRepository.findByFullNameOrEmail(keyword);
+//        return users.stream().map(userMapper::toUserResponse).toList();
+//    }
+
     @PreAuthorize("hasRole('Admin')")
-    public List<UserResponse> searchUsers(String keyword) {
-        List<User> users = userRepository.findByFullNameOrEmail(keyword);
-        return users.stream().map(userMapper::toUserResponse).toList();
+    public Page<UserResponse> searchUsers(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fullName").ascending());
+        Page<User> userPage = userRepository.findByFullNameOrEmail(keyword, pageable);
+        return userPage.map(userMapper::toUserResponse);
     }
 
 

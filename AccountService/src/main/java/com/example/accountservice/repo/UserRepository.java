@@ -21,6 +21,13 @@ public interface UserRepository extends JpaRepository<User, String> {
 
 //    Page<User> findAll(Pageable pageable);
 
+//    @Query("SELECT u FROM User u WHERE LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+//    List<User> findByFullNameOrEmail(String keyword);
+
+
     @Query("SELECT u FROM User u WHERE LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<User> findByFullNameOrEmail(String keyword);
+    Page<User> findByFullNameOrEmail(String keyword, Pageable pageable);
+
+
+//    Page<User> findByFullNameContainingOrEmailContaining(String fullName, String email, Pageable pageable);
 }
