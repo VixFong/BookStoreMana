@@ -43,7 +43,7 @@ export const Updated = () => {
 
         try {
 
-            const response = await axios.post(`http://localhost:8888/identity/auth/reset-password`,  
+            const response = await axios.post(`/api/identity/auth/reset-password`,  
                 { password, confirmPassword },
                 { params: { token } }
             );

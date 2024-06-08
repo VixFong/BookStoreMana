@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './SideBar';
 import axios from 'axios';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Modal, Button } from 'react-bootstrap';
 
@@ -20,19 +20,27 @@ export const UserManagement = () => {
     const [showLockModal, setShowLockModal] = useState(false); 
     const [userToToggleLock, setUserToToggleLock] = useState(null); 
 
-    useEffect(() => {
-        fetchUsers(page, size);
-    }, [page, size]);
+    const token = localStorage.getItem('authToken');
+    const navigate = useNavigate();
 
-    const fetchUsers = async (page, size) => {
-        const token = localStorage.getItem('authToken');
+    useEffect(() => {
+        if(!token){
+            navigate('/');
+        }
+        fetchUsers(page, size, searchTerm);
+    }, [page, size, searchTerm]);
+
+    const fetchUsers = async (page, size, keyword) => {
+        console.log(keyword)
         try {
-            const response = await axios.get('http://localhost:8888/identity/users', {
-                params: { page, size },
+            const response = await axios.get('/api/identity/users/search', {
+                params: { page, size, keyword },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            
+            console.log(response.data.data)
             setUsers(response.data.data.content);
             setTotalPages(response.data.data.totalPages);
         } catch (error) {
@@ -41,21 +49,17 @@ export const UserManagement = () => {
     };
 
     const toggleUserLock = async (userId, isLock) => {
-        console.log(userId, isLock)
         const token = localStorage.getItem('authToken');
         try {
-            const response = await axios.put(`http://localhost:8888/identity/users/${userId}/lock`, null, {
+            const response = await axios.put(`/api/identity/users/${userId}/lock`, null, {
                 params: { isLock },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             if(response.data.code === 200){
-                console.log("aaaa");
-                fetchUsers(page, size);
-
+                fetchUsers(page, size, searchTerm);
             }
-            
         } catch (error) {
             if(error.response && error.response.data && error.response.data.message){
                 setError(error.response.data.message);
@@ -63,8 +67,18 @@ export const UserManagement = () => {
         }
     };
 
-    const handleLockChange = (user) => {
-        toggleUserLock(user.id, !user.lock);
+   
+
+    const handleLockConfirm = async () => {
+        try {
+            await toggleUserLock(userToToggleLock.id, !userToToggleLock.lock);
+            setShowLockModal(false);
+        } catch (error) {
+            console.error('Error toggling user lock:', error);
+            setError(error.response?.data?.message);
+
+            // Handle error
+        }
     };
 
     const handleLockModalOpen = (user) => {
@@ -77,15 +91,6 @@ export const UserManagement = () => {
         setUserToToggleLock(null);
     };
     
-    const handleLockConfirm = async () => {
-        try {
-            await toggleUserLock(userToToggleLock.id, !userToToggleLock.lock);
-            setShowLockModal(false);
-        } catch (error) {
-            console.error('Error toggling user lock:', error);
-            // Handle error
-        }
-    };
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -106,13 +111,7 @@ export const UserManagement = () => {
     const handleSearchInputChange = (event) => {
         const value = event.target.value;
         setSearchTerm(value);
-        fetchUsers(0, size);
     };
-
-    const filterUsers = users.filter(user => 
-        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const handleDeleteClick = (user) => {
         setUserToDelete(user);
@@ -122,13 +121,13 @@ export const UserManagement = () => {
     const handleDeleteConfirm = async () => {
         const token = localStorage.getItem('authToken');
         try {
-            await axios.delete(`http://localhost:8888/identity/users/${userToDelete.id}`, {
+            await axios.delete(`/api/identity/users/${userToDelete.id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             setShowDeleteModal(false);
-            fetchUsers(page, size);
+            fetchUsers(page, size, searchTerm);
         } catch (error) {
             if(error.response && error.response.data && error.response.data.message){
                 setError(error.response.data.message);
@@ -148,7 +147,6 @@ export const UserManagement = () => {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
-
 
     return (
         <div className="d-flex">
@@ -172,14 +170,6 @@ export const UserManagement = () => {
                         body {
                             font-family: 'Roboto', sans-serif;
                         }
-
-                        // .table-bordered th, .table-bordered td {
-                        //     border: 1px solid #dee2e6;
-                        // }
-                        // .table th, .table td {
-                        //     vertical-align: middle;
-                        //     text-align: center;
-                        // }
 
                         .table {
                             width: 100%;
@@ -211,14 +201,6 @@ export const UserManagement = () => {
                             border-color: #dc3545;
                         }
 
-                        // .form-switch {
-                        //     display: flex;
-                        //     align-items: center;
-                        //     justify-content: center;
-                        //     padding-left: 50px;
-                        //     height: 100%;
-                        // }
-
                         .form-check-input:checked {
                             background-color: #dc3545;
                             border-color: #dc3545;
@@ -228,15 +210,12 @@ export const UserManagement = () => {
                             width: 2.25em;  
                             height: 1.25em; 
                             margin-left: -1em; 
-                            
-                           
                         }
                         
                         .form-check {
                             display: flex;
                             justify-content: center;
                             align-items: center;
-                            
                         }
                     `}
                 </style>
@@ -255,7 +234,7 @@ export const UserManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filterUsers.map((user) => (
+                        {users.map((user) => (
                             <tr key={user.id}>
                                 <td className="text-center align-middle">
                                     <img src={user.profilePicture} alt={user.fullName} className="rounded-circle" style={{ width: '70px', height: '70px' }} />
@@ -269,21 +248,18 @@ export const UserManagement = () => {
                                             className="form-check-input" 
                                             type="checkbox" 
                                             checked={user.lock} 
-                                            // onChange={() => handleLockChange(user)}
                                             onChange={() => handleLockModalOpen(user)}
                                         />
                                     </div>
                                 </td>
 
                                 <td className="text-center align-middle">
-                                    {/* {user.activate ? 'x' : ''} */}
                                     {user.activate ? <i className="fas fa-check-circle text-success fa-2x"></i> : <i className="fas fa-times-circle text-danger fa-2x"></i>}
                                 </td>
                                 <td className="text-center align-middle">{user.roles.map(role => role.name).join(', ')}</td>
                                 <td className="text-center align-middle">
-                                   <Link to={`/edit/${user.id}`} className='btn btn-warning btn-sm me-2'><i className="fas fa-edit"></i></Link>
+                                    <Link to={`/edit/${user.id}`} className='btn btn-warning btn-sm me-2'><i className="fas fa-edit"></i></Link>
                                     <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(user)}><i className="fas fa-trash-alt"></i></button>
-                                    
                                 </td>
                             </tr>
                         ))}
@@ -320,9 +296,6 @@ export const UserManagement = () => {
                 </Modal.Footer>
             </Modal>
 
-
-            {/* Lock Modal */}
-            
             <Modal show={showLockModal} onHide={handleLockModalClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Lock Status Change</Modal.Title>

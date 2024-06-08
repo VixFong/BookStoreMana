@@ -209,7 +209,7 @@
 // };
 
 // export default AddUser;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -236,6 +236,14 @@ export const Add = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    const token = localStorage.getItem('authToken');
+    useEffect(() => {
+        if(!token){
+            navigate('/');
+        }
+
+    })
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // setShowModal(true);  // Show the loading modal
@@ -257,7 +265,7 @@ export const Add = () => {
 
             try {
                 const response = await axios.post(
-                    `http://localhost:8888/identity/users`,
+                    `/api/identity/users`,
                     createUserRequest,
                     {
                         headers: {
@@ -327,7 +335,7 @@ export const Add = () => {
                     border: 1px solid #ddd;
                     padding: 5px;
                 }
-                .btn-primary, .btn-secondary {
+                .btn-danger, .btn-secondary {
                     width: 100px;
                     margin-right: 10px;
                 }
@@ -456,13 +464,13 @@ export const Add = () => {
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
                             >
-                                <option>Customer</option>
                                 <option>Admin</option>
+                                <option>Customer</option>
                                 <option>Employee</option>
                             </select>
                         </div>
                         <div className="d-flex justify-content-center">
-                            <button type="submit" className="btn btn-primary">Add User</button>
+                            <button type="submit" className="btn btn-danger">Add User</button>
                             <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
                         </div>
                     </div>

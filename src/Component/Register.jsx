@@ -23,7 +23,7 @@ export const Register = () => {
         }
 
         try{
-            const response = await axios.post(`http://localhost:8888/identity/users/register`, {
+            const response = await axios.post(`/api/identity/users/register`, {
                 fullName,
                 email,
                 password

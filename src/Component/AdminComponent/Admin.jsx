@@ -23,13 +23,15 @@ export const Admin = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     
     const [error, setError] = useState('');
+    const token = localStorage.getItem('authToken');
 
     useEffect(() => {
-        
+        if(!token){
+            navigate('/');
+        }
         const fetchAdmins = async () => {
-            const token = localStorage.getItem('authToken');
             try {
-                const response = await axios.get('http://localhost:8888/identity/users/info', {
+                const response = await axios.get('/api/identity/users/info', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -91,15 +93,15 @@ export const Admin = () => {
 
         const formData = new FormData();
         formData.append('fullName', fullName);
-        formData.append('email', email);
+        // formData.append('email', email);
         formData.append('phone', phone);
         formData.append('address', `${address},${ward},${district},${city}`);
-        formData.append('role', role);
+        // formData.append('role', role);
         if (file) {
             formData.append('file', file);
         }
         try {
-            const response = await axios.put(`http://localhost:8888/identity/users/info`,
+            const response = await axios.put(`/api/identity/users/info`,
                 formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -206,14 +208,15 @@ export const Admin = () => {
                             />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="email" className="form-label">Email *</label>
+                            <label htmlFor="email" className="form-label">Email</label>
                             <input
                                 type="email"
                                 className="form-control"
                                 id="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                readOnly
+                                // onChange={(e) => setEmail(e.target.value)}
+                                // required
                             />
                         </div>
                         <div className="mb-3">
@@ -287,6 +290,20 @@ export const Admin = () => {
                                 onChange={(e) => setAddress(e.target.value)}
                             />
                         </div>
+                        <div className="mb-3">
+                            <label htmlFor="role" className="form-label">Authorization</label>
+                            <input
+                                className="form-select"
+                                id="role"
+                                value={role}
+                                readOnly
+                            >
+                            {/* //     <option>Admin</option>
+                            //     <option>Customer</option>
+                            //     <option>Employee</option> */}
+                             </input>
+                        </div>
+
                         <div className="d-flex justify-content-center">
                             <button type="submit" className="btn btn-primary">Save</button>
                             <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>

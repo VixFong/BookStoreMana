@@ -28,12 +28,17 @@ export const Edit = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
 
 
+    const token = localStorage.getItem('authToken');
+
     useEffect(() => {
+        if(!token){
+            navigate('/');
+        }
         const fetchUserDetails = async () => {
             const token = localStorage.getItem('authToken');
           
             try {
-                const response = await axios.get(`http://localhost:8888/identity/users/${userId}`, {
+                const response = await axios.get(`/api/identity/users/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -41,35 +46,8 @@ export const Edit = () => {
 
                 if(response.data.code === 200){
                     const userData = response.data.data;
-                    console.log('User data:', userData); 
-    
-                    let extractAddress; 
-                    if(userData.address){
-                        extractAddress = userData.address.split(",");
-                        if (extractAddress.length >= 4) {
-                            setCity(extractAddress[3]);
-                        }
-                        if (extractAddress.length >= 3) {
-                            setDistrict(extractAddress[2]);
-                        }
-                        if (extractAddress.length >= 2) {
-                            setWard(extractAddress[1]);
-                        }
-                        if (extractAddress.length >= 1) {
-                            setAddress(extractAddress[0]);
-                        }
-    
-                    }
-                    if(userData.phone){
-                        setPhone(userData.phone)
-                    }
-                    
-                    setFullName(userData.fullName);
-                    setEmail(userData.email);
-    
-                    const userRoles = userData.roles.map(role => role.name);
-                    setRole(userRoles.join(', '))
-                    setProfilePicture(userData.profilePicture);
+                    console.log('User data:', userData);
+                    processUserData(userData);
     
                 }
             } catch (error) {
@@ -81,10 +59,40 @@ export const Edit = () => {
         fetchUserDetails();
     }, [userId]);
 
+    const processUserData = (userData) => {
+        let extractAddress;
+        if (userData.address) {
+            extractAddress = userData.address.split(",");
+            if (extractAddress.length >= 4) {
+                setCity(extractAddress[3]);
+            }
+            if (extractAddress.length >= 3) {
+                setDistrict(extractAddress[2]);
+            }
+            if (extractAddress.length >= 2) {
+                setWard(extractAddress[1]);
+            }
+            if (extractAddress.length >= 1) {
+                setAddress(extractAddress[0]);
+            }
+        }
+
+        if (userData.phone) {
+            setPhone(userData.phone);
+        }
+
+        setFullName(userData.fullName);
+        setEmail(userData.email);
+
+        const userRoles = userData.roles.map(role => role.name);
+        setRole(userRoles.join(', '));
+        setProfilePicture(userData.profilePicture);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(userId)
-        const token = localStorage.getItem('authToken');
+        
 
 
         const formData = new FormData();
@@ -98,7 +106,7 @@ export const Edit = () => {
         }
         try {
             setShowModal(true); 
-            const response = await axios.put(`http://localhost:8888/identity/users/${userId}`,
+            const response = await axios.put(`/api/identity/users/${userId}`,
                 formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -108,15 +116,46 @@ export const Edit = () => {
                 });
                
             if(response.data.code == 200){
+                processUserData(response.data.data);
+                
                 setShowModal(false); 
                 setShowSuccessModal(true);
                 setTimeout(() => {
                     setShowSuccessModal(false);
                 }, 1000);
 
+
+
             }
             
         } catch (error) {
+            setShowModal(false);
+
+            setError(error.response?.data?.message);
+            // toast.error('Failed to update user');
+            setShowErrorModal(true);
+        }
+    };
+
+    const handleForgotPassword = async () => {
+        setShowModal(true); 
+        try {
+            const response = await axios.post('/api/identity/users/activate', 
+                { email },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            
+            );
+            if (response.data.code === 200) {
+                toast.success('Reset password email sent');
+                setShowModal(false); 
+            
+            }
+        } catch (error) {
+            // toast.error('Failed to send reset password email');
             setShowModal(false);
 
             setError(error.response?.data?.message);
@@ -165,9 +204,9 @@ export const Edit = () => {
                     border: 1px solid #ddd;
                     padding: 5px;
                 }
-                .btn-primary, .btn-secondary {
+                .btn-danger, .btn-secondary, .btn-success {
                     width: 100px;
-                    margin-right: 10px;
+                    margin-left: 10px;
                 }
                 `}
             </style>
@@ -292,14 +331,16 @@ export const Edit = () => {
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
                             >
-                                <option>Customer</option>
                                 <option>Admin</option>
+                                <option>Customer</option>
                                 <option>Employee</option>
                             </select>
                         </div>
                         <div className="d-flex justify-content-center">
-                            <button type="submit" className="btn btn-primary">Save</button>
+                            {/* <button type="submit" className="btn btn-danger">Save</button> */}
+                            <Button type="button" variant="danger" onClick={handleSubmit}>Save</Button>
                             <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
+                            <Button type="button" variant="success" onClick={handleForgotPassword}>Activate</Button>
                         </div>
                     </div>
                 </form>
