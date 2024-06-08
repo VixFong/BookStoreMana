@@ -16,6 +16,8 @@ import { UpdatePass } from './Pages/UpdatePass.jsx'
 import { EditUser } from './Pages/EditUser.jsx'
 import { Administrators } from './Pages/Administrators.jsx'
 import { Category } from './Pages/Category.jsx'
+import { Product } from './Pages/Product.jsx'
+import { AddProduct } from './Pages/AddProduct.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
@@ -56,6 +58,14 @@ const router = createBrowserRouter([
   {
     path:"category",
     element: <Category/>,
+  },
+  {
+    path:"product",
+    element: <Product/>,
+  },
+  {
+    path:"addproduct",
+    element: <AddProduct/>,
   },
 ])
 
