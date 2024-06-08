@@ -7,6 +7,7 @@ import axios from 'axios';
 
 export const Sidebar = () => {
     const [UserMenu, setUserMenu] = useState(false);
+    const [CateMenu, setCateMenu] = useState(false);
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
 
@@ -21,6 +22,10 @@ export const Sidebar = () => {
 
     const toggleUserMenu = () => {
         setUserMenu(!UserMenu);
+    };
+
+    const toggleCateMenu = () => {
+        setCateMenu(!CateMenu);
     };
 
     const handleLogout = async () => {
@@ -74,7 +79,7 @@ export const Sidebar = () => {
     const isAdmin = roles.includes('Admin');
 
     return (
-        <div className="bg-dark text-white vh-100">
+        <div className="bg-dark text-white vh-100 ">
             <div className="p-3">
                 <h4 className="text-center">BOOKSTORE</h4>
                 <ul className="nav flex-column">
@@ -107,7 +112,22 @@ export const Sidebar = () => {
                     </li>
                       )}
                     <li className="nav-item">
-                        <a className="nav-link text-white" href="#">Category</a>
+                        <a className="nav-link text-white d-flex justify-content-between align-items-center" href="#" onClick={toggleCateMenu}>
+                            <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-radios" viewBox="0 0 16 16">
+                            <path d="M7 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zM0 12a3 3 0 1 1 6 0 3 3 0 0 1-6 0m7-1.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5M3 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6m0 4.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                            </svg> Category</span>
+                            <span>{CateMenu ? <FaChevronUp /> : <FaChevronDown />}</span>
+                        </a>
+                        <div className={`collapse ${CateMenu ? 'show' : ''}`}>
+                            <ul className="nav flex-column ms-3">
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="/category">Category Management</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="#">Add Category</Link>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li className="nav-item">
                         <a className="nav-link text-white" href="#">Product</a>

@@ -15,6 +15,7 @@ import { ForgotPass } from './Pages/ForgotPass.jsx'
 import { UpdatePass } from './Pages/UpdatePass.jsx'
 import { EditUser } from './Pages/EditUser.jsx'
 import { Administrators } from './Pages/Administrators.jsx'
+import { Category } from './Pages/Category.jsx'
 const router = createBrowserRouter([
   {
     path:"/",
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
   {
     path:"administrators",
     element: <Administrators/>,
+  },
+  {
+    path:"category",
+    element: <Category/>,
   },
 ])
 
