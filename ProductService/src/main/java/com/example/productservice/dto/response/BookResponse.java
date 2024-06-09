@@ -18,7 +18,7 @@ public class BookResponse {
     private int discount;
     private boolean flashSale;
     private boolean lock;
-    private String image;
+    private List<String> images;
     private String status;
 
 }

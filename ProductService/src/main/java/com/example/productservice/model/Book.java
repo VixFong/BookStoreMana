@@ -24,7 +24,7 @@ public class Book {
     private int discount;
     private boolean flashSale;
     private boolean lock;
-    private String image;
-    private String status;
+    private List<String> images;
+//    private String status;
 
 }

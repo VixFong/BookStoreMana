@@ -28,7 +28,7 @@ public interface BookMapper {
     @Mapping(source = "book.discount", target = "discount")
     @Mapping(source = "book.flashSale", target = "flashSale")
     @Mapping(source = "book.lock", target = "lock")
-    @Mapping(source = "book.image", target = "image")
+    @Mapping(source = "book.images", target = "images")
     @Mapping(source = "bookDetail.author", target = "author")
     @Mapping(source = "bookDetail.publisher", target = "publisher")
     @Mapping(source = "bookDetail.genre", target = "genre")
@@ -37,8 +37,8 @@ public interface BookMapper {
     BookInfoResponse toBookInfoResponse(Book book, BookDetail bookDetail);
 
     @Mapping(target = "bookId", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "image", ignore = true )
+//    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "images", ignore = true )
     void updateBookFromRequest(@MappingTarget Book book, UpdateBookRequest request);
 
     @Mapping(target = "bookDetailId", ignore = true)

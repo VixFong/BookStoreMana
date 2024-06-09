@@ -21,7 +21,7 @@ public class UpdateBookRequest {
     private int discount;
     private boolean flashSale;
     private boolean lock;
-    private MultipartFile file;
+    private List<MultipartFile> files;
 
     private String author;
     private String publisher;

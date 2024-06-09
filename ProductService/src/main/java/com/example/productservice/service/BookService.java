@@ -22,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,12 +50,18 @@ public class BookService {
         book.setBookId(id);
         bookDetail.setBookDetailId(id);
 
+//      Set lock
+        book.setLock(true);
+
+//      Set Flash Sale
+        book.setFlashSale(false);
+
         //Set Image
-        if(request.getFile() == null) {
-            book.setImage("https://res.cloudinary.com/dmdddwb1j/image/upload/v1717739669/books/xbamzlpkzsspmmkvjuda.jpg");
+        if(request.getFiles() == null) {
+            book.setImages(Collections.singletonList("https://res.cloudinary.com/dmdddwb1j/image/upload/v1717739669/books/xbamzlpkzsspmmkvjuda.jpg"));
         }
         else{
-            setImageIfHavingFile(book, request.getFile());
+            setImageIfHavingFiles(book, request.getFiles());
 //            var apiResponse = imageServiceClient.uploadImage(request.getFile(),"books");
 //
 //
@@ -77,17 +85,19 @@ public class BookService {
     }
 
 
-    private void setImageIfHavingFile(Book book, MultipartFile file){
-        var apiResponse = imageServiceClient.uploadImage(file,"books");
+    private void setImageIfHavingFiles(Book book, List<MultipartFile> files){
+        ApiResponse<List<ImageResponse>> apiResponse = imageServiceClient.uploadBookImages(files, "books");
 
-        System.out.println("set image");
-        // Check if the response is successful and not null
         if (apiResponse != null && apiResponse.getCode() == 100) {
-            var image = apiResponse.getData().getUrl();
-            // Process the images as needed, for example, store their URLs in the book details
-            book.setImage(image);
+            List<ImageResponse> images = apiResponse.getData();
+            if (images != null && !images.isEmpty()) {
+                // Collect all image URLs into a list
+                List<String> imageUrls = images.stream()
+                        .map(ImageResponse::getUrl)
+                        .collect(Collectors.toList());
+                book.setImages(imageUrls);
+            }
         } else {
-            // Handle the case where the image upload fails
             throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
         }
     }
@@ -106,9 +116,9 @@ public class BookService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
 
-        if(request.getFile() != null){
+        if(request.getFiles() != null){
 
-            setImageIfHavingFile(book, request.getFile());
+            setImageIfHavingFiles(book, request.getFiles());
         }
 
 

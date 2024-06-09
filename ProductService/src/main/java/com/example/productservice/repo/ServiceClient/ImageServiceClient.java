@@ -14,6 +14,6 @@ import java.util.List;
 
 @FeignClient(name = "ImageService", url = "http://localhost:8080", configuration = FeignConfig.class)
 public interface ImageServiceClient {
-    @PostMapping(value = "/images/upload", produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ImageResponse> uploadImage(@RequestPart("file") MultipartFile file, @RequestParam("folder") String folder);
+    @PostMapping(value = "/images/uploads", produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<List<ImageResponse>> uploadBookImages(@RequestPart("files") List<MultipartFile> files, @RequestParam("folder") String folder);
 }

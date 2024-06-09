@@ -49,9 +49,13 @@ public class ImageService {
             String imageUrl = uploadResult.get("url").toString();
 
 
-            String originalFileName = file.getOriginalFilename();
-            ImageDTO imageDTO = updateOrSaveImage(originalFileName, imageUrl);
-            imageDTOList.add(imageDTO);
+//            String originalFileName = file.getOriginalFilename();
+//            ImageDTO imageDTO = updateOrSaveImage(originalFileName, imageUrl);
+
+            Image image = new Image();
+            image.setName(file.getOriginalFilename());
+            image.setUrl(imageUrl);
+            imageDTOList.add(imageMapper.toImageDTO(image));
         }
 
         return imageDTOList;
