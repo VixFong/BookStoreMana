@@ -16,6 +16,12 @@ export const AddProd = () => {
     const [description, setDescription] = useState('');
 
     const [categoryOptions, setCategoryOptions] = useState([]);
+    const [publisherOptions, setPublisherOptions] = useState([])
+    const [authorOptions, setAuthorOptions] = useState([]);
+
+    const [selectedCategories, setSelectedCategories] = useState([]); 
+    const [selectedPublishers, setSelectedPublishers] = useState([]);
+    const [selectedAuthors, setSelectedAuthors] = useState([]);
 
     const token =  localStorage.getItem('authToken');
     useEffect(() => {
@@ -37,7 +43,43 @@ export const AddProd = () => {
             }
         };
 
+        const fetchPublishers = async () => {
+            try {
+                const response = await axios.get('/api/products/publishers', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const options = response.data.data.map(publisher => ({
+                    value: publisher.id,
+                    label: publisher.name
+                }));
+                setPublisherOptions(options); // Set publisher options
+            } catch (error) {
+                console.error('There was an error fetching the publishers!', error);
+            }
+        };
+
+        const fetchAuthors = async () => {
+            try {
+                const response = await axios.get('/api/products/authors', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const options = response.data.data.map(author => ({
+                    value: author.id,
+                    label: author.name
+                }));
+                setAuthorOptions(options); // Set author options
+            } catch (error) {
+                console.error('There was an error fetching the authors!', error);
+            }
+        };
+
         fetchCategories();
+        fetchPublishers();
+        fetchAuthors();
     }, []);    
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,6 +95,8 @@ export const AddProd = () => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('categories', category);
+        formData.append('publishers', selectedPublishers);
+        formData.append('authors', selectedAuthors);
         formData.append('price', price);
         formData.append('discount', discount);
         formData.append('description', description);
@@ -205,6 +249,30 @@ export const AddProd = () => {
                                 />
                             </Form.Group>
                         
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Publisher</Form.Label>
+                                <Select
+                                    options={publisherOptions}
+                                    isMulti
+                                    onChange={(selectedOptions) => setSelectedPublishers(selectedOptions.map(option => option.value))}
+                                    required
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Author</Form.Label>
+                                <Select
+                                    options={authorOptions}
+                                    isMulti
+                                    onChange={(selectedOptions) => setSelectedAuthors(selectedOptions.map(option => option.value))}
+                                    required
+                                />
+                            </Form.Group>
                         </Col>
                     </Row>
                     <Row>
