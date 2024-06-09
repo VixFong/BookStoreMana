@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Modal ,Button, Table, Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaCheck } from 'react-icons/fa';
 import axios from 'axios';
 
 export const CategoryManagement = () => {
@@ -15,6 +15,9 @@ export const CategoryManagement = () => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
+
+    const [editCategoryId, setEditCategoryId] = useState(null);
+    const [editCategoryName, setEditCategoryName] = useState(''); 
 
     const token =  localStorage.getItem('authToken');
     useEffect(() => {
@@ -70,10 +73,28 @@ export const CategoryManagement = () => {
         }
     };
 
-    const handleEdit = (id) => {
-        console.log(`Edit category with ID: ${id}`);
+    const handleEdit = (id, name) => {
+        setEditCategoryId(id);
+        setEditCategoryName(name);
     };
 
+    const handleSaveEdit = async (id) => {
+        try {
+            const updatedCategory = { category: editCategoryName };
+            const response = await axios.put(`/api/products/categories/${id}`, updatedCategory, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            fetchCategories();
+            setEditCategoryId(null);
+            setShowToast(true);
+        } catch (error) {
+            setError(error.response?.data?.message);
+            setShowErrorModal(true);
+        }
+    };
 
     
     const handleDelete = async() => {
@@ -179,16 +200,36 @@ export const CategoryManagement = () => {
                         {categories.map((category, index) => (
                             <tr key={category.id}>
                                 <td>{index + 1}</td>
-                                <td>{category.category}</td>
+                                <td>
+                                    {editCategoryId === category.id ? (
+                                        <input
+                                            type="text"
+                                            value={editCategoryName}
+                                            onChange={(e) => setEditCategoryName(e.target.value)}
+                                        />
+                                    ) : (
+                                        category.category
+                                    )}
+                                </td>
                                 <td>{category.productsCount}</td>
                                 <td>
-                                    <Button
-                                        variant="primary"
-                                        className="me-2"
-                                        onClick={() => handleEdit(category.id)}
-                                    >
-                                        <FaEdit />
-                                    </Button>
+                                    {editCategoryId === category.id ? ( // Conditional rendering for save button
+                                        <Button
+                                            variant="success"
+                                            className="me-2"
+                                            onClick={() => handleSaveEdit(category.id)}
+                                        >
+                                            <FaCheck />
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="primary"
+                                            className="me-2"
+                                            onClick={() => handleEdit(category.id, category.category)}
+                                        >
+                                            <FaEdit />
+                                        </Button>
+                                    )}
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteClick(category.id)}
@@ -206,7 +247,7 @@ export const CategoryManagement = () => {
                     <Toast.Header>
                         <strong className="me-auto">Notification</strong>
                     </Toast.Header>
-                    <Toast.Body>Adding successfully</Toast.Body>
+                    <Toast.Body>{editCategoryId === null ? 'Adding successfully' : 'Edit successfully'}</Toast.Body>
                 </Toast>
             </ToastContainer>
 
