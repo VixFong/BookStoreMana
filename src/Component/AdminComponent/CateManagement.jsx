@@ -1,37 +1,114 @@
-import React, { useState } from 'react';
-import { Button, Table, Toast, ToastContainer } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import {Modal ,Button, Table, Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import axios from 'axios';
 
 export const CategoryManagement = () => {
-    const [categories, setCategories] = useState([
-        { id: 1, name: 'Science', productsCount: 0 },
-        { id: 2, name: 'Romance', productsCount: 0 },
-        { id: 3, name: 'Business & Money', productsCount: 5 },
-        { id: 4, name: 'Biography', productsCount: 9 },
-    ]);
+    const [categories, setCategories] = useState([]);
+    const [error, setError] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const [showAddCategory, setShowAddCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showToast, setShowToast] = useState(false);
 
-    const handleAddCategory = () => {
-        const newCategory = {
-            id: categories.length + 1,
-            name: newCategoryName,
-            productsCount: 0,
-        };
-        setCategories([...categories, newCategory]);
-        setShowAddCategory(false);
-        setNewCategoryName('');
-        setShowToast(true);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false); 
+    const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
+
+    const token =  localStorage.getItem('authToken');
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get('/api/products/categories', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setCategories(response.data.data); 
+            console.log(response.data.data)
+        } catch (error) {
+            // console.error('Error fetching categories:', error);
+            setError(error.response?.data?.message);
+            setShowErrorModal(true);
+        }
+    };
+
+
+    const handleAddCategory = async() => {
+        try{
+            const newCategory = {
+                
+                category: newCategoryName,
+                // productsCount: 0,
+            };
+            const response = await axios.post("/api/products/categories", newCategory,{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+        
+
+            fetchCategories();
+            setShowAddCategory(false);
+            setNewCategoryName('');
+            setShowToast(true);
+            
+
+            // setCategories([...categories, newCategory]);
+            // setShowAddCategory(false);
+            // setNewCategoryName('');
+            // setShowToast(true);
+        }
+        catch(error){
+            // console.error('Error adding category:', error);
+            setError(error.response?.data?.message)
+            setShowErrorModal(true);
+        }
     };
 
     const handleEdit = (id) => {
         console.log(`Edit category with ID: ${id}`);
     };
 
-    const handleDelete = (id) => {
-        console.log(`Delete category with ID: ${id}`);
+
+    
+    const handleDelete = async() => {
+        try {
+            const response =await axios.delete(`/api/products/categories/${categoryIdToDelete}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            
+                
+            fetchCategories();
+            setShowDeleteModal(false);
+            // handleCloseDeleteModal();
+
+            
+        } catch (error) {
+            // console.error('Error deleting category:', error);
+            setError(error.response?.data?.message)
+            setShowErrorModal(true);
+        }
+    };
+
+    const handleDeleteClick = (id) => {
+        setCategoryIdToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false); 
+        setUserToDelete(null);
+    };
+
+    const handleCloseErrorModal = () => {
+        setShowErrorModal(false);
     };
 
     return (
@@ -102,7 +179,7 @@ export const CategoryManagement = () => {
                         {categories.map((category, index) => (
                             <tr key={category.id}>
                                 <td>{index + 1}</td>
-                                <td>{category.name}</td>
+                                <td>{category.category}</td>
                                 <td>{category.productsCount}</td>
                                 <td>
                                     <Button
@@ -114,7 +191,7 @@ export const CategoryManagement = () => {
                                     </Button>
                                     <Button
                                         variant="danger"
-                                        onClick={() => handleDelete(category.id)}
+                                        onClick={() => handleDeleteClick(category.id)}
                                     >
                                         <FaTrashAlt />
                                     </Button>
@@ -132,6 +209,37 @@ export const CategoryManagement = () => {
                     <Toast.Body>Adding successfully</Toast.Body>
                 </Toast>
             </ToastContainer>
+
+            <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
+                    <Modal.Body className="text-center">
+                        <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </div>
+                        <h4>Error</h4>
+                        <p>{error}</p>
+                        <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
+                    </Modal.Body>
+                </Modal>
+
+
+            <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this category?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

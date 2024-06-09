@@ -50,7 +50,7 @@ export const Sidebar = () => {
                 console.error('Failed to log out');
             }
         } catch (error) {
-            console.error('An error occurred during logout', error);
+            // console.error('An error occurred during logout', error);
         }
     };
 
@@ -74,7 +74,8 @@ export const Sidebar = () => {
                     setRoles(response.data.data.roles.map(role => role.name));
                 }
             } catch (error) {
-                console.error('Error fetching user email:', error);
+                
+                // console.error('Error fetching user email:', error);
             }
         };
 

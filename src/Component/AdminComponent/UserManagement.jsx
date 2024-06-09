@@ -31,7 +31,7 @@ export const UserManagement = () => {
     }, [page, size, searchTerm]);
 
     const fetchUsers = async (page, size, keyword) => {
-        console.log(keyword)
+        // console.log(keyword)
         try {
             const response = await axios.get('/api/identity/users/search', {
                 params: { page, size, keyword },
@@ -40,7 +40,7 @@ export const UserManagement = () => {
                 }
             });
             
-            console.log(response.data.data)
+            // console.log(response.data.data)
             setUsers(response.data.data.content);
             setTotalPages(response.data.data.totalPages);
         } catch (error) {
@@ -74,10 +74,10 @@ export const UserManagement = () => {
             await toggleUserLock(userToToggleLock.id, !userToToggleLock.lock);
             setShowLockModal(false);
         } catch (error) {
-            console.error('Error toggling user lock:', error);
+            // console.error('Error toggling user lock:', error);
             setError(error.response?.data?.message);
 
-            // Handle error
+           
         }
     };
 
