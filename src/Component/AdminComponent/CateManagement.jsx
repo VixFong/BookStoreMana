@@ -141,8 +141,8 @@ export const CategoryManagement = () => {
                     vertical-align: middle;
                 }
                 .category-table th {
-                    background-color: #007bff;
-                    color: white;
+                    background-color: #B8B8B8;
+                    color: black;
                     text-align: center;
                 }
                 .category-table td {
@@ -165,7 +165,7 @@ export const CategoryManagement = () => {
                 }
                 `}
             </style>
-            <h4>Category Management</h4>
+            <h4>Category</h4>
             <div className="mb-3">
                 <Button variant="danger" onClick={() => setShowAddCategory(!showAddCategory)}>
                     Add Category +
@@ -187,7 +187,7 @@ export const CategoryManagement = () => {
                 </div>
             )}
             <div className="table-responsive">
-                <Table striped bordered hover className="category-table w-100">
+                <Table bordered hover className="category-table w-100">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -207,11 +207,11 @@ export const CategoryManagement = () => {
                                             value={editCategoryName}
                                             onChange={(e) => setEditCategoryName(e.target.value)}
                                         />
-                                    ) : (
-                                        category.category
+                                        ) : (
+                                            category.category
                                     )}
                                 </td>
-                                <td>{category.productsCount}</td>
+                                <td>{category.bookCount}</td>
                                 <td>
                                     {editCategoryId === category.id ? ( // Conditional rendering for save button
                                         <Button
@@ -223,18 +223,22 @@ export const CategoryManagement = () => {
                                         </Button>
                                     ) : (
                                         <Button
-                                            variant="primary"
+                                            variant="warning"
                                             className="me-2"
                                             onClick={() => handleEdit(category.id, category.category)}
                                         >
-                                            <FaEdit />
+                                        <i className="fas fa-edit"></i>
+
+                                            {/* <FaEdit /> */}
                                         </Button>
                                     )}
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteClick(category.id)}
                                     >
-                                        <FaTrashAlt />
+                                        <i className="fas fa-trash-alt"></i>
+
+                                        {/* <FaTrashAlt /> */}
                                     </Button>
                                 </td>
                             </tr>
@@ -247,7 +251,7 @@ export const CategoryManagement = () => {
                     <Toast.Header>
                         <strong className="me-auto">Notification</strong>
                     </Toast.Header>
-                    <Toast.Body>{editCategoryId === null ? 'Adding successfully' : 'Edit successfully'}</Toast.Body>
+                    <Toast.Body>{editCategoryId === null ? 'Edit successfully' : 'Edit successfully'}</Toast.Body>
                 </Toast>
             </ToastContainer>
 
