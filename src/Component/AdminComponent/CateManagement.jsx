@@ -187,7 +187,7 @@ export const CategoryManagement = () => {
                 </div>
             )}
             <div className="table-responsive">
-                <Table striped bordered hover className="category-table w-100">
+                <Table bordered hover className="category-table w-100">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -211,7 +211,7 @@ export const CategoryManagement = () => {
                                         category.category
                                     )}
                                 </td>
-                                <td>{category.productsCount}</td>
+                                <td>{category.bookCount}</td>
                                 <td>
                                     {editCategoryId === category.id ? ( // Conditional rendering for save button
                                         <Button
@@ -247,7 +247,7 @@ export const CategoryManagement = () => {
                     <Toast.Header>
                         <strong className="me-auto">Notification</strong>
                     </Toast.Header>
-                    <Toast.Body>{editCategoryId === null ? 'Adding successfully' : 'Edit successfully'}</Toast.Body>
+                    <Toast.Body>{editCategoryId === null ? 'Edit successfully' : 'Edit successfully'}</Toast.Body>
                 </Toast>
             </ToastContainer>
 

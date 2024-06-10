@@ -49,7 +49,7 @@ export const UserManagement = () => {
     };
 
     const toggleUserLock = async (userId, isLock) => {
-        const token = localStorage.getItem('authToken');
+       
         try {
             const response = await axios.put(`/api/identity/users/${userId}/lock`, null, {
                 params: { isLock },
@@ -119,7 +119,7 @@ export const UserManagement = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        const token = localStorage.getItem('authToken');
+        
         try {
             await axios.delete(`/api/identity/users/${userToDelete.id}`, {
                 headers: {

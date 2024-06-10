@@ -157,15 +157,33 @@ export const AddProd = () => {
                     align-items: center;
                     justify-content: center;
                     padding: 0;
-                    z-index: 1
+                    
                 }
+
+                // .delete-button {
+                //    position: absolute;
+                //     top: 0;
+                //     right: 0;
+                //     background-color: red; /* Màu đỏ */
+                //     border: none;
+                //     cursor: pointer;
+                //     border-radius: 50%;
+                //     width: 20px;
+                //     height: 20px;
+                //     display: flex;
+                //     align-items: center;
+                //     justify-content: center;
+                //     padding: 0;
+                //     z-index: 4; 
+                // }
                 .delete-button svg {
                     width: 12px;
                     height: 12px;
+                     
                 }
                 .delete-button {
-                    margin-top: 32px;
-                    margin-left: 10px;
+                    // margin-top: 32px;
+                    // margin-left: 10px;
                 }
                 `}
             </style>

@@ -25,11 +25,12 @@ export const AuthorManagement = () => {
 
     const fetchAuthors = async () => {
         try {
-            const response = await axios.get('/api/authors', {
+            const response = await axios.get('/api/products/authors', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log(response.data.data)
             setAuthors(response.data.data);
         } catch (error) {
             setError(error.response?.data?.message);
@@ -39,8 +40,8 @@ export const AuthorManagement = () => {
 
     const handleAddAuthor = async () => {
         try {
-            const newAuthor = { name: newAuthorName };
-            await axios.post('/api/authors', newAuthor, {
+            const newAuthor = { authorName: newAuthorName };
+            await axios.post('/api/products/authors', newAuthor, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -63,7 +64,7 @@ export const AuthorManagement = () => {
 
     const handleSaveEdit = async (id) => {
         try {
-            await axios.put(`/api/authors/${id}`, { name: editedName }, {
+            await axios.put(`/api/products/authors/${id}`, { authorName: editedName }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -86,7 +87,7 @@ export const AuthorManagement = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`/api/authors/${authorIdToDelete}`, {
+            await axios.delete(`/api/products/authors/${authorIdToDelete}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -185,12 +186,16 @@ export const AuthorManagement = () => {
                                                 value={editedName}
                                                 onChange={(e) => setEditedName(e.target.value)}
                                             />
-                                            <Button variant="success" className="ms-2" onClick={() => handleSaveEdit(author.id)}>
+                                            <Button 
+                                                variant="success" 
+                                                className="ms-2" 
+                                                onClick={() => handleSaveEdit(author.id)}
+                                            >
                                                 <FaCheck />
                                             </Button>
                                         </>
                                     ) : (
-                                        author.name
+                                        author.authorName
                                     )}
                                 </td>
                                 <td>{author.booksPublished}</td>
@@ -198,7 +203,7 @@ export const AuthorManagement = () => {
                                     <Button
                                         variant="primary"
                                         className="me-2"
-                                        onClick={() => handleEdit(author.id, author.name)}
+                                        onClick={() => handleEdit(author.id, author.authorName)}
                                     >
                                         <FaEdit />
                                     </Button>
