@@ -315,7 +315,7 @@ export const ProductManagement = () => {
                                         onClick={() => handleEdit(product.id)}
                                         
                                     >
-                                        <i className="fas fa-edit"></i>
+                                        <Link to='/editproduct'><i className="fas fa-edit"></i></Link>
                                     {/* <FaEdit /> */}
                                     </Button>
                                     <Button
