@@ -20,7 +20,7 @@ export const CategoryManagement = () => {
     const [editCategoryName, setEditCategoryName] = useState(''); 
 
     const token =  localStorage.getItem('authToken');
-    useEffect(() => {
+    useEffect(() => {   
         fetchCategories();
     }, []);
 

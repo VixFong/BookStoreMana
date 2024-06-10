@@ -1,9 +1,45 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Login } from './Login';
+import { Cart } from './Cart';
 
 export const Heading = () => {
     const [showLogin, setShowLogin] = useState(false);
+    const [showCart, setShowCart] = useState(false);
+    const [cartItems, setCartItems] = useState([
+        {
+            image: 'https://via.placeholder.com/100',
+            category: 'MYSTERY, THRILLER & SUSPENSE',
+            title: 'Dark in Death: An Eve Dallas Novel (In Death, Book 46)',
+            author: 'J. D. Robb',
+            price: 14.20,
+            quantity: 2
+        },
+        {
+            image: 'https://via.placeholder.com/100',
+            category: 'MYSTERY, THRILLER & SUSPENSE',
+            title: 'Dark in Death: An Eve Dallas Novel (In Death, Book 46)',
+            author: 'J. D. Robb',
+            price: 14.20,
+            quantity: 2
+        },
+        {
+            image: 'https://via.placeholder.com/100',
+            category: 'MYSTERY, THRILLER & SUSPENSE',
+            title: 'Dark in Death: An Eve Dallas Novel (In Death, Book 46)',
+            author: 'J. D. Robb',
+            price: 14.20,
+            quantity: 2
+        },
+        {
+            image: 'https://via.placeholder.com/100',
+            category: 'The Last Sister',
+            title: 'Dark in Death: An Eve Dallas Novel (In Death, Book 46)',
+            author: 'J. D. Robb',
+            price: 14.20,
+            quantity: 1
+        }
+    ]);
 
     const handleLoginClick = () => {
         setShowLogin(true);
@@ -11,6 +47,21 @@ export const Heading = () => {
 
     const handleCloseLogin = () => {
         setShowLogin(false);
+    };
+
+    const toggleCart = () => {
+        setShowCart(!showCart);
+    };
+
+    const handleRemove = (index) => {
+        setCartItems(cartItems.filter((_, i) => i !== index));
+    };
+
+    const handleQuantityChange = (index, quantity) => {
+        const updatedCartItems = cartItems.map((item, i) =>
+            i === index ? { ...item, quantity: parseInt(quantity, 10) } : item
+        );
+        setCartItems(updatedCartItems);
     };
 
     return (
@@ -43,15 +94,19 @@ export const Heading = () => {
                             <button className="btn btn-primary" type="button">Search</button>
                         </form>
                         <button className="btn btn-outline-light ms-2 me-2" onClick={handleLoginClick}>Login</button>
-                        <p className="text-white mt-3" href="javascript:void(0)">
+                        <p className="text-white mt-3" onClick={toggleCart} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cart3" viewBox="0 0 16 16">
                                 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                             </svg>
+                            <span className="position-fixed w-10  translate-middle badge rounded-pill bg-danger" style={{ top: '20px', left: '99%', transform: 'translate(-50%, -50%)' }}>
+                                {cartItems.length}
+                            </span>
                         </p>
                     </div>
                 </div>
             </nav>
             {showLogin && <Login onClose={handleCloseLogin} />}
+            <Cart show={showCart} onClose={toggleCart} cartItems={cartItems} handleRemove={handleRemove} handleQuantityChange={handleQuantityChange}/>
         </div>
     );
 };
