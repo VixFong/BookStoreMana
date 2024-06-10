@@ -141,8 +141,8 @@ export const CategoryManagement = () => {
                     vertical-align: middle;
                 }
                 .category-table th {
-                    background-color: #007bff;
-                    color: white;
+                    background-color: #B8B8B8;
+                    color: black;
                     text-align: center;
                 }
                 .category-table td {
@@ -165,7 +165,7 @@ export const CategoryManagement = () => {
                 }
                 `}
             </style>
-            <h4>Category Management</h4>
+            <h4>Category</h4>
             <div className="mb-3">
                 <Button variant="danger" onClick={() => setShowAddCategory(!showAddCategory)}>
                     Add Category +
@@ -207,8 +207,8 @@ export const CategoryManagement = () => {
                                             value={editCategoryName}
                                             onChange={(e) => setEditCategoryName(e.target.value)}
                                         />
-                                    ) : (
-                                        category.category
+                                        ) : (
+                                            category.category
                                     )}
                                 </td>
                                 <td>{category.bookCount}</td>
@@ -223,18 +223,22 @@ export const CategoryManagement = () => {
                                         </Button>
                                     ) : (
                                         <Button
-                                            variant="primary"
+                                            variant="warning"
                                             className="me-2"
                                             onClick={() => handleEdit(category.id, category.category)}
                                         >
-                                            <FaEdit />
+                                        <i className="fas fa-edit"></i>
+
+                                            {/* <FaEdit /> */}
                                         </Button>
                                     )}
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteClick(category.id)}
                                     >
-                                        <FaTrashAlt />
+                                        <i className="fas fa-trash-alt"></i>
+
+                                        {/* <FaTrashAlt /> */}
                                     </Button>
                                 </td>
                             </tr>

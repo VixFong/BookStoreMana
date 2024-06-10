@@ -119,8 +119,8 @@ export const AuthorManagement = () => {
                     vertical-align: middle;
                 }
                 .author-table th {
-                    background-color: #007bff;
-                    color: white;
+                    background-color:#B8B8B8;
+                    color: black;
                     text-align: center;
                 }
                 .author-table td {
@@ -143,7 +143,7 @@ export const AuthorManagement = () => {
                 }
                 `}
             </style>
-            <h4>Author Management</h4>
+            <h4>Author</h4>
             <div className="mb-3">
                 <Button variant="danger" onClick={() => setShowAddAuthor(!showAddAuthor)}>
                     Add Author +
@@ -165,7 +165,7 @@ export const AuthorManagement = () => {
                 </div>
             )}
             <div className="table-responsive">
-                <Table striped bordered hover className="author-table w-100">
+                <Table bordered hover className="author-table w-100">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -201,17 +201,21 @@ export const AuthorManagement = () => {
                                 <td>{author.booksPublished}</td>
                                 <td>
                                     <Button
-                                        variant="primary"
+                                        variant="warning"
                                         className="me-2"
                                         onClick={() => handleEdit(author.id, author.authorName)}
                                     >
-                                        <FaEdit />
+                                        <i className="fas fa-edit"></i>
+
+                                        {/* <FaEdit /> */}
                                     </Button>
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteClick(author.id)}
                                     >
-                                        <FaTrashAlt />
+                                        <i className="fas fa-trash-alt"></i>
+
+                                        {/* <FaTrashAlt /> */}
                                     </Button>
                                 </td>
                             </tr>

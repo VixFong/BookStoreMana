@@ -201,8 +201,9 @@ export const ProductManagement = () => {
                         vertical-align: middle;
                     }
                     .product-table th {
-                        background-color: #007bff;
-                        color: white;
+                        background-color:#B8B8B8;
+                        color: black;
+
                         text-align: center;
                     }
                     .product-table td {
@@ -276,14 +277,13 @@ export const ProductManagement = () => {
                             <tr key={product.bookId}>
                                 <td><img src={product.images[0]} alt={product.name} className="img-fluid"  style={{ width: '100px', height: '100px' }}/></td>
                                 <td>{product.title}</td>
-                                {/* <td>{product.categories}</td> */}
-                                {/* <td>{product.price}</td> */}
+                        
                                 <td>
-                                {product.flashSale ? (
+                                    {product.flashSale ? (
                                         <div>
                                             <span style={{ textDecoration: 'line-through' }}>{product.price}</span>
                                             <br />
-                                            <span style={{ color: 'red' }}>{product.priceDiscount}</span>
+                                            <span style={{ color: 'red' }}>{product.priceDiscount.toFixed(2)}</span>
                                         </div>
                                     ) : (
                                         product.price
