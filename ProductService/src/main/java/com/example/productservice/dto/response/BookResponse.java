@@ -14,11 +14,13 @@ import java.util.Set;
 public class BookResponse {
     private String bookId;
     private String title;
-    private Set<String> categories;
     private int discount;
     private boolean flashSale;
     private boolean lock;
     private List<String> images;
-    private String status;
+    private double price;
+    private double priceDiscount;
+
+
 
 }

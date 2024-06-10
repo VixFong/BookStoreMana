@@ -14,6 +14,7 @@ import com.example.productservice.model.BookDetail;
 import com.example.productservice.repo.BookDetailRepository;
 import com.example.productservice.repo.BookRepository;
 import com.example.productservice.repo.ServiceClient.ImageServiceClient;
+import com.example.productservice.service.Category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,9 @@ public class BookService {
 
     @Autowired
     private BookDetailRepository bookDetailRepository;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private ImageServiceClient imageServiceClient;
@@ -62,25 +67,17 @@ public class BookService {
         }
         else{
             setImageIfHavingFiles(book, request.getFiles());
-//            var apiResponse = imageServiceClient.uploadImage(request.getFile(),"books");
-//
-//
-//            // Check if the response is successful and not null
-//            if (apiResponse != null && apiResponse.getCode() == 100) {
-//                var image = apiResponse.getData().getUrl();
-//                // Process the images as needed, for example, store their URLs in the book details
-//                book.setImage(image);
-//            } else {
-//                // Handle the case where the image upload fails
-//                throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
-//            }
         }
 
+//      Set price after discount
+        var discountPrice = request.getPrice() - (request.getPrice() * request.getDiscount() / 100);
+        book.setPriceDiscount(discountPrice);
 
         bookRepository.save(book);
         bookDetailRepository.save(bookDetail);
 
 
+        updateBookCounts(bookDetail.getCategories());
         return bookMapper.toBookInfoResponse(book, bookDetail);
     }
 
@@ -105,7 +102,7 @@ public class BookService {
     public Page<BookResponse> searchBook(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
         Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
-        return bookPage.map(bookMapper::toBookResponse);
+        return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
     }
 
     public BookInfoResponse update(String id, UpdateBookRequest request){
@@ -141,6 +138,20 @@ public class BookService {
                 .orElseThrow(()-> new AppException(ErrorCode.BOOK_NOT_FOUND));
         book.setLock(isLock);
         System.out.println("lock: "+isLock);
+        bookRepository.save(book);
+    }
+
+    private void updateBookCounts(Set<String> categories) {
+        for (String category : categories) {
+            int count = bookDetailRepository.countByCategoriesContaining(category);
+            categoryService.updateBookCount(category, count);
+        }
+    }
+
+    public void toggleFlashSale(String id, boolean flashSale) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        book.setFlashSale(flashSale);
         bookRepository.save(book);
     }
 }

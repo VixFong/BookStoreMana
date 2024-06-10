@@ -20,11 +20,13 @@ public class Book {
     @Id
     private String bookId;
     private String title;
-    private Set<String> categories;
     private int discount;
     private boolean flashSale;
     private boolean lock;
     private List<String> images;
+    private double price;
+    private double priceDiscount;
+
 //    private String status;
 
 }

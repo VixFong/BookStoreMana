@@ -7,6 +7,8 @@ import com.example.productservice.exception.ErrorCode;
 import com.example.productservice.mapper.CategoryMapper;
 import com.example.productservice.model.Author;
 import com.example.productservice.model.Category;
+import com.example.productservice.repo.BookDetailRepository;
+import com.example.productservice.repo.BookRepository;
 import com.example.productservice.repo.Category.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ import java.util.List;
 public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private BookDetailRepository bookDetailRepository;
 
     @Autowired
     public CategoryMapper categoryMapper;
@@ -46,6 +51,27 @@ public class CategoryService {
     }
 
     public void delete(String id){
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // Kiểm tra xem có sách nào chứa thông tin category đó không
+        boolean categoryUsed = bookDetailRepository.existsByCategoriesContains(category.getCategory());
+        if (categoryUsed) {
+            throw new AppException(ErrorCode.CATEGORY_CONTAINS_BOOKS);
+        }
+
+
         categoryRepository.deleteById(id);
+    }
+
+
+
+
+    public void updateBookCount(String categoryName, int bookCount) {
+        Category category = categoryRepository.findByCategory(categoryName)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        category.setBookCount(bookCount);
+        categoryRepository.save(category);
     }
 }

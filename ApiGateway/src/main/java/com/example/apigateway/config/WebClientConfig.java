@@ -25,7 +25,7 @@ public class WebClientConfig {
     @Bean
     CorsWebFilter corsWebFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://127.0.0.1:5000","http://127.0.0.1:3000"));
+        corsConfiguration.setAllowedOrigins(List.of("http://127.0.0.1:5000/","http://127.0.0.1:3000/"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
 

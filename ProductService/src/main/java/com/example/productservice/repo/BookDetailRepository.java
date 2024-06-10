@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookDetailRepository extends MongoRepository<BookDetail, String> {
+    boolean existsByCategoriesContains(String category);
+
+    Integer countByCategoriesContaining(String category);
 }

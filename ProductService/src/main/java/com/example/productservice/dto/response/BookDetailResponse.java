@@ -12,7 +12,9 @@ import java.util.Set;
 public class BookDetailResponse {
     private String author;
     private String publisher;
-    private Set<String> genre;
+//    private Set<String> genre;
+    private Set<String> categories;
+
     private String description;
-    private double price;
+
 }

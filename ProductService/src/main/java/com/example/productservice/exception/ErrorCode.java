@@ -19,6 +19,8 @@ public enum ErrorCode {
     GENRE_NOT_FOUND(205, "Genre not found", HttpStatus.NOT_FOUND),
     BOOK_EXISTED(205,"Book has existed", HttpStatus.BAD_REQUEST),
     BOOK_NOT_FOUND(206, "Book not found", HttpStatus.NOT_FOUND),
+    CATEGORY_CONTAINS_BOOKS(207,"Can not delete! Exist book have thís category.",HttpStatus.BAD_REQUEST),
+
 //
 //
 //    EMAIL_INVALID(203,"Invalid email",HttpStatus.BAD_REQUEST),

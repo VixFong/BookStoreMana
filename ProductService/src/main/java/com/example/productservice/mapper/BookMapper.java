@@ -13,10 +13,21 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface BookMapper {
+
     Book toBook(CreateBookRequest request);
 
+    @Mapping(target = "priceDiscount", ignore = true)
     BookResponse toBookResponse(Book book);
 
+    default BookResponse toBookResponseWithConditionalFields(Book book) {
+        BookResponse response = toBookResponse(book);
+        if (book.isFlashSale()) {
+            response.setPriceDiscount(book.getPriceDiscount());
+        } else {
+            response.setPriceDiscount(0);
+        }
+        return response;
+    }
 
     BookDetail toBookDetail(CreateBookRequest request);
 
@@ -24,16 +35,16 @@ public interface BookMapper {
 
     @Mapping(source = "book.bookId", target = "bookId")
     @Mapping(source = "book.title", target = "title")
-    @Mapping(source = "book.categories", target = "categories")
     @Mapping(source = "book.discount", target = "discount")
     @Mapping(source = "book.flashSale", target = "flashSale")
     @Mapping(source = "book.lock", target = "lock")
     @Mapping(source = "book.images", target = "images")
+    @Mapping(source = "book.price", target = "price")
     @Mapping(source = "bookDetail.author", target = "author")
     @Mapping(source = "bookDetail.publisher", target = "publisher")
-    @Mapping(source = "bookDetail.genre", target = "genre")
+//    @Mapping(source = "bookDetail.genre", target = "genre")
+    @Mapping(source = "bookDetail.categories", target = "categories")
     @Mapping(source = "bookDetail.description", target = "description")
-    @Mapping(source = "bookDetail.price", target = "price")
     BookInfoResponse toBookInfoResponse(Book book, BookDetail bookDetail);
 
     @Mapping(target = "bookId", ignore = true)

@@ -60,4 +60,14 @@ public class BookController {
                 .data(isLock ? "Book locked successfully" : "Book unlocked successfully")
                 .build();
     }
+
+
+    @PutMapping("/{id}/flashSale")
+    public ApiResponse<String> toggleFlashSale(@PathVariable String id, @RequestParam boolean flashSale) {
+        System.out.println("Flash sale" + flashSale);
+        bookService.toggleFlashSale(id, flashSale);
+        return ApiResponse.<String>builder()
+                .data(flashSale ? "User flash sale successfully" : "User unlocked successfully")
+                .build();
+    }
 }
