@@ -46,11 +46,11 @@ export const Sidebar = () => {
 
                 // Redirect to login page
                 navigate('/');
-            } else {
-                console.error('Failed to log out');
             }
         } catch (error) {
-            // console.error('An error occurred during logout', error);
+            // setError(error.response?.data?.message);
+            
+            console.error('An error occurred during logout', error);
         }
     };
 
@@ -91,7 +91,7 @@ export const Sidebar = () => {
                 <ul className="nav flex-column">
                     <li className="nav-item">
                         {/* {profilePicture && <img src={profilePicture} alt="Profile" className="rounded-circle me-2" style={{ width: '30px', height: '30px' }} />} */}
-                        <p className="mb-1"><img src={profilePicture} alt="Profile" className="rounded-circle me-2" style={{ width: '25px', height: '25px' }}/><Link to="/administrators">{fullName}</Link></p>
+                        <a className="nav-link mb-1"><img src={profilePicture} alt="Profile" className="rounded-circle me-2" style={{ width: '25px', height: '25px' }}/><Link to="/administrators" className='text-white '>{fullName}</Link></a>
                         <a className="nav-link text-white" href="#">Main Page</a>
 
                     </li>
@@ -153,13 +153,13 @@ export const Sidebar = () => {
                             </ul>
                         </div>
                     </li>
+                    <li className="nav-link text-white d-flex align-items-center" onClick={handleLogout}>
+                        <FaSignOutAlt className="me-2"/>Logout
+                    </li>
                 </ul>
             </div>
             <div className="p-3">
                 {/* <p className="mb-1">Hello, <Link to="/administrators">{email}</Link></p> */}
-                <a className="nav-link text-white d-flex align-items-center" onClick={handleLogout}>
-                    <FaSignOutAlt className="me-2" /> Log Out
-                </a>
             </div>
         </div>
     );
