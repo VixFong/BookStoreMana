@@ -186,13 +186,6 @@ export const AuthorManagement = () => {
                                                 value={editedName}
                                                 onChange={(e) => setEditedName(e.target.value)}
                                             />
-                                            <Button 
-                                                variant="success" 
-                                                className="ms-2" 
-                                                onClick={() => handleSaveEdit(author.id)}
-                                            >
-                                                <FaCheck />
-                                            </Button>
                                         </>
                                     ) : (
                                         author.authorName
@@ -200,6 +193,15 @@ export const AuthorManagement = () => {
                                 </td>
                                 <td>{author.booksPublished}</td>
                                 <td>
+                                    {editingAuthorId === author.id ? (
+                                    <Button 
+                                        variant="success" 
+                                        className="me-2" 
+                                        onClick={() => handleSaveEdit(author.id)}
+                                        >
+                                        <FaCheck />
+                                    </Button>
+                                    ):(
                                     <Button
                                         variant="warning"
                                         className="me-2"
@@ -209,6 +211,7 @@ export const AuthorManagement = () => {
 
                                         {/* <FaEdit /> */}
                                     </Button>
+                                    )}
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteClick(author.id)}

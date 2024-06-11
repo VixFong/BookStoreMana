@@ -85,7 +85,8 @@ export const Sidebar = () => {
     const isAdmin = roles.includes('Admin');
 
     return (
-        <div className="bg-dark text-white vh-100 ">
+        <div className="sidebar-container">
+        <div className="bg-dark text-white vh-100 d-flex flex-column justify-content-between">
             <div className="p-3">
                 <h4 className="text-center">BOOKSTORE</h4>
                 <ul className="nav flex-column">
@@ -162,6 +163,7 @@ export const Sidebar = () => {
                 {/* <p className="mb-1">Hello, <Link to="/administrators">{email}</Link></p> */}
             </div>
         </div>
+    </div>
     );
 };
 

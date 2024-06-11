@@ -243,7 +243,7 @@ export const ProductManagement = () => {
                 `}
             </style>
             <h4>Product Management</h4>
-            <div className="mb-3">
+            <div className="d-flex justify-content-between mb-3">
                 <Button variant="danger" onClick={() => setShowAddProduct(!showAddProduct)}>
                     <Link to='/addproduct' className='text-light'>
                     Add New Product +
@@ -315,7 +315,7 @@ export const ProductManagement = () => {
                                         onClick={() => handleEdit(product.id)}
                                         
                                     >
-                                        <i className="fas fa-edit"></i>
+                                        <Link to='/editproduct'><i className="fas fa-edit"></i></Link>
                                     {/* <FaEdit /> */}
                                     </Button>
                                     <Button
