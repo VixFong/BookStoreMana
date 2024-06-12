@@ -11,12 +11,14 @@ export const AddProd = () => {
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
     const [category, setCategory] = useState('');
+
     // const [author, setAuthor] = useState('');
 
     const [discount, setDiscount] = useState('');
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-    const [variants, setVariants] = useState([{ color: '', size: '', quantity: '' }]);
+    const [customFields, setCustomFields] = useState([{ key: '', value: '' }]);
+
     const [description, setDescription] = useState('');
 
     const [categoryOptions, setCategoryOptions] = useState([]);
@@ -105,26 +107,26 @@ export const AddProd = () => {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log({
-        //     title,
-        //     price,
-        //     category,
-        //     discount,
-        //     images,
-        //     variants,
-        //     description,
-        // });
         const formData = new FormData();
         formData.append('title', title);
         formData.append('categories', category);
         formData.append('publishers', selectedPublishers);
-        formData.append('authors', selectedAuthors);
+        formData.append('author', selectedAuthors);
         formData.append('price', price);
         formData.append('discount', discount);
         formData.append('description', description);
         images.forEach((image) => {
             formData.append('files', image);
         });
+        // Adding custom fields
+        const customFieldsObject = customFields.reduce((acc, field) => {
+            if (field.key && field.value) {
+                acc[field.key] = field.value;
+            }
+            return acc;
+        }, {});
+        formData.append('info', JSON.stringify(customFieldsObject));
+        console.log(customFields)
         try {
             setShowModal(true); 
             const response = await axios.post('api/products/books', formData, {
@@ -179,19 +181,19 @@ export const AddProd = () => {
         setImagePreviews(newImagePreviews);
     };
 
-    const handleVariantChange = (index, field, value) => {
-        const newVariants = [...variants];
-        newVariants[index][field] = value;
-        setVariants(newVariants);
+    const handleCustomFieldChange = (index, field, value) => {
+        const newCustomFields = [...customFields];
+        newCustomFields[index][field] = value;
+        setCustomFields(newCustomFields);
     };
 
-    const handleAddVariant = () => {
-        setVariants([...variants, { color: '', size: '', quantity: '' }]);
+    const handleAddCustomField = () => {
+        setCustomFields([...customFields, { key: '', value: '' }]);
     };
 
-    const handleDeleteVariant = (index) => {
-        const newVariants = variants.filter((_, i) => i !== index);
-        setVariants(newVariants);
+    const handleDeleteCustomField = (index) => {
+        const newCustomFields = customFields.filter((_, i) => i !== index);
+        setCustomFields(newCustomFields);
     };
 
     return (
@@ -247,22 +249,7 @@ export const AddProd = () => {
                     
                 }
 
-                // .delete-button {
-                //    position: absolute;
-                //     top: 0;
-                //     right: 0;
-                //     background-color: red; /* Màu đỏ */
-                //     border: none;
-                //     cursor: pointer;
-                //     border-radius: 50%;
-                //     width: 20px;
-                //     height: 20px;
-                //     display: flex;
-                //     align-items: center;
-                //     justify-content: center;
-                //     padding: 0;
-                //     z-index: 4; 
-                // }
+        
                 .delete-button svg {
                     width: 12px;
                     height: 12px;
@@ -290,21 +277,13 @@ export const AddProd = () => {
                             </Form.Group>
                         </Col>
                         <Col md={6}>
-                            {/* <Form.Group className="mb-3">
-                                <Form.Label>Category</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    required
-                                />
-                            </Form.Group> */}
+                            
                             <Form.Group className="mb-3">
                                 <Form.Label>Category</Form.Label>
                                 <Select
                                     options={categoryOptions}
                                     isMulti
-                                    onChange={(selectedOptions) => setCategory(selectedOptions.map(option => option.label))}
+                                    onChange={(selectedOptions) => setCategory(selectedOptions.map(option => option.value))}
                                     required
                                 
                                 />
@@ -329,8 +308,10 @@ export const AddProd = () => {
                                 <Form.Label>Author</Form.Label>
                                 <Select
                                     options={authorOptions}
-                                    isMulti
-                                    onChange={(selectedOptions) => setSelectedAuthors(selectedOptions.map(option => option.value))}
+                                    onChange={(selectedOption) => setSelectedAuthors(selectedOption ? selectedOption.value : null)}
+                                    
+                                    // isMulti
+                                    // onChange={(selectedOptions) => setSelectedAuthors(selectedOptions.map(option => option.value))}
                                     required
                                 />
                             </Form.Group>
@@ -352,7 +333,7 @@ export const AddProd = () => {
                             <Form.Group className="mb-3">
                                 <Form.Label>Discount</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    type="number"
                                     value={discount}
                                     onChange={(e) => setDiscount(e.target.value)}
                                 />
@@ -384,7 +365,7 @@ export const AddProd = () => {
                                 </div>
                             </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        {/* <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Tùy Chọn Sản Phẩm</Form.Label>
                                 <Form.Control as="select">
@@ -394,44 +375,49 @@ export const AddProd = () => {
                                     <option value="Option 3">Option 3</option>
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                     </Row>
-                    {variants.map((variant, index) => (
-                        <Row key={index}>
-                            <Col md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Book Format</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={variant.color}
-                                        onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>In-Stock</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        value={variant.quantity}
-                                        onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={1} className="d-flex align-items-center">
-                                <Button
-                                    variant="danger"
-                                    className="delete-button"
-                                    onClick={() => handleDeleteVariant(index)}
-                                >
-                                    <FaTimes />
-                                </Button>
-                            </Col>
-                        </Row>
-                    ))}
-                    <Button variant="danger" className="mb-3" onClick={handleAddVariant}>
-                        More +
-                    </Button>
+                    <Row>
+                    <Col md={12}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Custom Fields</Form.Label>
+                            {customFields.map((field, index) => (
+                                <div key={index} style={{ marginBottom: '10px' }}>
+                                    <Row>
+                                        <Col md={5}>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Key"
+                                                value={field.key}
+                                                onChange={(e) => handleCustomFieldChange(index, 'key', e.target.value)}
+                                            />
+                                        </Col>
+                                        <Col md={5}>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Value"
+                                                value={field.value}
+                                                onChange={(e) => handleCustomFieldChange(index, 'value', e.target.value)}
+                                            />
+                                        </Col>
+                                        <Col md={2}>
+                                            <Button variant="danger" onClick={() => handleDeleteCustomField(index)}>
+                                            <i className="fas fa-trash-alt"></i>
+
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            ))}
+                            <Button variant="secondary" onClick={handleAddCustomField}>
+                                More
+                            </Button>
+                        </Form.Group>
+                    </Col>
+                    </Row>
+                    {/* <Button variant="danger" className="mb-3" onClick={handleAddVariant}> */}
+                        {/* More + */}
+                    {/* </Button> */}
                     <Form.Group className="mb-3">
                         <Form.Label>Description</Form.Label>
                         <Form.Control

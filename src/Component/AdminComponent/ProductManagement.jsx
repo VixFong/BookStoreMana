@@ -32,12 +32,30 @@ export const ProductManagement = () => {
     const navigate = useNavigate();
     useEffect(() => {
         if(!token){
+            
             navigate('/');
+        
         }
+        // checkToken(token)
         fetchBooks(page, size, search);
 
-    }, [page, size, search]);
+    }, [page, size, search, token]);
 
+    const checkToken = async(token) =>{
+        try {
+            const response = await axios.post('api/identity/auth/introspect', {
+                token : token
+            })
+
+            const isValid = response.data.data.valid;
+            if(!isValid){
+                console.log("aaaaaa")
+                navigate('/');        
+            }
+        } catch (error) {
+            setError(error.response?.data?.message);
+        }
+    }
 
     const fetchBooks = async(page,size,keyword) => {
         try {
@@ -47,7 +65,7 @@ export const ProductManagement = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            // console.log(response.data.data)
+            console.log(response.data.data)
             setProducts(response.data.data.content);
             setTotalPages(response.data.data.totalPages);
 
@@ -66,10 +84,10 @@ export const ProductManagement = () => {
     const handlePageChange = (newPage) => {
         setPage(newPage);
     };
-    const handleEdit = (id) => {
-        // Handle edit logic
-        // console.log(`Edit product with ID: ${id}`);
-    };
+    // const handleEdit = (id) => {
+    //     // Handle edit logic
+    //     // console.log(`Edit product with ID: ${id}`);
+    // };
 
     const handleDeleteConfirm = async () => {
         const token = localStorage.getItem('authToken');
@@ -295,7 +313,7 @@ export const ProductManagement = () => {
                                     <Form.Check
                                         // className='form-check-input'
                                         type="switch"
-                                        id={`flash-sale-${product.id}`}
+                                        // id={`flash-sale-${product.id}`}
                                         checked={product.flashSale}
                                         onChange={() => handleFlashSaleModalOpen(product)}
                                     />
@@ -303,7 +321,7 @@ export const ProductManagement = () => {
                                 <td>
                                     <Form.Check
                                         type="switch"
-                                        id={`lock-${product.id}`}
+                                        // id={`lock-${product.id}`}
                                         checked={product.lock}
                                         onChange={() => handleLockModalOpen(product)}
                                     />
@@ -312,10 +330,10 @@ export const ProductManagement = () => {
                                     <Button
                                         variant="warning"
                                         className="me-2"
-                                        onClick={() => handleEdit(product.id)}
+                                        // onClick={() => handleEdit(product.id)}
                                         
                                     >
-                                        <Link to='/editproduct'><i className="fas fa-edit"></i></Link>
+                                        <Link to={`/editproduct/${product.bookId}`}><i className="fas fa-edit"></i></Link>
                                     {/* <FaEdit /> */}
                                     </Button>
                                     <Button

@@ -7,14 +7,13 @@ import axios from 'axios';
 import Select from 'react-select';
 
 export const EditProd = () => {
-    const { id } = useParams();
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
-    const [category, setCategory] = useState('');
     const [discount, setDiscount] = useState('');
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-    const [variants, setVariants] = useState([{ color: '', size: '', quantity: '' }]);
+    const [customFields, setCustomFields] = useState([{ key: '', value: '' }]);
+    
     const [description, setDescription] = useState('');
 
     const [categoryOptions, setCategoryOptions] = useState([]);
@@ -23,7 +22,10 @@ export const EditProd = () => {
 
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPublishers, setSelectedPublishers] = useState([]);
-    const [selectedAuthors, setSelectedAuthors] = useState([]);
+    const [selectedAuthors, setSelectedAuthors] = useState(null);
+
+    const [info, setInfo] = useState({});
+
 
     const [showModal, setShowModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -31,6 +33,7 @@ export const EditProd = () => {
     const [error, setError] = useState('');
 
     const token = localStorage.getItem('authToken');
+    const { bookId } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,29 +41,7 @@ export const EditProd = () => {
             navigate('/');
         }
 
-        const fetchProduct = async () => {
-            try {
-                const response = await axios.get(`/api/products/books/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                const product = response.data.data;
-                setTitle(product.title);
-                setPrice(product.price);
-                setDiscount(product.discount);
-                setDescription(product.description);
-                setImages(product.images || []);
-                setImagePreviews(product.images ? product.images.map((image) => image) : []);
-                setSelectedCategories(product.categories.map((category) => ({ value: category.id, label: category.category })));
-                setSelectedPublishers(product.publishers.map((publisher) => ({ value: publisher.id, label: publisher.name })));
-                setSelectedAuthors(product.authors.map((author) => ({ value: author.id, label: author.authorName })));
-            } catch (error) {
-                setError(error.response?.data?.message || 'An error occurred');
-                setShowErrorModal(true);
-            }
-        };
-
+      
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/products/categories', {
@@ -72,29 +53,31 @@ export const EditProd = () => {
                     value: category.id,
                     label: category.category
                 }));
-                setCategoryOptions(options);
+                return options;
+                // setCategoryOptions(options);
             } catch (error) {
                 setError(error.response?.data?.message || 'An error occurred');
                 setShowErrorModal(true);
+                return [];
             }
         };
 
-        const fetchPublishers = async () => {
-            try {
-                const response = await axios.get('/api/products/publishers', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                const options = response.data.data.map((publisher) => ({
-                    value: publisher.id,
-                    label: publisher.name
-                }));
-                setPublisherOptions(options);
-            } catch (error) {
-                console.error('There was an error fetching the publishers!', error);
-            }
-        };
+        // const fetchPublishers = async () => {
+        //     try {
+        //         const response = await axios.get('/api/products/publishers', {
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`
+        //             }
+        //         });
+        //         const options = response.data.data.map((publisher) => ({
+        //             value: publisher.id,
+        //             label: publisher.name
+        //         }));
+        //         setPublisherOptions(options);
+        //     } catch (error) {
+        //         console.error('There was an error fetching the publishers!', error);
+        //     }
+        // };
 
         const fetchAuthors = async () => {
             try {
@@ -107,34 +90,139 @@ export const EditProd = () => {
                     value: author.id,
                     label: author.authorName
                 }));
-                setAuthorOptions(options);
+                return options;
+                // setAuthorOptions(options);
             } catch (error) {
                 console.error('There was an error fetching the authors!', error);
+                return [];
             }
         };
 
-        fetchProduct();
-        fetchCategories();
-        fetchPublishers();
-        fetchAuthors();
-    }, [id]);
+
+        const fetchProduct = async () => {
+            try {
+                
+                const response = await axios.get(`/api/products/books/${bookId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                return response.data.data;
+                
+                // setImages(product.images || []);
+                // setImagePreviews(product.images ? product.images.map((image) => image) : []);
+                
+               
+                // setSelectedPublishers(product.publishers.map((publisher) => ({ value: publisher.id, label: publisher.name })));
+            } catch (error) {
+                console.log(error);
+                setError(error.response?.data?.message || 'An error occurred');
+                setShowErrorModal(true);
+                return null;
+            }
+        };
+
+        const fetchData = async () => {
+            const [categories, authors, product] = await Promise.all([
+                fetchCategories(),
+                fetchAuthors(),
+                fetchProduct()
+            ]);
+            // console.log(product.info)
+            if (product) {
+                setTitle(product.title);
+                setPrice(product.price);
+                setDiscount(product.discount);
+                setDescription(product.description);
+                // setImages(product.images || []);
+                setImages(product.images);
+                setImagePreviews(product.images ? product.images.map((image) => image) : []);
+
+                setCategoryOptions(categories);
+                // setPublisherOptions(publishers);
+                setAuthorOptions(authors);
+
+                setSelectedCategories(product.categories.map(categoryId => 
+                    categories.find(category => category.value === categoryId)
+                ));
+                // setSelectedPublishers(product.publishers.map(publisher => 
+                //     publishers.find(publisherOption => publisherOption.value === publisher.id)
+                // ));
+                setSelectedAuthors(authors.find(author => author.value === product.author))
+                setInfo(product.info || {});
+
+                setCustomFields(Object.entries(product.info).map(([key, value]) => ({ key, value })));
+            
+            }
+
+        };
+            fetchData();
+    
+      
+
+      
+        // fetchPublishers();
+        
+
+        // fetchPublishers(),
+        // publisherOptions,
+        // authorOptions
+    }, [bookId, token]);
+
+
+    console.log('info',info)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('categories', category);
-        formData.append('publishers', selectedPublishers);
-        formData.append('authors', selectedAuthors);
+
+        const categoryValues = selectedCategories.map(category => category.value).join(',');
+        formData.append('categories', categoryValues);
+
+        // formData.append('publishers', selectedPublishers);
+        formData.append('author', selectedAuthors.value);
         formData.append('price', price);
         formData.append('discount', discount);
         formData.append('description', description);
-        images.forEach((image) => {
-            formData.append('files', image);
+
+        // console.log(selectedCategories.value);
+        // console.log(selectedAuthors);
+        
+        // images.forEach((image) => {
+        //     formData.append('files', image);
+        // });
+
+         // Thêm các URL hình ảnh hiện có vào formData
+        imagePreviews.forEach((url, index) => {
+            if (url.startsWith('http')) { // Kiểm tra xem đây có phải là URL hiện có hay không
+                formData.append('imageUrls', url);
+            }
         });
+
+          // Thêm các tệp hình ảnh mới vào formData
+        images.forEach((image) => {
+            if (image instanceof File) {
+                formData.append('files', image);
+            }
+        });
+
+        const customFieldsObject = customFields.reduce((acc, field) => {
+            if (field.key && field.value) {
+                acc[field.key] = field.value;
+            }
+            return acc;
+        }, {});
+        formData.append('info', JSON.stringify(customFieldsObject));
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+          }
+        // console.log(formData)
+
         try {
             setShowModal(true);
-            const response = await axios.put(`/api/products/books/${id}`, formData, {
+            const response = await axios.put(`/api/products/books/${bookId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -148,6 +236,7 @@ export const EditProd = () => {
             console.log('Book updated successfully:', response.data);
         } catch (error) {
             setShowModal(false);
+            console.log(error)
             setError(error.response?.data?.message || 'An error occurred');
             setShowErrorModal(true);
         }
@@ -158,10 +247,14 @@ export const EditProd = () => {
             const files = Array.from(e.target.files).slice(0, 8);
             const newImages = [...images, ...files];
             setImages(newImages);
-            const filePreviews = newImages.map((file) => URL.createObjectURL(file));
+            const filePreviews = newImages.map(file => { 
+                // URL.createObjectURL(file)
+                return file instanceof File ? URL.createObjectURL(file) : file;
+               });
             setImagePreviews(filePreviews);
         }
     };
+
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
@@ -183,21 +276,47 @@ export const EditProd = () => {
         setImagePreviews(newImagePreviews);
     };
 
-    const handleVariantChange = (index, field, value) => {
-        const newVariants = [...variants];
-        newVariants[index][field] = value;
-        setVariants(newVariants);
+    // const handleCustomFieldChange = (index, field, value) => {
+    //     const newCustomFields = [...customFields];
+    //     newCustomFields[index][field] = value;
+    //     setCustomFields(newCustomFields);
+    // };
+
+    const handleAddCustomField = () => {
+        setCustomFields([...customFields, { key: '', value: '' }]);
     };
 
-    const handleAddVariant = () => {
-        setVariants([...variants, { color: '', size: '', quantity: '' }]);
+    const handleDeleteCustomField = (index) => {
+        const newCustomFields = customFields.filter((_, i) => i !== index);
+        setCustomFields(newCustomFields);
     };
 
-    const handleDeleteVariant = (index) => {
-        const newVariants = variants.filter((_, i) => i !== index);
-        setVariants(newVariants);
+    const handleCustomFieldChange = (index, field, value) => {
+        const newCustomFields = [...customFields];
+        newCustomFields[index][field] = value;
+        setCustomFields(newCustomFields);
     };
+    
+    // Thêm hàm để xác định loại thay đổi và gọi hàm handleCustomFieldChange
+    // const handleFieldChange = (index, type) => (e) => {
+    //     console.log('index', index)
+    //     console.log('key', type)
+    //     // console.log('value', value)
+        
+    //     const { value } = e.target;
 
+    //     if (type === 'key') {
+    //         setEditingFieldKey(value); // Cập nhật giá trị cho key
+    //         handleCustomFieldChange(index, 'key', value);
+    //     } else {
+    //         setEditingFieldValue(value); // Cập nhật giá trị cho value
+    //         handleCustomFieldChange(index, 'value', value);
+    //     }
+    //     // const field = type === 'key' ? 'key' : 'value';
+    //     // console.log(field)
+    //     // handleCustomFieldChange(index, field, value);
+    // };
+   
     return (
         <div className="container mt-5">
             <style>
@@ -274,9 +393,12 @@ export const EditProd = () => {
                                 <Form.Label>Category</Form.Label>
                                 <Select
                                     options={categoryOptions}
-                                    isMulti
                                     value={selectedCategories}
                                     onChange={(selectedOptions) => setSelectedCategories(selectedOptions)}
+                                    // onChange={(selectedOptions) => setCategory(selectedOptions.map(option => option.value))}
+                                    
+                                    isLoading={!categoryOptions.length}
+                                    isMulti
                                     required
                                 />
                             </Form.Group>
@@ -299,9 +421,10 @@ export const EditProd = () => {
                                 <Form.Label>Author</Form.Label>
                                 <Select
                                     options={authorOptions}
-                                    isMulti
+                                    // isMulti
                                     value={selectedAuthors}
                                     onChange={(selectedOptions) => setSelectedAuthors(selectedOptions)}
+                                    isLoading={!authorOptions.length}
                                     required
                                 />
                             </Form.Group>
@@ -331,6 +454,8 @@ export const EditProd = () => {
                         </Col>
                     </Row>
                     <Row>
+                      
+
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Picture</Form.Label>
@@ -355,7 +480,7 @@ export const EditProd = () => {
                                 </div>
                             </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        {/* <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Tùy Chọn Sản Phẩm</Form.Label>
                                 <Form.Control as="select">
@@ -365,44 +490,48 @@ export const EditProd = () => {
                                     <option value="Option 3">Option 3</option>
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                     </Row>
-                    {variants.map((variant, index) => (
-                        <Row key={index}>
-                            <Col md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Book Format</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={variant.color}
-                                        onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>In-Stock</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        value={variant.quantity}
-                                        onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={1} className="d-flex align-items-center">
-                                <Button
-                                    variant="danger"
-                                    className="delete-button"
-                                    onClick={() => handleDeleteVariant(index)}
-                                >
-                                    <FaTimes />
-                                </Button>
-                            </Col>
-                        </Row>
-                    ))}
-                    <Button variant="danger" className="mb-3" onClick={handleAddVariant}>
-                        More +
-                    </Button>
+                    <Row>
+                    <Col md={12}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Custom Fields</Form.Label>
+                            {customFields.map((field, index) => (
+                                <div key={index} style={{ marginBottom: '10px' }}>
+                                    <Row>
+                                        <Col md={5}>
+                                            <Form.Control
+                                          
+                                                type="text"
+                                                placeholder="Key"
+                                                value={field.key}
+                                                onChange={(e) =>handleCustomFieldChange(index, 'key',  e.target.value)}
+                                            />
+                                        </Col>
+                                        <Col md={5}>
+                                            <Form.Control
+                                        
+                                                type="text"
+                                                placeholder="Value"
+                                                value={field.value}
+                                                onChange={(e) =>handleCustomFieldChange(index, 'value', e.target.value)}
+                                            />
+                                        </Col>
+                                        <Col md={2}>
+                                            <Button variant="danger" onClick={() => handleDeleteCustomField(index)}>
+                                            <i className="fas fa-trash-alt"></i>
+
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            ))}
+                            <Button variant="secondary" onClick={handleAddCustomField}>
+                                More
+                            </Button>
+                        </Form.Group>
+                    </Col>
+                    </Row>
                     <Form.Group className="mb-3">
                         <Form.Label>Description</Form.Label>
                         <Form.Control
