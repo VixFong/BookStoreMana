@@ -19,63 +19,99 @@ import { Category } from './Pages/Category.jsx'
 import { Product } from './Pages/Product.jsx'
 import { AddProduct } from './Pages/AddProduct.jsx'
 import { EditProduct } from './Pages/EditProduct.jsx'
-const router = createBrowserRouter([
-  {
-    path:"/",
-    element: <App/>,
-  },
-  {
-    path:"RegisterPage",
-    element: <RegisteredPage/>,
-  },
-  {
-    path:"ForgotPass",
-    element: <ForgotPass/>,
-  },
-  {
-    path:"UpdatePass",
-    element: <UpdatePass/>,
-  },
-  {
-    path:"AdminPage",
-    element: <AdminPage/>,
-  },
-  {
-    path:"UserManagement",
-    element: <UserManagement/>,
-  },
-  {
-    path:"add",
-    element: <AddUser/>,
-  },
-  {
-    path:"/edit/:userId",
-    element: <EditUser/>,
-  },
-  {
-    path:"administrators",
-    element: <Administrators/>,
-  },
-  {
-    path:"category",
-    element: <Category/>,
-  },
-  {
-    path:"product",
-    element: <Product/>,
-  },
-  {
-    path:"addproduct",
-    element: <AddProduct/>,
-  },
-  {
-    path:"/editproduct/:bookId",
-    element: <EditProduct/>,
-  },
-])
+import { ProtectedRoute } from './ProtectedRoute.jsx'
+
+  const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <App />,
+    },
+    {
+        path: 'RegisterPage',
+        element: <RegisteredPage />,
+    },
+    {
+        path: 'ForgotPass',
+        element: <ForgotPass />,
+    },
+    {
+        path: 'UpdatePass',
+        element: <UpdatePass />,
+    },
+    {
+        path: 'AdminPage',
+        element: (
+            <ProtectedRoute>
+                <AdminPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'UserManagement',
+        element: (
+            <ProtectedRoute>
+                <UserManagement />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'add',
+        element: (
+            <ProtectedRoute>
+                <AddUser />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/edit/:userId',
+        element: (
+            <ProtectedRoute>
+                <EditUser />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'administrators',
+        element: (
+            <ProtectedRoute>
+                <Administrators />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'category',
+        element: (
+            <ProtectedRoute>
+                <Category />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'product',
+        element: (
+            <ProtectedRoute>
+                <Product />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'addproduct',
+        element: (
+            <ProtectedRoute>
+                <AddProduct />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'editproduct/:id',
+        element: (
+            <ProtectedRoute>
+                <EditProduct />
+            </ProtectedRoute>
+        ),
+    },
+]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <RouterProvider router={router}/>
-  </React.StrictMode>,
-)
+        <RouterProvider router={router} />
+);
