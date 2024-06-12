@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.Set;
 
 @Getter
@@ -22,4 +23,6 @@ public class BookDetail {
     private Set<String> categories;
 
     private String description;
+
+    private HashMap<String, String> info;
 }

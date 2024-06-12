@@ -29,6 +29,8 @@ public interface BookMapper {
         return response;
     }
 
+
+    @Mapping(target = "info", expression = "java(request.getCustomFieldsMap())")
     BookDetail toBookDetail(CreateBookRequest request);
 
     BookDetailResponse toBookDetailResponse(BookDetail bookDetail);
@@ -42,16 +44,18 @@ public interface BookMapper {
     @Mapping(source = "book.price", target = "price")
     @Mapping(source = "bookDetail.author", target = "author")
     @Mapping(source = "bookDetail.publisher", target = "publisher")
-//    @Mapping(source = "bookDetail.genre", target = "genre")
     @Mapping(source = "bookDetail.categories", target = "categories")
     @Mapping(source = "bookDetail.description", target = "description")
+    @Mapping(source = "bookDetail.info", target = "info")
     BookInfoResponse toBookInfoResponse(Book book, BookDetail bookDetail);
 
     @Mapping(target = "bookId", ignore = true)
-//    @Mapping(target = "status", ignore = true)
     @Mapping(target = "images", ignore = true )
+    @Mapping(target = "priceDiscount", ignore = true )
     void updateBookFromRequest(@MappingTarget Book book, UpdateBookRequest request);
 
+
+    @Mapping(target = "info", expression = "java(request.getCustomFieldsMap())")
     @Mapping(target = "bookDetailId", ignore = true)
     void updateBookDetailFromRequest( @MappingTarget BookDetail bookDetail, UpdateBookRequest request);
 }

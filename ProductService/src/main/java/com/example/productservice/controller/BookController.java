@@ -34,6 +34,14 @@ public class BookController {
                 .build();
     }
 
+    @GetMapping("{id}")
+    public ApiResponse<BookInfoResponse> getBookInfo(@PathVariable String id){
+        System.out.println("Controller getBookInfo");
+        return ApiResponse.<BookInfoResponse>builder()
+                .data(bookService.getBookInfo(id))
+                .build();
+    }
+
     @PutMapping("{id}")
     public ApiResponse<BookInfoResponse> updateBook(@PathVariable String id, @ModelAttribute UpdateBookRequest request){
         System.out.println("Update");

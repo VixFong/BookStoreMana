@@ -4,6 +4,7 @@ import com.example.productservice.model.Category;
 import lombok.*;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -23,8 +24,8 @@ public class BookInfoResponse {
 
     private String author;
     private String publisher;
-//    private Set<String> genre;
     private String description;
     private double price;
     private double priceDiscount;
+    private HashMap<String, String> info;
 }

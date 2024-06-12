@@ -7,6 +7,7 @@ import com.example.productservice.exception.ErrorCode;
 import com.example.productservice.mapper.AuthorMapper;
 import com.example.productservice.model.Author;
 import com.example.productservice.repo.Author.AuthorRepository;
+import com.example.productservice.repo.BookDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ import java.util.List;
 public class AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
+
+    @Autowired
+    private BookDetailRepository bookDetailRepository;
 
     @Autowired
     private AuthorMapper authorMapper;
@@ -43,7 +47,18 @@ public class AuthorService {
     }
 
     public void delete(String id){
+        boolean isExistBookHavingAuthor = bookDetailRepository.existsBookDetailByAuthor(id);
+
+        if(isExistBookHavingAuthor)
+            throw new AppException(ErrorCode.AUTHOR_CONTAINS_BOOKS);
         authorRepository.deleteById(id);
     }
+
+//    public void updateBookPublishCountByAuthor(String authorId, int bookCount) {
+//        var author = authorRepository.findById(authorId)
+//                .orElseThrow(() -> new AppException(ErrorCode.AUTHOR_NOT_FOUND));
+//        author.setBookCount(bookCount);
+//        authorRepository.save(author);
+//    }
 
 }

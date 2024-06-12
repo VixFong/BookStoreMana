@@ -61,6 +61,36 @@ public class ImageService {
         return imageDTOList;
     }
 
+    public List<ImageDTO> uploadBookImages2(List<MultipartFile> files, List<String> imageUrls,String folder) throws IOException {
+        List<ImageDTO> imageDTOList = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            // Check file type
+            if (!SUPPORTED_IMAGE_TYPES.contains(file.getContentType())) {
+                throw new AppException(ErrorCode.IMAGE_TYPE_INVALID);
+            }
+
+            // Check file size
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new AppException(ErrorCode.IMAGE_SIZE_INVALID);
+            }
+
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", folder));
+            String imageUrl = uploadResult.get("url").toString();
+
+
+//            String originalFileName = file.getOriginalFilename();
+//            ImageDTO imageDTO = updateOrSaveImage(originalFileName, imageUrl);
+
+            Image image = new Image();
+            image.setName(file.getOriginalFilename());
+            image.setUrl(imageUrl);
+            imageDTOList.add(imageMapper.toImageDTO(image));
+        }
+
+        return imageDTOList;
+    }
+
     private ImageDTO updateOrSaveImage(String name, String url) {
         Optional<Image> imageOptional = imageRepository.findByName(name);
         Image image;

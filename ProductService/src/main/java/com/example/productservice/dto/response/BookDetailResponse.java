@@ -2,6 +2,7 @@ package com.example.productservice.dto.response;
 
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.Set;
 
 @Getter
@@ -16,5 +17,6 @@ public class BookDetailResponse {
     private Set<String> categories;
 
     private String description;
+    private HashMap<String, String> info;
 
 }

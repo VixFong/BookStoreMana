@@ -14,6 +14,7 @@ import com.example.productservice.model.BookDetail;
 import com.example.productservice.repo.BookDetailRepository;
 import com.example.productservice.repo.BookRepository;
 import com.example.productservice.repo.ServiceClient.ImageServiceClient;
+import com.example.productservice.service.Author.AuthorService;
 import com.example.productservice.service.Category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,9 @@ public class BookService {
 
     @Autowired
     private CategoryService categoryService;
+
+//    @Autowired
+//    private AuthorService authorService;
 
     @Autowired
     private ImageServiceClient imageServiceClient;
@@ -70,14 +74,22 @@ public class BookService {
         }
 
 //      Set price after discount
-        var discountPrice = request.getPrice() - (request.getPrice() * request.getDiscount() / 100);
+        double discountPrice = setPriceAfterDiscount(request.getPrice(), request.getDiscount());
         book.setPriceDiscount(discountPrice);
+
+//      Set info
+        System.out.println("Info " + request.getInfo());
+        if(request.getInfo() != null || !request.getInfo().isEmpty()){
+
+            bookDetail.setInfo(request.getCustomFieldsMap());
+        }
 
         bookRepository.save(book);
         bookDetailRepository.save(bookDetail);
 
 
         updateBookCounts(bookDetail.getCategories());
+//        updateBookPublishCounts(bookDetail.getAuthor());
         return bookMapper.toBookInfoResponse(book, bookDetail);
     }
 
@@ -105,6 +117,14 @@ public class BookService {
         return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
     }
 
+    public BookInfoResponse getBookInfo(String id){
+        var book = bookRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        var bookDetail = bookDetailRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.BOOK_NOT_FOUND));
+
+        return bookMapper.toBookInfoResponse(book, bookDetail);
+    }
     public BookInfoResponse update(String id, UpdateBookRequest request){
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
@@ -112,24 +132,64 @@ public class BookService {
         BookDetail bookDetail =bookDetailRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
+        System.out.println("Update file " + request.getFiles());
+//        if(request.getFiles() != null || !request.getFiles().isEmpty()){
 
-        if(request.getFiles() != null){
+//            setImageIfHavingFiles(book, request.getFiles());
+//        }
 
-            setImageIfHavingFiles(book, request.getFiles());
+//        Set Images
+//        Check whether client send back old images if not having it will set list is null
+        List<String> existingImageUrls = request.getImageUrls() != null ? request.getImageUrls() : Collections.emptyList();
+        List<String> allImageUrls = existingImageUrls;
+
+//        Check whether client send files or not
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            ApiResponse<List<ImageResponse>> apiResponse = imageServiceClient.uploadBookImages(request.getFiles(), "books");
+            if (apiResponse != null && apiResponse.getCode() == 100) {
+                List<ImageResponse> images = apiResponse.getData();
+                if (images != null && !images.isEmpty()) {
+                    List<String> uploadedImageUrls = images.stream()
+                            .map(ImageResponse::getUrl)
+                            .collect(Collectors.toList());
+                    allImageUrls.addAll(uploadedImageUrls);
+                }
+            } else {
+                throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
+            }
+        }
+        book.setImages(allImageUrls);
+
+        //Set price after discount
+        double discountPrice = setPriceAfterDiscount(request.getPrice(), request.getDiscount());
+        book.setPriceDiscount(discountPrice);
+
+//      Set info
+        System.out.println("Info " + request.getInfo());
+        if(request.getInfo() != null || !request.getInfo().isEmpty()){
+
+            bookDetail.setInfo(request.getCustomFieldsMap());
         }
 
 
         bookMapper.updateBookFromRequest(book, request);
         bookMapper.updateBookDetailFromRequest(bookDetail, request);
 
-     ;
+        // Update book counts
+        updateBookCounts(bookDetail.getCategories());
         return bookMapper.toBookInfoResponse(bookRepository.save(book), bookDetailRepository.save(bookDetail));
     }
 
     public void delete(String id){
+        BookDetail bookDetail = bookDetailRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        Set<String> categoryIds = bookDetail.getCategories();
+
         bookRepository.deleteById(id);
         bookDetailRepository.deleteById(id);
 
+        // Update book counts
+        updateBookCounts(categoryIds);
     }
 
 
@@ -141,12 +201,31 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    private void updateBookCounts(Set<String> categories) {
-        for (String category : categories) {
-            int count = bookDetailRepository.countByCategoriesContaining(category);
-            categoryService.updateBookCount(category, count);
+//    private void updateBookCounts(Set<String> categories) {
+//        for (String category : categories) {
+//            int count = bookDetailRepository.countByCategoriesContaining(category);
+//            categoryService.updateBookCount(category, count);
+//        }
+//    }
+
+    private double setPriceAfterDiscount(double price, int discount){
+        var discountPrice = price - (price * discount / 100);
+        return discountPrice;
+    }
+
+    private void updateBookCounts(Set<String> categoryIds) {
+        for (String id : categoryIds) {
+            int count = bookDetailRepository.countByCategoriesContaining(id);
+            categoryService.updateBookCount(id, count);
         }
     }
+
+//    private void updateBookPublishCounts(String authorIds) {
+//        for (String id : authorIds) {
+//            int count = bookDetailRepository.countByAuthorContaining(id);
+//            authorService.updateBookPublishCountByAuthor(id, count);
+//        }
+//    }
 
     public void toggleFlashSale(String id, boolean flashSale) {
         Book book = bookRepository.findById(id)

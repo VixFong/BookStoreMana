@@ -55,8 +55,10 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        System.out.println("cate id" + id);
         // Kiểm tra xem có sách nào chứa thông tin category đó không
-        boolean categoryUsed = bookDetailRepository.existsByCategoriesContains(category.getCategory());
+        boolean categoryUsed = bookDetailRepository.existsByCategoriesContains(category.getId());
+
         if (categoryUsed) {
             throw new AppException(ErrorCode.CATEGORY_CONTAINS_BOOKS);
         }
@@ -68,10 +70,12 @@ public class CategoryService {
 
 
 
-    public void updateBookCount(String categoryName, int bookCount) {
-        Category category = categoryRepository.findByCategory(categoryName)
+    public void updateBookCount(String categoryId, int bookCount) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         category.setBookCount(bookCount);
         categoryRepository.save(category);
     }
+
+
 }
