@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { Link } from 'react-router-dom'
 const books = [
     {
       title: "The Last Sister (Columbia River Book 1)",
@@ -81,7 +81,7 @@ export const BestSelling = () => {
                   <div className="row">
                     {chunk.map((book, idx) => (
                       <div className="col-12 col-md-6 col-lg-3 mb-4" key={idx}>
-                        <a href='#'className="link-offset-2 link-underline link-underline-opacity-0">
+                        <a href='/BookDetail'className="link-offset-2 link-underline link-underline-opacity-0">
                         <div 
                             className="card h-100" 
                             style={cardStyle} 

@@ -20,6 +20,7 @@ import { Product } from './Pages/Product.jsx'
 import { AddProduct } from './Pages/AddProduct.jsx'
 import { EditProduct } from './Pages/EditProduct.jsx'
 import { ProtectedRoute } from './ProtectedRoute.jsx'
+import { DetailPage } from './Pages/DetailPage.jsx'
 
   const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ import { ProtectedRoute } from './ProtectedRoute.jsx'
     {
         path: 'UpdatePass',
         element: <UpdatePass />,
+    },
+    {
+        path: 'BookDetail',
+        element: <DetailPage/>,
     },
     {
         path: 'AdminPage',
@@ -103,7 +108,7 @@ import { ProtectedRoute } from './ProtectedRoute.jsx'
         ),
     },
     {
-        path: 'editproduct/:id',
+        path: 'editproduct/:bookId',
         element: (
             <ProtectedRoute>
                 <EditProduct />
