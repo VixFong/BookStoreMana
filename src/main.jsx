@@ -103,7 +103,7 @@ import { ProtectedRoute } from './ProtectedRoute.jsx'
         ),
     },
     {
-        path: 'editproduct/:id',
+        path: 'editproduct/:bookId',
         element: (
             <ProtectedRoute>
                 <EditProduct />
