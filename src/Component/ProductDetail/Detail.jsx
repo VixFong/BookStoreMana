@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Button, Carousel } from 'react-bootstrap';
+import { Button, Carousel, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaCartPlus } from 'react-icons/fa';
 
@@ -13,10 +13,16 @@ export const Detail = ({ addToCart }) => {
             'https://via.placeholder.com/300x450?text=Second+Image',
             'https://via.placeholder.com/300x450?text=Third+Image'
         ],
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat.'
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat.',
+        formats: [
+            { label: 'Hardcover', price: 29.95 },
+            { label: 'Kindle', price: 39.95 },
+            { label: 'Paperback', price: 59.95 }
+        ]
     };
 
     const [quantity, setQuantity] = useState(1);
+    const [selectedFormat, setSelectedFormat] = useState(product.formats[0]);
     const imgRef = useRef(null);
 
     const handleQuantityChange = (amount) => {
@@ -132,6 +138,17 @@ export const Detail = ({ addToCart }) => {
                 <p className="product-detail-author">By (author) {product.author}</p>
                 <p className="product-detail-price">${product.price}</p>
                 <p className="product-detail-description">{product.description}</p>
+                <Form.Group className="mb-3">
+                    <Form.Label>Book Format</Form.Label>
+                    <Form.Control as="select" value={selectedFormat.label} onChange={(e) => {
+                        const selected = product.formats.find(format => format.label === e.target.value);
+                        setSelectedFormat(selected);
+                    }}>
+                        {product.formats.map((format, index) => (
+                            <option key={index} value={format.label}>{format.label} ${format.price}</option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
                 <div className="product-detail-quantity">
                     <button onClick={() => handleQuantityChange(-1)}>-</button>
                     <input type="text" value={quantity} readOnly />
