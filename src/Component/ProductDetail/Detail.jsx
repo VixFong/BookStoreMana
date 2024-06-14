@@ -13,7 +13,6 @@ export const Detail = ({ addToCart }) => {
             'https://via.placeholder.com/300x450?text=Second+Image',
             'https://via.placeholder.com/300x450?text=Third+Image'
         ],
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat.',
         formats: [
             { label: 'Hardcover', price: 29.95 },
             { label: 'Kindle', price: 39.95 },
