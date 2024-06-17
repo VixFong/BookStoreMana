@@ -250,6 +250,13 @@ export const AddProd = () => {
         setCustomFields(newCustomFields);
     };
 
+    const handleDownloadTemplate = () => {
+        const link = document.createElement('a');
+        link.href = './AddProduct.xlsx';
+        link.download = 'add_product_template.xlsx';
+        link.click();
+    };
+
     return (
         <div className="container mt-5">
             <style>
@@ -315,6 +322,11 @@ export const AddProd = () => {
                 .delete-button {
                     // margin-top: 32px;
                     // margin-left: 10px;
+                }
+                .download-template {
+                    color: blue;
+                    text-decoration: underline;
+                    cursor: pointer;
                 }
                 `}
             </style>
@@ -543,6 +555,9 @@ export const AddProd = () => {
                                     
                                 )}
                         </div>
+                        <p className="download-template" onClick={handleDownloadTemplate}>
+                            Download the add product template
+                        </p>
                     </Form.Group>
 
                     {/* <div className="d-flex justify-content-center">
