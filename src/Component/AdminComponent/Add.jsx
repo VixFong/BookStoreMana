@@ -467,6 +467,8 @@ export const Add = () => {
                                 <option>Admin</option>
                                 <option>Customer</option>
                                 <option>Employee</option>
+                                <option>Publisher</option>
+
                             </select>
                         </div>
                         <div className="d-flex justify-content-center">

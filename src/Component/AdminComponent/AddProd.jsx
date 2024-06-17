@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Modal, Spinner, Button, Form, Col, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes,FaFileExcel, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -34,6 +34,10 @@ export const AddProd = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [error, setError] = useState('');
 
+    const [file, setFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [message, setMessage] = useState('');
+
     const token =  localStorage.getItem('authToken');
 
     const navigate = useNavigate();
@@ -64,22 +68,22 @@ export const AddProd = () => {
             }
         };
 
-        const fetchPublishers = async () => {
-            try {
-                const response = await axios.get('/api/products/publishers', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                const options = response.data.data.map(publisher => ({
-                    value: publisher.id,
-                    label: publisher.name
-                }));
-                setPublisherOptions(options); // Set publisher options
-            } catch (error) {
-                console.error('There was an error fetching the publishers!', error);
-            }
-        };
+        // const fetchPublishers = async () => {
+        //     try {
+        //         const response = await axios.get('/api/products/publishers', {
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`
+        //             }
+        //         });
+        //         const options = response.data.data.map(publisher => ({
+        //             value: publisher.id,
+        //             label: publisher.name
+        //         }));
+        //         setPublisherOptions(options); // Set publisher options
+        //     } catch (error) {
+        //         console.error('There was an error fetching the publishers!', error);
+        //     }
+        // };
 
         const fetchAuthors = async () => {
             try {
@@ -100,17 +104,67 @@ export const AddProd = () => {
         };
 
         fetchCategories();
-        fetchPublishers();
+        // fetchPublishers();
         fetchAuthors();
     }, []);  
+
+
+    const handleUpload = async () => {
+        if (!file) {
+          setMessage('Please select a file first.');
+          return;
+        }
+    
+        const formData = new FormData();
+        formData.append('file', file);
+        console.log(file)
+        try {
+            setShowModal(true); 
+            const response = await axios.post('api/products/books/import', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            setShowModal(false); 
+            setMessage('File uploaded successfully');
+            setShowSuccessModal(true);
+            setTimeout(() => {
+            setShowSuccessModal(false);
+            }, 1000);
+          console.log('Response:', response.data);
+        } catch (error) {
+            setMessage('Failed to upload file');
+            setShowModal(false);
+            setError(error.response?.data?.message || 'An error occurred');
+            setShowErrorModal(true);
+        }
+      };
+
+      const handleFileChange = (event) => {
+        console.log(1);
+        setFile(event.target.files[0]);
+        setIsUploading(true);
+        console.log(file)
+      };
+
+       const handleDeleteFile = () => {
+        setFile(null);
+        setIsUploading(false);
+
+    };
     
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isUploading) {
+            handleUpload();
+            return;
+        }
         const formData = new FormData();
         formData.append('title', title);
         formData.append('categories', category);
-        formData.append('publishers', selectedPublishers);
+        // formData.append('publishers', selectedPublishers);
         formData.append('author', selectedAuthors);
         formData.append('price', price);
         formData.append('discount', discount);
@@ -213,9 +267,12 @@ export const AddProd = () => {
                     margin-bottom: 20px;
                     color: #333;
                 }
-                .btn-primary, .btn-secondary {
+                .btn-danger, .btn-secondary  {
                     width: 100px;
                     margin-right: 10px;
+                }
+                .btn-success{
+                    width: 100px;
                 }
                 .image-preview {
                     display: flex;
@@ -272,7 +329,8 @@ export const AddProd = () => {
                                     type="text"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    required
+                                    required={!isUploading}
+                                    disabled={isUploading}
                                 />
                             </Form.Group>
                         </Col>
@@ -284,7 +342,8 @@ export const AddProd = () => {
                                     options={categoryOptions}
                                     isMulti
                                     onChange={(selectedOptions) => setCategory(selectedOptions.map(option => option.value))}
-                                    required
+                                    
+                                    isDisabled={isUploading}
                                 
                                 />
                             </Form.Group>
@@ -292,7 +351,7 @@ export const AddProd = () => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={6}>
+                        {/* <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Publisher</Form.Label>
                                 <Select
@@ -302,7 +361,7 @@ export const AddProd = () => {
                                     // required
                                 />
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Author</Form.Label>
@@ -312,7 +371,8 @@ export const AddProd = () => {
                                     
                                     // isMulti
                                     // onChange={(selectedOptions) => setSelectedAuthors(selectedOptions.map(option => option.value))}
-                                    required
+                                    isDisabled={isUploading}
+                                    
                                 />
                             </Form.Group>
                         </Col>
@@ -325,7 +385,8 @@ export const AddProd = () => {
                                     type="number"
                                     value={price}
                                     onChange={(e) => setPrice(e.target.value)}
-                                    required
+                                    required={!isUploading}
+                                    disabled={isUploading}
                                 />
                             </Form.Group>
                         </Col>
@@ -336,6 +397,8 @@ export const AddProd = () => {
                                     type="number"
                                     value={discount}
                                     onChange={(e) => setDiscount(e.target.value)}
+                                    required={!isUploading}
+                                    disabled={isUploading}
                                 />
                             </Form.Group>
                         </Col>
@@ -348,6 +411,7 @@ export const AddProd = () => {
                                     type="file"
                                     onChange={handleImageChange}
                                     multiple
+                                    disabled={isUploading}
                                 />
                                 <div className="image-preview">
                                     {imagePreviews.map((src, index) => (
@@ -357,6 +421,7 @@ export const AddProd = () => {
                                                 type="button"
                                                 className="delete-button"
                                                 onClick={() => handleDeleteImage(index)}
+                                                disabled={isUploading}
                                             >
                                                 <FaTimes />
                                             </button>
@@ -390,6 +455,7 @@ export const AddProd = () => {
                                                 placeholder="Key"
                                                 value={field.key}
                                                 onChange={(e) => handleCustomFieldChange(index, 'key', e.target.value)}
+                                                disabled={isUploading}
                                             />
                                         </Col>
                                         <Col md={5}>
@@ -398,10 +464,14 @@ export const AddProd = () => {
                                                 placeholder="Value"
                                                 value={field.value}
                                                 onChange={(e) => handleCustomFieldChange(index, 'value', e.target.value)}
+                                                disabled={isUploading}
                                             />
                                         </Col>
                                         <Col md={2}>
-                                            <Button variant="danger" onClick={() => handleDeleteCustomField(index)}>
+                                            <Button variant="danger" 
+                                                onClick={() => handleDeleteCustomField(index)}
+                                                disabled={isUploading}
+                                                >
                                             <i className="fas fa-trash-alt"></i>
 
                                             </Button>
@@ -409,7 +479,11 @@ export const AddProd = () => {
                                     </Row>
                                 </div>
                             ))}
-                            <Button variant="secondary" onClick={handleAddCustomField}>
+                            <Button 
+                                variant="secondary" 
+                                onClick={handleAddCustomField}
+                                disabled={isUploading}
+                            >
                                 More
                             </Button>
                         </Form.Group>
@@ -425,12 +499,63 @@ export const AddProd = () => {
                             rows={3}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                            required={!isUploading}
+                            disabled={isUploading}
                         />
                     </Form.Group>
                     <div className="d-flex justify-content-center">
+                        
+                        <Button
+                            variant="danger"
+                            type="submit"
+                            disabled={isUploading}
+                        >
+                            Add
+                        </Button>
+                        <Button variant="secondary" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                    </div>
+                    <Form.Group className="mb-3 mt-3">
+                        <Form.Label>Upload Excel File</Form.Label>
+
+                        <div className="d-flex align-items-center">
+
+                            <Form.Control
+                                className="me-2" 
+                                type="file"
+                                accept=".xlsx, .xls, .csv"
+                                onChange={handleFileChange}
+                                // disabled={isUploading}
+                            />
+                                {file && (
+                                   <>
+                                        <Button variant="success" onClick={handleUpload} className="me-2">
+                                            <FaUpload /> Excel
+                                             {/* <FaFileExcel /> */}
+                                        </Button>
+                                        
+                                        <Button variant="danger" onClick={handleDeleteFile}>
+                                            <FaTimes /> Delete
+                                        </Button>
+                                   </>
+                                    
+                                    
+                                )}
+                        </div>
+                    </Form.Group>
+
+                    {/* <div className="d-flex justify-content-center">
                         <Button type="submit" className="btn btn-danger">Add</Button>
                         <Button type="button" variant="secondary"  onClick={handleCancel}>Cancel</Button>
-                    </div>
+                    </div> */}
+
+                    {/* <div>
+                        <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                        <button onClick={handleUpload}>Upload</button> */}
+                        {/* {message && <p>{message}</p>} */}
+                        {/* <h1>Upload Excel File</h1> */}
+                    {/* </div> */}
                 </Form>
             </div>
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -464,6 +589,7 @@ export const AddProd = () => {
                         <p>{error}</p>
                         <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
                     </Modal.Body>
+                    {message && <p>{message}</p>}
                 </Modal>
         </div>
     );

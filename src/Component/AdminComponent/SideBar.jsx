@@ -64,6 +64,7 @@ export const Sidebar = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                console.log(response.data)
                 if (response.data.code === 200) {
                     const userProfilePicture = response.data.data.profilePicture;
                     const userEmail = response.data.data.email;
@@ -74,6 +75,7 @@ export const Sidebar = () => {
                     setRoles(response.data.data.roles.map(role => role.name));
                 }
             } catch (error) {
+                console.error('An error occurred during logout', error);
                 
                 // console.error('Error fetching user email:', error);
             }
