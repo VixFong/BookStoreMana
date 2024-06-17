@@ -14,7 +14,7 @@ export const ProductTabs = () => {
     const [key, setKey] = useState('description');
 
     return (
-        <div className="product-tabs-container container mt-5">
+        <div className="product-tabs-container container mt-2">
             <style>
                 {`
                 .product-tabs-container {
@@ -23,7 +23,7 @@ export const ProductTabs = () => {
                 .nav-tabs {
                     width: 200px; 
                     background-color: white;
-                    border-right: 1px solid #ddd;
+                    border: 1px solid #ddd;
                 }
                 .nav-link {
                     border: none;
@@ -53,6 +53,7 @@ export const ProductTabs = () => {
                     left: 0;
                 }
                 .tab-content {
+                    border: 1px solid #ddd;
                     padding: 20px;
                     margin-left: 20px;
                     width: calc(100% - 240px); 
@@ -60,6 +61,7 @@ export const ProductTabs = () => {
                 .detail-item {
                     padding: 10px 0;
                     transition: background-color 0.3s ease;
+                    
                 }
                 .detail-item:hover {
                     background-color: #f8f9fa;
