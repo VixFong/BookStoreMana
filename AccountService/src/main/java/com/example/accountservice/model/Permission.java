@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import lombok.*;
 import jakarta.persistence.Id;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+//import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter

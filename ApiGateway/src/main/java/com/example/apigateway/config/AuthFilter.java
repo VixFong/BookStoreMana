@@ -49,12 +49,20 @@ public class AuthFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.get(0).replace("Bearer ", "");
+        System.out.println("Token From Api" + token);
         return accountService.introspect(token).flatMap(introspectResponseApiResponse -> {
-            if(introspectResponseApiResponse.getData().isValid())
+            if(introspectResponseApiResponse.getData().isValid()) {
+                System.out.println("Connect to introspect  " + introspectResponseApiResponse.getData().isValid());
                 return chain.filter(exchange);
-            else
+            }
+            else {
+                System.out.println("It fail ");
                 return unauthenticated(exchange.getResponse());
-        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse())); //if have any other errors it will prevent
+            }
+        }).onErrorResume(throwable -> {
+            log.error("Error during token introspection", throwable);
+            return unauthenticated(exchange.getResponse());
+        }); //if have any other errors it will prevent
 
     }
 

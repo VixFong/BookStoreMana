@@ -8,10 +8,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="DiscoveryServer" />
+        <module name="PublisherService" />
+        <module name="ProductService" />
+        <module name="InventoryService" />
         <module name="AccountService" />
         <module name="ImageService" />
         <module name="ApiGateway" />
-        <module name="ProductService" />
       </profile>
     </annotationProcessing>
   </component>
@@ -21,7 +23,9 @@
       <module name="ApiGateway" options="-parameters" />
       <module name="DiscoveryServer" options="-parameters" />
       <module name="ImageService" options="-parameters" />
+      <module name="InventoryService" options="-parameters" />
       <module name="ProductService" options="-parameters" />
+      <module name="PublisherService" options="-parameters" />
     </option>
   </component>
 </project>

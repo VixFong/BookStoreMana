@@ -1,0 +1,259 @@
+#version: '3.6'
+#
+#services:
+#  discovery-server:
+#    image: 'discovery-server:latest'
+#    build:
+#      context: DiscoveryServer
+#      dockerfile: Dockerfile
+#    container_name: discovery-server
+#    environment:
+#      - SPRING_APPLICATION_NAME=DiscoveryServer
+#      - SERVER_PORT=8761
+#    ports:
+#      - "8761:8761"
+#    networks:
+#      - eureka-network
+#
+#  apigateway:
+#    image: 'api-gateway:latest'
+##    volumes:
+##      - ./ApiGateway/target:/api-gateway
+##    working_dir: /api-gateway
+#
+#    build:
+#      context: ApiGateway
+#      dockerfile: Dockerfile
+#    container_name: api-gateway
+#
+#    ports:
+#      - "8888:8888"
+#
+#    environment:
+#      - SPRING_APPLICATION_NAME=ApiGateway
+#      - SERVER_PORT=8888
+#      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+#      - SPRING_CLOUD_GATEWAY_ROUTES[0].ID=account-service
+#      - SPRING_CLOUD_GATEWAY_ROUTES[0].URI=http://accountservice:8081
+#      - SPRING_CLOUD_GATEWAY_ROUTES[0].PREDICATES[0]=Path=/identity/**
+#      - SPRING_CLOUD_GATEWAY_ROUTES[1].ID=image-service
+#      - SPRING_CLOUD_GATEWAY_ROUTES[1].URI=http://imageservice:8080
+#      - SPRING_CLOUD_GATEWAY_ROUTES[1].PREDICATES[0]=Path=/images/**
+#    networks:
+#      - eureka-network
+#    depends_on:
+#      - discovery-server
+#
+#  accountservice:
+#    image: 'account-service:latest'
+##    volumes:
+##      - ./accountservice/target:/accountservice
+##    working_dir: /accountservice
+#    build:
+#      context: AccountService
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      - SPRING_APPLICATION_NAME=AccountService
+#      - SERVER_PORT=8081
+#      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+##      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3307/AccountService?useSSL=false&createDatabaseIfNotExist=true
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/AccountService?useSSL=false&createDatabaseIfNotExist=true
+#
+#      - SPRING_DATASOURCE_USERNAME=root
+#      - SPRING_DATASOURCE_PASSWORD=Khang2002
+#      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+#      - JWT_SECRETKEY=ySp2wMFd2mdJCl+EDIuW5fT3e//1XX7JhMpsNsbKxGddVDdLmRSnE/9w379QY36O
+#      - SPRING_MAIL_HOST=smtp.gmail.com
+#      - SPRING_MAIL_PORT=587
+#      - SPRING_MAIL_USERNAME=khangdogia2002@gmail.com
+#      - SPRING_MAIL_PASSWORD=dtjo qbgd xlyl mqfm
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+#      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
+#    networks:
+#      - eureka-network
+#    depends_on:
+#      - discovery-server
+##      - mysql
+##    command: ["java", "-jar", "account-service.jar"]
+#
+#
+##  mysql:
+##    image: mysql:8.0
+##    environment:
+##      MYSQL_ROOT_PASSWORD: Khang2002
+##      MYSQL_DATABASE: AccountService
+##    ports:
+##      - "3307:3307"
+##    networks:
+##      - eureka-network
+#  imageservice:
+#    image: 'image-service:latest'
+#    build:
+#      context: ImageService
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SPRING_APPLICATION_NAME=ImageService
+#      - SERVER_PORT=8080
+#      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+#
+#      - SPRING_DATA_MONGODB_URI=mongodb+srv://khangdogia2002:Khang2002@cluster0.8prixrh.mongodb.net/image_service?retryWrites=true&w=majority
+#    networks:
+#      - eureka-network
+#    depends_on:
+#      - discovery-server
+#
+#networks:
+#  eureka-network:
+#    driver: bridge
+
+version: '3.6'
+
+services:
+  discovery-server:
+    image: 'discovery-server:latest'
+    build:
+      context: DiscoveryServer
+      dockerfile: Dockerfile
+    container_name: discovery-server
+    environment:
+      - SPRING_APPLICATION_NAME=DiscoveryServer
+      - SERVER_PORT=8761
+    ports:
+      - "8761:8761"
+    networks:
+      - eureka-network
+
+  apigateway:
+    image: 'api-gateway:latest'
+    build:
+      context: ApiGateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_APPLICATION_NAME=ApiGateway
+      - SERVER_PORT=8888
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+#      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+#      - EUREKA_CLIENT_FETCH_REGISTRY=true
+##      - SPRING_CLOUD_GATEWAY_ROUTES[0].URI=http://accountservice:8081
+      - SPRING_CLOUD_GATEWAY_ROUTES[0].ID=account-service
+      - SPRING_CLOUD_GATEWAY_ROUTES[0].URI=lb://accountservice
+      - SPRING_CLOUD_GATEWAY_ROUTES[0].PREDICATES[0]=Path=/identity/**
+##
+      - SPRING_CLOUD_GATEWAY_ROUTES[1].ID=image-service
+      - SPRING_CLOUD_GATEWAY_ROUTES[1].URI=lb://imageservice
+      - SPRING_CLOUD_GATEWAY_ROUTES[1].PREDICATES[0]=Path=/images/**
+#      - SPRING_CLOUD_GATEWAY_ROUTES[1].URI=http://imageservice:8080
+
+      - SPRING_CLOUD_GATEWAY_ROUTES[2].ID=inventory-service
+      - SPRING_CLOUD_GATEWAY_ROUTES[2].URI=lb://inventoryservice
+      - SPRING_CLOUD_GATEWAY_ROUTES[2].PREDICATES[0]=Path=/inventory/**
+
+
+      - SPRING_CLOUD_GATEWAY_ROUTES[3].ID=product-service
+      - SPRING_CLOUD_GATEWAY_ROUTES[3].URI=lb://productservice
+      - SPRING_CLOUD_GATEWAY_ROUTES[3].PREDICATES[0]=Path=/products/**
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
+
+  accountservice:
+    image: 'account-service:latest'
+    build:
+      context: AccountService
+      dockerfile: Dockerfile
+    container_name: accountservice
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_APPLICATION_NAME=AccountService
+      - SERVER_PORT=8081
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/AccountService?useSSL=false&createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Khang2002
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+      - JWT_SECRETKEY=ySp2wMFd2mdJCl+EDIuW5fT3e//1XX7JhMpsNsbKxGddVDdLmRSnE/9w379QY36O
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=khangdogia2002@gmail.com
+      - SPRING_MAIL_PASSWORD=dtjo qbgd xlyl mqfm
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
+
+  imageservice:
+    image: 'image-service:latest'
+    build:
+      context: ImageService
+      dockerfile: Dockerfile
+    container_name: imageservice
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APPLICATION_NAME=ImageService
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://khangdogia2002:Khang2002@cluster0.8prixrh.mongodb.net/image_service?retryWrites=true&w=majority
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
+
+  inventoryservice:
+    image: 'inventory-service:latest'
+    build:
+      context: InventoryService
+      dockerfile: Dockerfile
+    container_name: inventoryservice
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_APPLICATION_NAME=InventoryService
+      - SERVER_PORT=8083
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://khangdogia2002:Khang2002@cluster0.8prixrh.mongodb.net/inventory_service?retryWrites=true&w=majority
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
+
+  productservice:
+    image: 'product-service:latest'
+    build:
+      context: ProductService
+      dockerfile: Dockerfile
+    container_name: productservice
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_APPLICATION_NAME=ProductService
+      - SERVER_PORT=8083
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://khangdogia2002:Khang2002@cluster0.8prixrh.mongodb.net/product_service?retryWrites=true&w=majority
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
+
+
+
+networks:
+  eureka-network:
+    driver: bridge

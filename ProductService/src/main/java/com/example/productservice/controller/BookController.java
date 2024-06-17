@@ -11,6 +11,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -23,6 +26,14 @@ public class BookController {
     public ApiResponse<BookInfoResponse> addBook(@ModelAttribute CreateBookRequest request){
         return ApiResponse.<BookInfoResponse>builder()
                 .data(bookService.addBook(request))
+                .build();
+    }
+    @PostMapping("/import")
+    public ApiResponse<List<BookInfoResponse>> importBooksFromExcel(@RequestParam("file") MultipartFile file) {
+        List<BookInfoResponse> responses = bookService.importBooksFromExcel(file);
+        System.out.println("Import");
+        return ApiResponse.<List<BookInfoResponse>>builder()
+                .data(responses)
                 .build();
     }
 

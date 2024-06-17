@@ -21,10 +21,7 @@ public enum ErrorCode {
     BOOK_NOT_FOUND(206, "Book not found", HttpStatus.NOT_FOUND),
     CATEGORY_CONTAINS_BOOKS(207,"Can not delete! Exist book have thís category.",HttpStatus.BAD_REQUEST),
     AUTHOR_CONTAINS_BOOKS(208,"Can not delete! Exist book have thís author.",HttpStatus.BAD_REQUEST),
-
-//
-//
-//    EMAIL_INVALID(203,"Invalid email",HttpStatus.BAD_REQUEST),
+    FAIL_PARSE_EXCEL(209,"Failed to parse Excel file",HttpStatus.BAD_REQUEST),
 //    PASSWORD_INVALID(204,"Password must be at least 6 characters",HttpStatus.BAD_REQUEST),
 //    UNAUTHENTICATED(205,"Unauthenticated",HttpStatus.UNAUTHORIZED),
 //    UNAUTHORIZED(206, "You do not have permission",HttpStatus.FORBIDDEN),

@@ -11,11 +11,14 @@ import com.example.productservice.exception.ErrorCode;
 import com.example.productservice.mapper.BookMapper;
 import com.example.productservice.model.Book;
 import com.example.productservice.model.BookDetail;
+import com.example.productservice.repo.Author.AuthorRepository;
 import com.example.productservice.repo.BookDetailRepository;
 import com.example.productservice.repo.BookRepository;
+import com.example.productservice.repo.Category.CategoryRepository;
 import com.example.productservice.repo.ServiceClient.ImageServiceClient;
 import com.example.productservice.service.Author.AuthorService;
 import com.example.productservice.service.Category.CategoryService;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,10 +27,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +43,11 @@ public class BookService {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AuthorRepository authorRepository;
 //    @Autowired
 //    private AuthorService authorService;
 
@@ -50,6 +57,8 @@ public class BookService {
     @Autowired
     private BookMapper bookMapper;
     public BookInfoResponse addBook(CreateBookRequest request){
+
+        System.out.println("add Req " + request.getBookDetailId());
 
         Book book = bookMapper.toBook(request);
         BookDetail bookDetail = bookMapper.toBookDetail(request);
@@ -183,6 +192,7 @@ public class BookService {
     public void delete(String id){
         BookDetail bookDetail = bookDetailRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+
         Set<String> categoryIds = bookDetail.getCategories();
 
         bookRepository.deleteById(id);
@@ -232,5 +242,97 @@ public class BookService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         book.setFlashSale(flashSale);
         bookRepository.save(book);
+    }
+
+
+    public List<BookInfoResponse> importBooksFromExcel(MultipartFile file) {
+        List<BookInfoResponse> responses = new ArrayList<>();
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = WorkbookFactory.create(inputStream)) {
+
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) {
+                    // Skip header row
+                    continue;
+                }
+
+                CreateBookRequest request = new CreateBookRequest();
+                request.setTitle(getCellValue(row.getCell(0)));
+
+
+                // Lấy danh sách các category từ ô trong Excel
+                String[] categoriesFromExcel = getCellValue(row.getCell(1)).split(",");
+                Set<String> categoryIds = new HashSet<>();
+
+                for(String category : categoriesFromExcel){
+                    var cate = categoryRepository.findByCategory(category.trim())
+                            .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+                    categoryIds.add(cate.getId());
+
+                }
+//                List<String> categoryIds = List.of(getCellValue(row.getCell(1)).split(",")).stream().allMatch(ca);
+                request.setCategories(categoryIds);
+
+//                System.out.println(2);
+                String discountStr = getCellValue(row.getCell(2));
+                if (!discountStr.isEmpty()) {
+                    String[] parts = discountStr.split("\\.");
+                    System.out.println(parts[0]);
+                    request.setDiscount(Integer.parseInt(parts[0]));
+                }
+//                System.out.println("author " + getCellValue(row.getCell(3)).trim());
+
+//                request.setStatus(getCellValue(row.getCell(5)));
+                var author = authorRepository.findByAuthorName(getCellValue(row.getCell(3)).trim())
+                        .orElseThrow(() -> new AppException(ErrorCode.AUTHOR_NOT_FOUND));
+                request.setAuthor(author.getId());
+                request.setPublisher(getCellValue(row.getCell(4)));
+                request.setDescription(getCellValue(row.getCell(5)));
+                request.setPrice(Double.parseDouble(getCellValue(row.getCell(6))));
+                request.setInfo(getCellValue(row.getCell(7)));
+
+                // Assume files will not be included in Excel import for simplicity
+                request.setFiles(null);
+//                System.out.println(request.getCategories());
+//                System.out.println(request.getAuthor());
+//                System.out.println(request.getPrice());
+//                System.out.println(request.getDiscount());
+//                System.out.println(request.getCustomFieldsMap());
+                System.out.println(request.getInfo());
+                responses.add(addBook(request));
+
+//                System.out.println("resp = "+responses.get(0));
+            }
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FAIL_PARSE_EXCEL);
+        }
+        return responses;
+    }
+
+    private String getCellValue(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+//                    System.out.println("numeric " + cell.getNumericCellValue());
+                    return String.valueOf(cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            case BLANK:
+                return "";
+            default:
+                return "";
+        }
     }
 }
