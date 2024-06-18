@@ -21,6 +21,7 @@ import { AddProduct } from './Pages/AddProduct.jsx'
 import { EditProduct } from './Pages/EditProduct.jsx'
 import { ProtectedRoute } from './ProtectedRoute.jsx'
 import { DetailPage } from './Pages/DetailPage.jsx'
+import { Inventory } from './Pages/Inventory.jsx'
 
   const router = createBrowserRouter([
     {
@@ -112,6 +113,14 @@ import { DetailPage } from './Pages/DetailPage.jsx'
         element: (
             <ProtectedRoute>
                 <EditProduct />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'inventory',
+        element: (
+            <ProtectedRoute>
+                <Inventory/>
             </ProtectedRoute>
         ),
     },
