@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import { Button, Card, Col, Container, Row, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddInv from './AddInv';
 import EditInv from './EditInv';
+import { FaTimes } from 'react-icons/fa';
 
 // const inventoryItems = [
 //     { image: 'https://via.placeholder.com/150', name: 'Harry Potter', price: '5$', quantity: '20 Books' },
@@ -21,6 +22,8 @@ export const InventoryManagement = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     const handleAddInventory = (newItem) => {
         setInventory([...inventory, newItem]);
@@ -39,6 +42,20 @@ export const InventoryManagement = () => {
         setShowEditModal(true);
     };
 
+    const handleDeleteClick = (item) => {
+        setItemToDelete(item);
+        if (item.onHand > 0) {
+            toast.error(`The ${item.name} inventory is greater than 0`);
+        } else {
+            setShowDeleteModal(true);
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        setInventory(inventory.filter(item => item !== itemToDelete));
+        setShowDeleteModal(false);
+        toast.success('Item deleted successfully');
+    };
 
     return (
         <Container className="mt-5">
@@ -55,11 +72,15 @@ export const InventoryManagement = () => {
             <Row>
                 {inventory.map((item, index) => (
                     <Col lg={3} md={4} sm={6} xs={12}className="mb-4" key={index}>
-                        <Card className="inventory-item">
+                        <Card className="inventory-item h-100">
+                            <FaTimes 
+                                className="delete-icon" 
+                                onClick={() => handleDeleteClick(item)} 
+                            />
                             {item.image && (
-                                <Card.Img variant="top" src={URL.createObjectURL(item.image)} alt={`Product ${index}`} className="inventory-img" onClick={() => handleCardClick(item)}/>
+                                <Card.Img variant="top" src={URL.createObjectURL(item.image)} alt={`Product ${index}`} className="inventory-img"/>
                             )}
-                            <Card.Body>
+                            <Card.Body onClick={() => handleCardClick(item)}>
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>
                                     <strong>Price:</strong> {item.price}<br />
@@ -83,13 +104,23 @@ export const InventoryManagement = () => {
                     item={currentItem} 
                 />
             )}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Body className="text-center">
+                    <p>Are you sure you want to delete this item?</p>
+                    <Button variant="danger" onClick={handleConfirmDelete}>Yes</Button>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+                </Modal.Body>
+            </Modal>
             <ToastContainer />
                  <style>{`
                 .inventory-item {
+                    position: relative;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                     border-radius: 5px;
                     overflow: hidden;
                     transition: transform 0.2s ease-in-out;
+                    cursor: pointer;
+
                 }
                 .inventory-item:hover {
                     transform: translateY(-5px);
@@ -109,6 +140,14 @@ export const InventoryManagement = () => {
                 }
                 .text-end {
                     text-align: right;
+                }
+                .delete-icon {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    color: red;
+                    cursor: pointer;
+                    z-index: 10;
                 }
             `}</style>
         </Container>
