@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AddInv from './AddInv';
+import EditInv from './EditInv';
 
 // const inventoryItems = [
 //     { image: 'https://via.placeholder.com/150', name: 'Harry Potter', price: '5$', quantity: '20 Books' },
@@ -16,10 +19,27 @@ import AddInv from './AddInv';
 export const InventoryManagement = () => {
     const [inventory, setInventory] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
 
     const handleAddInventory = (newItem) => {
         setInventory([...inventory, newItem]);
     };
+
+    const handleEditInventory = (updatedItem) => {
+        const updatedInventory = inventory.map(item =>
+            item === currentItem ? updatedItem : item
+        );
+        setInventory(updatedInventory);
+        toast.success('Edit successfully');
+    };
+
+    const handleCardClick = (item) => {
+        setCurrentItem(item);
+        setShowEditModal(true);
+    };
+
+
     return (
         <Container className="mt-5">
             <Row>
@@ -37,7 +57,7 @@ export const InventoryManagement = () => {
                     <Col lg={3} md={4} sm={6} xs={12}className="mb-4" key={index}>
                         <Card className="inventory-item">
                             {item.image && (
-                                <Card.Img variant="top" src={URL.createObjectURL(item.image)} alt={`Product ${index}`} className="inventory-img" />
+                                <Card.Img variant="top" src={URL.createObjectURL(item.image)} alt={`Product ${index}`} className="inventory-img" onClick={() => handleCardClick(item)}/>
                             )}
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
@@ -55,6 +75,15 @@ export const InventoryManagement = () => {
                 onHide={() => setShowAddModal(false)} 
                 onAdd={handleAddInventory} 
             />
+            {currentItem && (
+                <EditInv 
+                    show={showEditModal} 
+                    onHide={() => setShowEditModal(false)} 
+                    onSave={handleEditInventory} 
+                    item={currentItem} 
+                />
+            )}
+            <ToastContainer />
                  <style>{`
                 .inventory-item {
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
