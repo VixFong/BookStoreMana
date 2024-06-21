@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, Col, Container, Row, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AddInv from './AddInv';
 import EditInv from './EditInv';
 import { FaTimes } from 'react-icons/fa';
-
+import axios from 'axios';
 // const inventoryItems = [
 //     { image: 'https://via.placeholder.com/150', name: 'Harry Potter', price: '5$', quantity: '20 Books' },
 //     { image: '/UnderAFireFly.jpg', name: 'Under A Fire Fly', price: '5$', quantity: '20 Books' },
@@ -19,11 +19,52 @@ import { FaTimes } from 'react-icons/fa';
 
 export const InventoryManagement = () => {
     const [inventory, setInventory] = useState([]);
+
+    const [error, setError] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const token =  localStorage.getItem('authToken');
+
+    useEffect(()=>{
+        fetchInventory();
+    },[])
+
+    const fetchInventory = async() =>{
+        try {
+            const response = await axios.get('/api/inventory',{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+
+            });
+            setInventory(response.data.data);
+            console.log(response.data.data);
+
+        } catch (error) {
+            setError(error.response?.data?.message);
+            
+        }
+    }
+
+    const fetchBooks = async() =>{
+        try {
+            const response = await axios.get('/api/inventory',{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+
+            });
+            setInventory(response.data.data);
+            console.log(response.data.data);
+
+        } catch (error) {
+            setError(error.response?.data?.message);
+            
+        }
+    }
 
     const handleAddInventory = (newItem) => {
         setInventory([...inventory, newItem]);

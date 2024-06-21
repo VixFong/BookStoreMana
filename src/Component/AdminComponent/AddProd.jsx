@@ -42,9 +42,9 @@ export const AddProd = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(!token){
-            navigate('/');
-        }
+        // if(!token){
+        //     navigate('/');
+        // }
 
 
         const fetchCategories = async () => {

@@ -31,31 +31,31 @@ export const ProductManagement = () => {
     const token = localStorage.getItem("authToken");
     const navigate = useNavigate();
     useEffect(() => {
-        if(!token){
+        // if(!token){
             
-            navigate('/');
+        //     navigate('/');
         
-        }
+        // }
         // checkToken(token)
         fetchBooks(page, size, search);
 
     }, [page, size, search, token]);
 
-    const checkToken = async(token) =>{
-        try {
-            const response = await axios.post('api/identity/auth/introspect', {
-                token : token
-            })
+    // const checkToken = async(token) =>{
+    //     try {
+    //         const response = await axios.post('api/identity/auth/introspect', {
+    //             token : token
+    //         })
 
-            const isValid = response.data.data.valid;
-            if(!isValid){
-                console.log("aaaaaa")
-                navigate('/');        
-            }
-        } catch (error) {
-            setError(error.response?.data?.message);
-        }
-    }
+    //         const isValid = response.data.data.valid;
+    //         if(!isValid){
+    //             console.log("aaaaaa")
+    //             navigate('/');        
+    //         }
+    //     } catch (error) {
+    //         setError(error.response?.data?.message);
+    //     }
+    // }
 
     const fetchBooks = async(page,size,keyword) => {
         try {

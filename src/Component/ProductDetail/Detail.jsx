@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaCartPlus } from 'react-icons/fa';
 
 export const Detail = ({ addToCart }) => {
+    
+    
     const product = {
         title: 'Dark in Death: An Eve Dallas Novel (In Death, Book 46)',
         author: 'J. D. Robb',
