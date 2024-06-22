@@ -15,5 +15,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Publisher {
     @Id
     private String id;
-    private String publisher;
+
+    private String name;
+
+    private String address;
+
+    private String email;
 }

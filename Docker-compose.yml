@@ -162,6 +162,10 @@ services:
       - SPRING_CLOUD_GATEWAY_ROUTES[3].ID=product-service
       - SPRING_CLOUD_GATEWAY_ROUTES[3].URI=lb://productservice
       - SPRING_CLOUD_GATEWAY_ROUTES[3].PREDICATES[0]=Path=/products/**
+
+      - SPRING_CLOUD_GATEWAY_ROUTES[4].ID=publisher-service
+      - SPRING_CLOUD_GATEWAY_ROUTES[4].URI=lb://publisherservice
+      - SPRING_CLOUD_GATEWAY_ROUTES[4].PREDICATES[0]=Path=/publishers/**
     networks:
       - eureka-network
     depends_on:
@@ -185,13 +189,13 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
-      - JWT_SECRETKEY=ySp2wMFd2mdJCl+EDIuW5fT3e//1XX7JhMpsNsbKxGddVDdLmRSnE/9w379QY36O
-      - SPRING_MAIL_HOST=smtp.gmail.com
-      - SPRING_MAIL_PORT=587
-      - SPRING_MAIL_USERNAME=khangdogia2002@gmail.com
-      - SPRING_MAIL_PASSWORD=dtjo qbgd xlyl mqfm
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+#      - JWT_SECRETKEY=ySp2wMFd2mdJCl+EDIuW5fT3e//1XX7JhMpsNsbKxGddVDdLmRSnE/9w379QY36O
+#      - SPRING_MAIL_HOST=smtp.gmail.com
+#      - SPRING_MAIL_PORT=587
+#      - SPRING_MAIL_USERNAME=khangdogia2002@gmail.com
+#      - SPRING_MAIL_PASSWORD=dtjo qbgd xlyl mqfm
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+#      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
     networks:
       - eureka-network
@@ -252,6 +256,30 @@ services:
     depends_on:
       - discovery-server
 
+  publisherservice:
+    image: 'publisher-service:latest'
+    build:
+      context: PublisherService
+      dockerfile: Dockerfile
+    container_name: publisherservice
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_APPLICATION_NAME=PublisherService
+      - SERVER_PORT=8084
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3307/PublisherService?useSSL=false&createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Khang2002
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
+
+    networks:
+      - eureka-network
+    depends_on:
+      - discovery-server
 
 
 networks:

@@ -12,6 +12,7 @@ public interface BookRepository extends MongoRepository<Book, String> {
     @Query("{ 'title': { $regex: ?0, $options: 'i' } }")
     Page<Book> findBookByTitle(String keyword, Pageable pageable);
 
-
+    @Query(value = "{ '_id': ?0 }", fields = "{ 'title': 1, 'images': 1 }")
+    Book findBookById(String id);
 
 }

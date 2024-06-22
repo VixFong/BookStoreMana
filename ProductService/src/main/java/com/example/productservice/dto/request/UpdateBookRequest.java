@@ -26,7 +26,8 @@ public class UpdateBookRequest {
     private List<String> imageUrls;
 
     private String author;
-    private String publisher;
+    private Set<String> publishers;
+
     private String description;
     private double price;
     private double priceDiscount;

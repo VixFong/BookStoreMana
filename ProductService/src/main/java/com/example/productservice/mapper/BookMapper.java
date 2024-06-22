@@ -43,7 +43,7 @@ public interface BookMapper {
     @Mapping(source = "book.images", target = "images")
     @Mapping(source = "book.price", target = "price")
     @Mapping(source = "bookDetail.author", target = "author")
-    @Mapping(source = "bookDetail.publisher", target = "publisher")
+    @Mapping(source = "bookDetail.publishers", target = "publishers")
     @Mapping(source = "bookDetail.categories", target = "categories")
     @Mapping(source = "bookDetail.description", target = "description")
     @Mapping(source = "bookDetail.info", target = "info")

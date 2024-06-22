@@ -18,8 +18,7 @@ public class BookDetail {
     private String bookDetailId;
 
     private String author;
-    private String publisher;
-//    private Set<String> genre;
+    private Set<String> publishers;
     private Set<String> categories;
 
     private String description;

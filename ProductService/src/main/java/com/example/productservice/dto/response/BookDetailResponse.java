@@ -12,8 +12,7 @@ import java.util.Set;
 @Builder
 public class BookDetailResponse {
     private String author;
-    private String publisher;
-//    private Set<String> genre;
+    private Set<String> publishers;
     private Set<String> categories;
 
     private String description;

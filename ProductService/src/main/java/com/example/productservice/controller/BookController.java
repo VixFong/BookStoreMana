@@ -5,6 +5,7 @@ import com.example.productservice.dto.request.UpdateBookRequest;
 import com.example.productservice.dto.response.ApiResponse;
 import com.example.productservice.dto.response.BookInfoResponse;
 import com.example.productservice.dto.response.BookResponse;
+import com.example.productservice.dto.response.Book_InventoryResponse;
 import com.example.productservice.service.BookService;
 import jakarta.validation.Valid;
 import lombok.Getter;
@@ -50,6 +51,15 @@ public class BookController {
         System.out.println("Controller getBookInfo");
         return ApiResponse.<BookInfoResponse>builder()
                 .data(bookService.getBookInfo(id))
+                .build();
+    }
+
+    @GetMapping("{id}/bookData")
+    public ApiResponse<Book_InventoryResponse> getBookData(@PathVariable String id){
+        System.out.println("Controller getBookData");
+
+        return ApiResponse.<Book_InventoryResponse>builder()
+                .data(bookService.getBookData(id))
                 .build();
     }
 

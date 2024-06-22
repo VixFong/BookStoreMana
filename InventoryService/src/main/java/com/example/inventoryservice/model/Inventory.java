@@ -26,6 +26,7 @@ public class Inventory {
     private int orderedQuantity;
     private int receivedQuantity;
 
+    private double totalPrice;
     private String status;
     private String bookId;
 

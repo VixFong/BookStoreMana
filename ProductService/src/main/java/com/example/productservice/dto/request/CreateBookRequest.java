@@ -25,14 +25,17 @@ public class CreateBookRequest {
     private boolean flashSale;
     private boolean lock;
     private List<MultipartFile> files;
+    private List<String> imageUrls;
     private String status;
 
     private String author;
-    private String publisher;
-//    private Set<String> genre;
+    private Set<String> publishers;
     private String description;
     private double price;
-//    private HashMap<String, String> info;
+
+    private int quantity;
+    private double totalPrice;
+
     private String info;  // Change this to String
 
     public HashMap<String, String> getCustomFieldsMap() {
@@ -51,7 +54,7 @@ public class CreateBookRequest {
             String[] keyValue = pair.split(":");
             if (keyValue.length == 2) {
                 map.put(keyValue[0].trim(), keyValue[1].trim());
-                System.out.println("key "+keyValue[1]);
+//                System.out.println("key "+keyValue[1]);
 
             }
         }

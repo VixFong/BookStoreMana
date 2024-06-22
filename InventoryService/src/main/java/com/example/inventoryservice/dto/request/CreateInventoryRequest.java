@@ -13,14 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 public class CreateInventoryRequest {
 
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    private LocalDateTime dateCreated;
-//
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    private LocalDateTime dateUpdate;
 
     private int orderedQuantity;
-//    private int receivedQuantity;
+    private double totalPrice;
 
     private String bookId;
 }

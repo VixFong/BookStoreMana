@@ -18,8 +18,8 @@ public class WebClientConfig {
     @Bean
     WebClient webClient(){
         return WebClient.builder()
-//                .baseUrl("http://localhost:8081/identity")
-                .baseUrl("http://accountservice:8081/identity")
+                .baseUrl("http://localhost:8081/identity")
+//                .baseUrl("http://accountservice:8081/identity")
                 .build();
     }
 

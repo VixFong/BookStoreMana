@@ -14,6 +14,6 @@ public class CreatePublisherRequest {
 
     private String address;
 
-    private String publisher_id;
+    private String email;
 
 }

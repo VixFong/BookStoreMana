@@ -1,4 +1,4 @@
-package com.example.publisherservice.dto.request;
+package com.example.productservice.dto.request.Publisher;
 
 
 import lombok.*;

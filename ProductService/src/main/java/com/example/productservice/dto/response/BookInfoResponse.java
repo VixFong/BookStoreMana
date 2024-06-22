@@ -23,7 +23,8 @@ public class BookInfoResponse {
     private List<String> images;
 
     private String author;
-    private String publisher;
+    private Set<String> publishers;
+
     private String description;
     private double price;
     private double priceDiscount;

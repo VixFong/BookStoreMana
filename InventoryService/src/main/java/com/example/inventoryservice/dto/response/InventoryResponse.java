@@ -24,5 +24,8 @@ public class InventoryResponse {
     private int orderedQuantity;
     private int receivedQuantity;
 
+    private double totalPrice;
+
+
     private String bookId;
 }

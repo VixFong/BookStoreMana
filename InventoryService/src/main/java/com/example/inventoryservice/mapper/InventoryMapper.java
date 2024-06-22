@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface InventoryMapper {
 
+//    @Mapping(target = "orderedQuantity", ignore = true)
     Inventory toInventory(CreateInventoryRequest request);
 
     InventoryResponse toInventoryResponse(Inventory inventory);

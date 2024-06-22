@@ -1,4 +1,4 @@
-package com.example.publisherservice.dto.request;
+package com.example.productservice.dto.response;
 
 
 import lombok.*;
@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdatePublisherRequest {
+public class PublisherResponse {
+    private String id;
     private String name;
 
     private String address;

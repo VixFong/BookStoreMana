@@ -33,7 +33,8 @@ public class AuthFilter implements GlobalFilter, Ordered {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final String[] publicEndPoint = {"/identity/users/register","/identity/users/","/identity/auth/.*"};
+    private final String[] publicEndPoint = {"/identity/users/register","/identity/users/","/identity/auth/.*",
+                                            "/products/.*"};
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain){

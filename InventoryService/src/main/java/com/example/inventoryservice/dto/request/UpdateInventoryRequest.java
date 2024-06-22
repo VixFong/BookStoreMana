@@ -20,6 +20,7 @@ public class UpdateInventoryRequest {
 
     private int orderedQuantity;
     private int receivedQuantity;
+    private double totalPrice;
 
     private String bookId;
 }

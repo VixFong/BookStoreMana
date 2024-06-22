@@ -73,6 +73,7 @@ public class CategoryService {
     public void updateBookCount(String categoryId, int bookCount) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
         category.setBookCount(bookCount);
         categoryRepository.save(category);
     }
