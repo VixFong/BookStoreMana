@@ -94,6 +94,11 @@ export const InventoryManagement = () => {
         // const updatedInventory = inventory.map(item =>
         //     item === currentItem ? updatedItem : item
         // );
+        // setInventory(updatedInventory);
+        // toast.success('Edit successfully');
+        const updatedInventory = inventory.map(item =>
+            item.id === updatedItem.id ? updatedItem : item
+        );
         setInventory(updatedInventory);
         toast.success('Edit successfully');
     };
@@ -107,7 +112,7 @@ export const InventoryManagement = () => {
     const handleDeleteClick = (item) => {
         setItemToDelete(item);
         if (item.receivedQuantity > 0) {
-            toast.error(`The ${item.name} inventory is greater than 0`);
+            toast.error(`The ${item.title} inventory is greater than 0`);
         } else {
             setShowDeleteModal(true);
         }
@@ -165,14 +170,14 @@ export const InventoryManagement = () => {
                                 className="delete-icon" 
                                 onClick={() => handleDeleteClick(item)} 
                             />
-                      
-                        
-                            <Card.Img 
-                                variant="top" 
-                                src={item.image || 'https://via.placeholder.com/150'} 
-                                alt={`Product ${index}`} 
-                                className="inventory-img"
-                            />
+                            {item.image && (
+                                <Card.Img 
+                                    variant="top" 
+                                    src={URL.createObjectURL(item.image)}
+                                    alt={`Product ${index}`} 
+                                    className="inventory-img"
+                                />
+                            )}
                             <Card.Body onClick={() => handleCardClick(item)}>
                                 <Card.Title>{item.title}</Card.Title>
                                 <Card.Text>

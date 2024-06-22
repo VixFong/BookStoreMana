@@ -4,8 +4,8 @@ import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
 
 const AddInv = ({ show, onHide, onAdd }) => {
     const [name, setName] = useState('');
-    const [onHand] = useState(0);  // On hand is always 0 and read-only
-    const [units] = useState('books');  // Units is always 'books' and read-only
+    const [onHand] = useState(0);
+    const [units] = useState('books');
     const [price, setPrice] = useState('');
     const [image, setImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);

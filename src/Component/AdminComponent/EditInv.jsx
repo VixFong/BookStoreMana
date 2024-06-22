@@ -7,12 +7,14 @@ export const EditInv = ({ show, onHide, onSave, item }) => {
     const [onHand, setOnHand] = useState(item.onHand);
     const [price, setPrice] = useState(item.price);
     const [image, setImage] = useState(item.image);
+    const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
         setName(item.name);
         setOnHand(item.onHand);
         setPrice(item.price);
         setImage(item.image);
+        setImagePreview(item.image ? URL.createObjectURL(item.image) : null);
     }, [item]);
 
     const handleSubmit = (e) => {
@@ -23,7 +25,9 @@ export const EditInv = ({ show, onHide, onSave, item }) => {
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            setImage(e.target.files[0]);
+            const file = e.target.files[0];
+            setImage(file);
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
