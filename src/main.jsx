@@ -23,6 +23,7 @@ import { ProtectedRoute } from './ProtectedRoute.jsx'
 import { DetailPage } from './Pages/DetailPage.jsx'
 import { Inventory } from './Pages/Inventory.jsx'
 import { AddInventory } from './Pages/AddInventory.jsx'
+import { CategoryCli } from './Pages/CategoryCli.jsx'
 
   const router = createBrowserRouter([
     {
@@ -44,6 +45,10 @@ import { AddInventory } from './Pages/AddInventory.jsx'
     {
         path: 'BookDetail',
         element: <DetailPage/>,
+    },
+    {
+        path: 'CategoryClient',
+        element: <CategoryCli/>,
     },
     {
         path: 'AdminPage',
