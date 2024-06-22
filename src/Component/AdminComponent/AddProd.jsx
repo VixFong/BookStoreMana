@@ -10,6 +10,9 @@ import Select from 'react-select';
 export const AddProd = () => {
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
+    const [totalPrice, setTotalPrice] = useState('');
+    const [quantity, setQuantity] = useState('');
+
     const [category, setCategory] = useState('');
 
     // const [author, setAuthor] = useState('');
@@ -42,11 +45,7 @@ export const AddProd = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        // if(!token){
-        //     navigate('/');
-        // }
-
-
+     
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/products/categories', {
@@ -68,22 +67,22 @@ export const AddProd = () => {
             }
         };
 
-        // const fetchPublishers = async () => {
-        //     try {
-        //         const response = await axios.get('/api/products/publishers', {
-        //             headers: {
-        //                 Authorization: `Bearer ${token}`
-        //             }
-        //         });
-        //         const options = response.data.data.map(publisher => ({
-        //             value: publisher.id,
-        //             label: publisher.name
-        //         }));
-        //         setPublisherOptions(options); // Set publisher options
-        //     } catch (error) {
-        //         console.error('There was an error fetching the publishers!', error);
-        //     }
-        // };
+        const fetchPublishers = async () => {
+            try {
+                const response = await axios.get('/api/products/publishers', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const options = response.data.data.map(publisher => ({
+                    value: publisher.id,
+                    label: publisher.name
+                }));
+                setPublisherOptions(options); // Set publisher options
+            } catch (error) {
+                console.error('There was an error fetching the publishers!', error);
+            }
+        };
 
         const fetchAuthors = async () => {
             try {
@@ -104,7 +103,7 @@ export const AddProd = () => {
         };
 
         fetchCategories();
-        // fetchPublishers();
+        fetchPublishers();
         fetchAuthors();
     }, []);  
 
@@ -164,10 +163,13 @@ export const AddProd = () => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('categories', category);
-        // formData.append('publishers', selectedPublishers);
+        formData.append('publishers', selectedPublishers);
         formData.append('author', selectedAuthors);
         formData.append('price', price);
         formData.append('discount', discount);
+        formData.append('totalPrice', totalPrice);
+        formData.append('orderedQuantity', quantity);
+
         formData.append('description', description);
         images.forEach((image) => {
             formData.append('files', image);
@@ -363,17 +365,17 @@ export const AddProd = () => {
                         </Col>
                     </Row>
                     <Row>
-                        {/* <Col md={6}>
+                        <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Publisher</Form.Label>
                                 <Select
                                     options={publisherOptions}
                                     isMulti
                                     onChange={(selectedOptions) => setSelectedPublishers(selectedOptions.map(option => option.value))}
-                                    // required
+                                    isDisabled={isUploading}
                                 />
                             </Form.Group>
-                        </Col> */}
+                        </Col>
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Author</Form.Label>
@@ -409,6 +411,30 @@ export const AddProd = () => {
                                     type="number"
                                     value={discount}
                                     onChange={(e) => setDiscount(e.target.value)}
+                                    required={!isUploading}
+                                    disabled={isUploading}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Total Price</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={totalPrice}
+                                    onChange={(e) => setTotalPrice(e.target.value)}
+                                    required={!isUploading}
+                                    disabled={isUploading}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Quantity</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(e.target.value)}
                                     required={!isUploading}
                                     disabled={isUploading}
                                 />

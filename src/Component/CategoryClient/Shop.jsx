@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 'react-bootstrap';
+import axios from 'axios'
 
 const filters = {
     categories: ['Arts & Photography', 'Baby', 'Biographies & Memoirs', 'Biography', 'Business & Money', 'BWafts', 'Children', 'Christian Books & Bibles'],
@@ -47,11 +48,29 @@ const filters = {
 };
 
 export const Shop = () => {
+
+    const [products, setProducts] = useState([]);
+
+
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(4);
+    const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
+
+    const [category, setCategory] = useState([])
+    const [publisher, setPubliser] = useState([])
+    const [author, setAuthor] = useState([])
+
     const [sortOption, setSortOption] = useState('Default sorting');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedAuthors, setSelectedAuthors] = useState([]);
     const [selectedFormats, setSelectedFormats] = useState([]);
     const [priceRange, setPriceRange] = useState(70);
+
+
+    // const token = localStorage.getItem("authToken");
+    useEffect
+
 
     const handleSortChange = (option) => {
         setSortOption(option);

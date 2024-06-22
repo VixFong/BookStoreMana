@@ -8,17 +8,10 @@ import AddInv from './AddInv';
 import EditInv from './EditInv';
 import { FaTimes } from 'react-icons/fa';
 import axios from 'axios';
-// const inventoryItems = [
-//     { image: 'https://via.placeholder.com/150', name: 'Harry Potter', price: '5$', quantity: '20 Books' },
-//     { image: '/UnderAFireFly.jpg', name: 'Under A Fire Fly', price: '5$', quantity: '20 Books' },
-//     { image: '/TheLastSister.jpg', name: 'The Last Sister', price: '5$', quantity: '20 Books' },
-//     { image: '/ThinkLikeAMonk.jpg', name: 'Think Like A Monk', price: '5$', quantity: '20 Books' },
-//     { image: '/ZombieTheorem.jpg', name: 'Zombie Theorem', price: '5$', quantity: '20 Books' },
-//     { image: 'https://via.placeholder.com/150', name: 'Tony Tony', price: '5$', quantity: '20 Books' },
-// ];
 
 export const InventoryManagement = () => {
     const [inventory, setInventory] = useState([]);
+    const [publishers, setPublishers] = useState([]);
 
     const [error, setError] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
@@ -30,74 +23,128 @@ export const InventoryManagement = () => {
 
     useEffect(()=>{
         fetchInventory();
+        fetchPublishers();
     },[])
 
-    const fetchInventory = async() =>{
+
+    const fetchInventory = async () => {
         try {
-            const response = await axios.get('/api/inventory',{
+            const response = await axios.get('/api/inventory', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-
             });
-            setInventory(response.data.data);
-            console.log(response.data.data);
+            const inventoryData = response.data.data;
+            console.log(inventoryData)
 
+            // Fetch book details for each inventory item
+            const updatedInventory = await Promise.all(
+                inventoryData.map(async (item) => {
+                    const bookResponse = await axios.get(`/api/products/books/${item.bookId}/bookData`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    return { ...item, ...bookResponse.data.data };
+                })
+            );
+
+            setInventory(updatedInventory);
         } catch (error) {
             setError(error.response?.data?.message);
-            
         }
-    }
+    };
 
-    const fetchBooks = async() =>{
+
+    const fetchPublishers = async () => {
         try {
-            const response = await axios.get('/api/inventory',{
+            const response = await axios.get('/api/products/publishers/publisherData', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-
             });
-            setInventory(response.data.data);
-            console.log(response.data.data);
-
+            setPublishers(response.data.data);
         } catch (error) {
             setError(error.response?.data?.message);
-            
         }
-    }
+    };
+
+    console.log(inventory);
+    console.log(publishers);
+
+    const getPublisherName = (publisherIds) => {
+        
+        return publisherIds.map(publisherId => {
+            const publisher = publishers.find(pub => pub.id === publisherId);
+            return publisher ? publisher.name : 'Unknown Publisher';
+        })
+        .join(', ');
+    };
+
+
+    // const handleDeleteConfirm = async () => {
+     
+    // };
 
     const handleAddInventory = (newItem) => {
         setInventory([...inventory, newItem]);
     };
 
     const handleEditInventory = (updatedItem) => {
-        const updatedInventory = inventory.map(item =>
-            item === currentItem ? updatedItem : item
-        );
+        // const updatedInventory = inventory.map(item =>
+        //     item === currentItem ? updatedItem : item
+        // );
         setInventory(updatedInventory);
         toast.success('Edit successfully');
     };
 
     const handleCardClick = (item) => {
         setCurrentItem(item);
+        console.log('current item', item)
         setShowEditModal(true);
     };
 
     const handleDeleteClick = (item) => {
         setItemToDelete(item);
-        if (item.onHand > 0) {
+        if (item.receivedQuantity > 0) {
             toast.error(`The ${item.name} inventory is greater than 0`);
         } else {
             setShowDeleteModal(true);
         }
     };
 
-    const handleConfirmDelete = () => {
-        setInventory(inventory.filter(item => item !== itemToDelete));
-        setShowDeleteModal(false);
-        toast.success('Item deleted successfully');
+    const handleConfirmDelete = async() => {
+        try {
+            await axios.delete(`/api/inventory/${itemToDelete.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            
+            setShowDeleteModal(false);
+            fetchInventory();
+            toast.success('Item deleted successfully');
+        } catch (error) {
+            setError(error.response?.data?.message);
+        }
+        
     };
 
+    const formatDate = (dateString) => {
+        if(dateString != null){
+            
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+    
+            const hour = String(date.getHours());
+            const minute = String(date.getMinutes());
+    
+            return `${day}-${month}-${year}  ${hour}:${minute}` ;
+        }
+        return;
+    };
     return (
         <Container className="mt-5">
             <Row>
@@ -118,14 +165,23 @@ export const InventoryManagement = () => {
                                 className="delete-icon" 
                                 onClick={() => handleDeleteClick(item)} 
                             />
-                            {item.image && (
-                                <Card.Img variant="top" src={URL.createObjectURL(item.image)} alt={`Product ${index}`} className="inventory-img"/>
-                            )}
+                      
+                        
+                            <Card.Img 
+                                variant="top" 
+                                src={item.image || 'https://via.placeholder.com/150'} 
+                                alt={`Product ${index}`} 
+                                className="inventory-img"
+                            />
                             <Card.Body onClick={() => handleCardClick(item)}>
-                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Title>{item.title}</Card.Title>
                                 <Card.Text>
-                                    <strong>Price:</strong> {item.price}<br />
-                                    <strong>On hand:</strong> {item.onHand} {item.units}
+                                    <strong>Price:</strong> {item.totalPrice}<br />
+                                    <strong>Quantity:</strong> {item.receivedQuantity} / {item.orderedQuantity} <br />
+                                    <strong>Publisher:</strong> {getPublisherName(item.publishers)}<br />
+                                    <strong>Date Created:</strong> {formatDate(item.dateCreated)}<br />
+                                    <strong>Date Updated:</strong> {formatDate(item.dateUpdated)}<br />
+
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -168,7 +224,7 @@ export const InventoryManagement = () => {
                 }
                 .inventory-img {
                     max-width: 100%;
-                    max-height: 200px;
+                    max-height: 400px;
                     object-fit: cover;
                 }
                 .card-title {

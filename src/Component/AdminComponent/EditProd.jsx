@@ -37,11 +37,7 @@ export const EditProd = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!token) {
-            navigate('/');
-        }
-
-      
+       
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/products/categories', {
@@ -62,22 +58,23 @@ export const EditProd = () => {
             }
         };
 
-        // const fetchPublishers = async () => {
-        //     try {
-        //         const response = await axios.get('/api/products/publishers', {
-        //             headers: {
-        //                 Authorization: `Bearer ${token}`
-        //             }
-        //         });
-        //         const options = response.data.data.map((publisher) => ({
-        //             value: publisher.id,
-        //             label: publisher.name
-        //         }));
-        //         setPublisherOptions(options);
-        //     } catch (error) {
-        //         console.error('There was an error fetching the publishers!', error);
-        //     }
-        // };
+        const fetchPublishers = async () => {
+            try {
+                const response = await axios.get('/api/products/publishers', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const options = response.data.data.map((publisher) => ({
+                    value: publisher.id,
+                    label: publisher.name
+                }));
+                return options;
+                // setPublisherOptions(options);
+            } catch (error) {
+                console.error('There was an error fetching the publishers!', error);
+            }
+        };
 
         const fetchAuthors = async () => {
             try {
@@ -124,31 +121,32 @@ export const EditProd = () => {
         };
 
         const fetchData = async () => {
-            const [categories, authors, product] = await Promise.all([
+            const [categories, publishers, authors, product] = await Promise.all([
                 fetchCategories(),
+                fetchPublishers(),
                 fetchAuthors(),
                 fetchProduct()
             ]);
-            // console.log(product.info)
+            console.log(product)
             if (product) {
                 setTitle(product.title);
                 setPrice(product.price);
                 setDiscount(product.discount);
                 setDescription(product.description);
-                // setImages(product.images || []);
+          
                 setImages(product.images);
                 setImagePreviews(product.images ? product.images.map((image) => image) : []);
 
                 setCategoryOptions(categories);
-                // setPublisherOptions(publishers);
+                setPublisherOptions(publishers);
                 setAuthorOptions(authors);
 
                 setSelectedCategories(product.categories.map(categoryId => 
                     categories.find(category => category.value === categoryId)
                 ));
-                // setSelectedPublishers(product.publishers.map(publisher => 
-                //     publishers.find(publisherOption => publisherOption.value === publisher.id)
-                // ));
+                setSelectedPublishers(product.publishers.map(publisherId => 
+                    publishers.find(publisherOption => publisherOption.value === publisherId)
+                ));
                 setSelectedAuthors(authors.find(author => author.value === product.author))
                 setInfo(product.info || {});
 
@@ -159,19 +157,10 @@ export const EditProd = () => {
         };
             fetchData();
     
-      
-
-      
-        // fetchPublishers();
-        
-
-        // fetchPublishers(),
-        // publisherOptions,
-        // authorOptions
     }, [bookId, token]);
 
 
-    console.log('info',info)
+    // console.log('info',info)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -181,7 +170,9 @@ export const EditProd = () => {
         const categoryValues = selectedCategories.map(category => category.value).join(',');
         formData.append('categories', categoryValues);
 
-        // formData.append('publishers', selectedPublishers);
+
+        const publishersValues = selectedPublishers.map(publisher => publisher.value).join(',');
+        formData.append('publishers', publishersValues);
         formData.append('author', selectedAuthors.value);
         formData.append('price', price);
         formData.append('discount', discount);
@@ -410,9 +401,12 @@ export const EditProd = () => {
                                 <Form.Label>Publisher</Form.Label>
                                 <Select
                                     options={publisherOptions}
-                                    isMulti
                                     value={selectedPublishers}
                                     onChange={(selectedOptions) => setSelectedPublishers(selectedOptions)}
+                                    
+                                    isLoading={!publisherOptions.length}
+                                    isMulti
+                                    required
                                 />
                             </Form.Group>
                         </Col>

@@ -90,7 +90,6 @@ export const ProductManagement = () => {
     // };
 
     const handleDeleteConfirm = async () => {
-        const token = localStorage.getItem('authToken');
         try {
             await axios.delete(`/api/products/books/${bookToDelete.bookId}`, {
                 headers: {
