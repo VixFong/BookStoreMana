@@ -287,8 +287,7 @@ export const InventoryManagement = () => {
                                     <strong>Publisher:</strong> {getPublisherName(item.publishers)}<br />
                                     <strong>Date Created:</strong> {formatDate(item.dateCreated)}<br />
                                     <strong>Date Updated:</strong> {formatDate(item.dateUpdated)}<br />
-                                    <strong>Status:</strong> {item.status}
-
+                                    <strong>Status:</strong><span className="text-danger fw-bolder"> {item.status}</span>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -351,29 +350,32 @@ export const InventoryManagement = () => {
                             overflow: hidden;
                             transition: transform 0.2s ease-in-out;
                             cursor: pointer;
+                            height: 300px;
+                            width: 250px;
 
                         }
                         .inventory-item:hover {
                             transform: translateY(-5px);
+                            border: 1px solid black;
                         }
             
 
                         .image-container {
-                            height: 300px; 
+                            height: 250px; 
                             overflow: hidden;
                         }
                         .inventory-img {
-                            width: 100%;
-                            height: 100%;
+                            width: 250px;
+                            height: 250px;
                             object-fit: cover;
                         }  
                         .card-title {
-                            font-size: 1.25rem;
+                            font-size: 1rem;
                             font-weight: 600;
                             margin: 10px 0;
                         }
                         .card-text {
-                            font-size: 1rem;
+                            font-size: 0.9rem;
                         }
                         .text-end {
                             text-align: right;
@@ -385,6 +387,9 @@ export const InventoryManagement = () => {
                             color: red;
                             cursor: pointer;
                             z-index: 10;
+                        }
+                        .status.in-stock {
+                            color: #ffffff;
                         }
             `}</style>
         </Container>
