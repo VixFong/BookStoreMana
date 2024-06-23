@@ -24,6 +24,7 @@ import { DetailPage } from './Pages/DetailPage.jsx'
 import { Inventory } from './Pages/Inventory.jsx'
 import { AddInventory } from './Pages/AddInventory.jsx'
 import { CategoryCli } from './Pages/CategoryCli.jsx'
+import { DaftOrder } from './Pages/DaftOrder.jsx'
 
   const router = createBrowserRouter([
     {
@@ -135,6 +136,14 @@ import { CategoryCli } from './Pages/CategoryCli.jsx'
         element: (
             <ProtectedRoute>
                 <AddInventory/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'daftorder',
+        element: (
+            <ProtectedRoute>
+                <DaftOrder/>
             </ProtectedRoute>
         ),
     },

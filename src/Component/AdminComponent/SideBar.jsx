@@ -9,6 +9,8 @@ export const Sidebar = () => {
     const [UserMenu, setUserMenu] = useState(false);
     const [CateMenu, setCateMenu] = useState(false);
     const [ProductMenu, setProductMenu] = useState(false);
+    const [InventoryMenu, setInventoryMenu] = useState(false);
+    const [ItemOrderMenu, setItemOrderMenu] = useState(false);
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
 
@@ -32,6 +34,14 @@ export const Sidebar = () => {
     const toggleProdMenu = () => {
         setProductMenu(!ProductMenu);
     };
+
+    const toggleInventMenu = () => {
+        setInventoryMenu(!InventoryMenu);
+    }
+
+    const toggleItemOrderMenu = () => {
+        setItemOrderMenu(!ItemOrderMenu);
+    }
 
     const handleLogout = async () => {
         try {
@@ -157,20 +167,41 @@ export const Sidebar = () => {
                         </div>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link text-white d-flex justify-content-between align-items-center" href="#" onClick={toggleProdMenu}>
+                        <a className="nav-link text-white d-flex justify-content-between align-items-center" href="#" onClick={toggleInventMenu}>
                             <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backpack" viewBox="0 0 16 16">
                             <path d="M4.04 7.43a4 4 0 0 1 7.92 0 .5.5 0 1 1-.99.14 3 3 0 0 0-5.94 0 .5.5 0 1 1-.99-.14M4 9.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm1 .5v3h6v-3h-1v.5a.5.5 0 0 1-1 0V10z"/>
                             <path d="M6 2.341V2a2 2 0 1 1 4 0v.341c2.33.824 4 3.047 4 5.659v5.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5V8a6 6 0 0 1 4-5.659M7 2v.083a6 6 0 0 1 2 0V2a1 1 0 0 0-2 0m1 1a5 5 0 0 0-5 5v5.5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5V8a5 5 0 0 0-5-5"/>
                             </svg> Inventory</span>
-                            <span>{ProductMenu ? <FaChevronUp /> : <FaChevronDown />}</span>
+                            <span>{InventoryMenu ? <FaChevronUp /> : <FaChevronDown />}</span>
                         </a>
-                        <div className={`collapse ${ProductMenu ? 'show' : ''}`}>
+                        <div className={`collapse ${InventoryMenu ? 'show' : ''}`}>
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item">
                                     <Link className="nav-link text-white" to="/inventory">Inventory Management</Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link text-white" to="#">Add Product</Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link text-white d-flex justify-content-between align-items-center" href="#" onClick={toggleItemOrderMenu}>
+                            <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
+                            <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                            </svg> Item Order</span>
+                            <span>{ItemOrderMenu ? <FaChevronUp /> : <FaChevronDown />}</span>
+                        </a>
+                        <div className={`collapse ${ItemOrderMenu ? 'show' : ''}`}>
+                            <ul className="nav flex-column ms-3">
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="/daftorder">Daft</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="#">On The Way</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="#">Completed</Link>
                                 </li>
                             </ul>
                         </div>
