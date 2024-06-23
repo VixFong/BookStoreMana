@@ -192,7 +192,7 @@ export const InventoryManagement = () => {
     const handleDeleteClick = (item) => {
         setItemToDelete(item);
         if (item.receivedQuantity > 0) {
-            toast.error(`The ${item.name} inventory is greater than 0`);
+            toast.error(`The ${item.title} inventory is greater than 0`);
         } else {
             setShowDeleteModal(true);
         }

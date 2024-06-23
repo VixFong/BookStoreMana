@@ -256,7 +256,7 @@ export const AddProd = () => {
 
     const handleDownloadTemplate = () => {
         const link = document.createElement('a');
-        link.href = './AddProduct.xlsx';
+        link.href = './Book1.xlsx';
         link.download = 'add_product_template.xlsx';
         link.click();
     };
