@@ -31,11 +31,11 @@ export const Edit = () => {
     const token = localStorage.getItem('authToken');
 
     useEffect(() => {
-        if(!token){
-            navigate('/');
-        }
+        // if(!token){
+        //     navigate('/');
+        // }
         const fetchUserDetails = async () => {
-            const token = localStorage.getItem('authToken');
+            
           
             try {
                 const response = await axios.get(`/api/identity/users/${userId}`, {

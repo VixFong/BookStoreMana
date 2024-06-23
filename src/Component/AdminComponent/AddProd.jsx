@@ -39,7 +39,7 @@ export const AddProd = () => {
 
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [message, setMessage] = useState('');
+    // const [message, setMessage] = useState('');
 
     const token =  localStorage.getItem('authToken');
 
@@ -110,8 +110,10 @@ export const AddProd = () => {
 
     const handleUpload = async () => {
         if (!file) {
-          setMessage('Please select a file first.');
-          return;
+            setError('Choose file excel');
+
+            setShowErrorModal(true);
+        //   return;
         }
     
         const formData = new FormData();
@@ -630,7 +632,7 @@ export const AddProd = () => {
                         <p>{error}</p>
                         <Button variant="danger" onClick={handleCloseErrorModal}>Close</Button>
                     </Modal.Body>
-                    {message && <p>{message}</p>}
+                    {/* {message && <p>{message}</p>} */}
                 </Modal>
         </div>
     );

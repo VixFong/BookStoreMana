@@ -206,9 +206,9 @@ export const EditProd = () => {
             return acc;
         }, {});
         formData.append('info', JSON.stringify(customFieldsObject));
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-          }
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        //   }
         // console.log(formData)
 
         try {

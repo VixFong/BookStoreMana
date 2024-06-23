@@ -3,31 +3,29 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
 
 const AddInv = ({ show, onHide, onAdd }) => {
-    const [name, setName] = useState('');
-    const [onHand] = useState(0);  // On hand is always 0 and read-only
-    const [units] = useState('books');  // Units is always 'books' and read-only
-    const [price, setPrice] = useState('');
-    const [image, setImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [book, setBook] = useState('');
+    const [orderedQuantity, setOrderedQuantity] = useState();
+    const [receivedQuantity, setReceivedQuantity] = useState();
+    const [totalPrice, setTotalPrice] = useState();
+
+    // const [onHand] = useState(0);  // On hand is always 0 and read-only
+    // const [units] = useState('books');  // Units is always 'books' and read-only
+    // const [price, setPrice] = useState('');
+    // const [image, setImage] = useState(null);
+    // const [imagePreview, setImagePreview] = useState(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newItem = { name, onHand, units, price, image };
+        const newItem = { book, orderedQuantity, receivedQuantity, totalPrice };
         onAdd(newItem);
-        setName('');
-        setPrice('');
-        setImage(null);
-        setImagePreview(null);
+        setBook('');
+        setOrderedQuantity();
+        setReceivedQuantity();
+        setTotalPrice();
+       
         onHide();
     };
 
-    const handleImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImage(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
 
     return (
         <Modal show={show} onHide={onHide} centered>
@@ -37,52 +35,41 @@ const AddInv = ({ show, onHide, onAdd }) => {
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Name</Form.Label>
+                        <Form.Label>Book</Form.Label>
                         <Form.Control
                             type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={book}
+                            onChange={(e) => setBook(e.target.value)}
                             required
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>On Hand</Form.Label>
+                        <Form.Label>Ordered Quantity</Form.Label>
                         <Form.Control
                             type="number"
-                            value={onHand}
-                            readOnly
+                            value={orderedQuantity}
+                            onChange={(e) => setOrderedQuantity(e.target.value)}
+                            required
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Units</Form.Label>
+                        <Form.Label>Received Quantity</Form.Label>
                         <Form.Control
-                            type="text"
-                            value={units}
-                            readOnly
+                            type="number"
+                            value={receivedQuantity}
+                            onChange={(e) => setReceivedQuantity(e.target.value)}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Price</Form.Label>
                         <Form.Control
                             type="text"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
+                            value={totalPrice}
+                            onChange={(e) => setTotalPrice(e.target.value)}
                             required
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Image</Form.Label>
-                        <Form.Control
-                            type="file"
-                            onChange={handleImageChange}
-                            required
-                        />
-                        {imagePreview && (
-                            <div className="mt-3">
-                                <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', height: 'auto' }} />
-                            </div>
-                        )}
-                    </Form.Group>
+                
                     <Button variant="primary" type="submit">
                         Add Inventory
                     </Button>

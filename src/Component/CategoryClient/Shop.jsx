@@ -69,7 +69,13 @@ export const Shop = () => {
 
 
     // const token = localStorage.getItem("authToken");
-    useEffect
+    useEffect(() => {
+
+        fetchBooks(page, size, search);
+
+    }, [page, size, search, token]);
+
+    
 
 
     const handleSortChange = (option) => {
