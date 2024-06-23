@@ -22,5 +22,5 @@ public class UpdateInventoryRequest {
     private int receivedQuantity;
     private double totalPrice;
 
-    private String bookId;
+//    private String bookId;
 }

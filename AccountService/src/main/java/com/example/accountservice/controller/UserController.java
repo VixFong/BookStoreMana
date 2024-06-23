@@ -5,6 +5,7 @@ import com.example.accountservice.dto.response.ApiResponse;
 import com.example.accountservice.dto.response.GetUserResponse;
 import com.example.accountservice.dto.response.ProfileResponse;
 import com.example.accountservice.dto.response.UserResponse;
+
 import com.example.accountservice.service.ResetPasswordService;
 import com.example.accountservice.service.UserService;
 import com.nimbusds.jose.JOSEException;
@@ -51,6 +52,8 @@ public class UserController {
                 .data(userService.searchUsers(keyword, page, size))
                 .build();
     }
+
+
     @PostMapping("/activate")
     public ApiResponse<String> activateAccount(@RequestBody EmailRequest request) throws JOSEException, MessagingException {
         resetPasswordService.activateAccount(request.getEmail());

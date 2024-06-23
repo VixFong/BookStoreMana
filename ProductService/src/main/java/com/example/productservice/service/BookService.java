@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import static com.example.productservice.config.RabbitMQConfig.BOOK_QUEUE;
@@ -63,6 +64,7 @@ public class BookService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @PreAuthorize("hasRole('Admin')")
     public BookInfoResponse addBook(CreateBookRequest request){
 
 
@@ -125,6 +127,7 @@ public class BookService {
     }
 
 
+
     private void setImageIfHavingFiles(Book book, List<MultipartFile> files){
         ApiResponse<List<ImageResponse>> apiResponse = imageServiceClient.uploadBookImages(files, "books");
 
@@ -141,12 +144,24 @@ public class BookService {
             throw new AppException(ErrorCode.FAIL_UPLOAD_IMAGE);
         }
     }
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     public Page<BookResponse> searchBook(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
         Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
         return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
     }
+
+    public List<SearchBook_InventoryResponse> searchIdsBook(String keyword){
+        var bookIds = bookRepository.findBookIdsByTitle(keyword);
+        System.out.println("ids book "+bookIds.get(0));
+        return bookIds.stream()
+                .map(bookId -> SearchBook_InventoryResponse.builder()
+                        .bookId(bookId.getBookId())
+                        .build())
+                .collect(Collectors.toList());
+
+    }
+
 
     public BookInfoResponse getBookInfo(String id){
         var book = bookRepository.findById(id)

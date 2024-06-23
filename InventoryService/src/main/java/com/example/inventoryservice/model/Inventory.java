@@ -30,5 +30,10 @@ public class Inventory {
     private String status;
     private String bookId;
 
+    public static final String STATUS_NEW = "NEW BOOK";
+    public static final String STATUS_IN_STOCK = "IN STOCK";
+
+    public static final String STATUS_OUT_OF_STOCK = "OUT OF STOCK";
+    public static final String STATUS_NEED_REORDER = "NEED REORDER";
 
 }

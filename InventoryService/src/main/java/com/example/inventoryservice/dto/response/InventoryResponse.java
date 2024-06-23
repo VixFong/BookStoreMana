@@ -25,7 +25,7 @@ public class InventoryResponse {
     private int receivedQuantity;
 
     private double totalPrice;
-
+    private String status;
 
     private String bookId;
 }

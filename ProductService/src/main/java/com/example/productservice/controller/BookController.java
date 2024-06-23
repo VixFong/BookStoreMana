@@ -2,10 +2,7 @@ package com.example.productservice.controller;
 
 import com.example.productservice.dto.request.CreateBookRequest;
 import com.example.productservice.dto.request.UpdateBookRequest;
-import com.example.productservice.dto.response.ApiResponse;
-import com.example.productservice.dto.response.BookInfoResponse;
-import com.example.productservice.dto.response.BookResponse;
-import com.example.productservice.dto.response.Book_InventoryResponse;
+import com.example.productservice.dto.response.*;
 import com.example.productservice.service.BookService;
 import jakarta.validation.Valid;
 import lombok.Getter;
@@ -43,6 +40,13 @@ public class BookController {
         System.out.println("Controller");
         return ApiResponse.<Page<BookResponse>>builder()
                 .data(bookService.searchBook(keyword, page, size))
+                .build();
+    }
+
+    @GetMapping("/bookIds")
+    public ApiResponse<List<SearchBook_InventoryResponse>> searchIdsBook(@RequestParam String keyword){
+        return ApiResponse.<List<SearchBook_InventoryResponse>>builder()
+                .data(bookService.searchIdsBook(keyword))
                 .build();
     }
 
