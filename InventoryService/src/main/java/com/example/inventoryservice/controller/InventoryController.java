@@ -44,16 +44,44 @@ public class InventoryController {
 
     }
 
+//    @PostMapping("/search")
+//    public ApiResponse<Page<InventoryResponse>> searchInventory(
+//            @RequestBody List<SearchInventoryByBookIdRequest> request,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        System.out.println(request.get(0));
+//        return ApiResponse.<Page<InventoryResponse>>builder()
+//                .data(inventoryService.searchInventory(request, page, size))
+//                .build();
+//
+//    }
+
     @GetMapping("/search")
-    public ApiResponse<Void> searchInventories(@RequestBody List<SearchInventoryByBookIdRequest> request,
+    public ApiResponse<Page<InventoryResponse>> searchInventory(
+            @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        inventoryService.SearchInventory(request, page,size);
+        System.out.println(keyword);
+        return ApiResponse.<Page<InventoryResponse>>builder()
+                .data(inventoryService.searchInventory(keyword, page, size))
+                .build();
+
+    }
+
+//    @PostMapping("/search")
+//    public ApiResponse<Page<InventoryResponse>> searchInventories(@RequestBody List<SearchInventoryByBookIdRequest> request,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//
+////        for(SearchInventoryByBookIdRequest i : request){
+////
+////            System.out.println("Request " + i.getBookId());
+////        }
+////        inventoryService.SearchInventory(request, page,size);
 //        return ApiResponse.<Page<InventoryResponse>>builder()
 //                .data(inventoryService.getAllInventories(page, size))
 //                .build();
-        return ApiResponse.<Void>builder().build();
-    }
+//    }
     @PutMapping("/{id}")
     public ApiResponse<InventoryResponse> update(@PathVariable String id, @RequestBody UpdateInventoryRequest request){
         return ApiResponse.<InventoryResponse>builder()
@@ -68,9 +96,11 @@ public class InventoryController {
 //                .build();
 //    }
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable String id){
-        inventoryService.delete(id);
-        return ApiResponse.<Void>builder()
+    public ApiResponse<String> delete(@PathVariable String id){
+        String annouceDelete = inventoryService.delete(id);
+        System.out.println(annouceDelete);
+        return ApiResponse.<String>builder()
+                .data(annouceDelete)
                 .build();
     }
 

@@ -23,6 +23,9 @@ public enum ErrorCode {
     AUTHOR_CONTAINS_BOOKS(208,"Can not delete! Exist book have thís author.",HttpStatus.BAD_REQUEST),
     FAIL_PARSE_EXCEL(209,"Failed to parse Excel file",HttpStatus.BAD_REQUEST),
 
+    UNAUTHENTICATED(301,"Unauthenticated",HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN(302, "Invalid token",HttpStatus.BAD_REQUEST),
+
 
 
     EXCEPTION(400,"Exception error", HttpStatus.INTERNAL_SERVER_ERROR)

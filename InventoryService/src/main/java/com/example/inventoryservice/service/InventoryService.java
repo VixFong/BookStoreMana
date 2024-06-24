@@ -5,11 +5,13 @@ import com.example.inventoryservice.dto.request.SearchInventoryByBookIdRequest;
 import com.example.inventoryservice.dto.request.UpdateInventoryRequest;
 import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
 import com.example.inventoryservice.dto.response.InventoryResponse;
+import com.example.inventoryservice.dto.response.SearchInventoryByBookIdResponse;
 import com.example.inventoryservice.exception.AppException;
 import com.example.inventoryservice.exception.ErrorCode;
 import com.example.inventoryservice.mapper.InventoryMapper;
 import com.example.inventoryservice.model.Inventory;
 import com.example.inventoryservice.repo.InventoryRepository;
+import com.example.inventoryservice.repo.ProductServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import static com.example.inventoryservice.config.RabbitMQConfig.BOOK_QUEUE;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InventoryService {
@@ -28,6 +31,9 @@ public class InventoryService {
 
     @Autowired
     private InventoryMapper inventoryMapper;
+
+    @Autowired
+    private ProductServiceClient productServiceClient;
 
     public InventoryResponse create(CreateInventoryRequest request){
         System.out.println("Inventory " + request.getBookId());
@@ -59,13 +65,28 @@ public class InventoryService {
         return inventoryPage.map(inventoryMapper::toInventoryResponse);
     }
 
-    public void SearchInventory(List<SearchInventoryByBookIdRequest> request, int page, int size) {
-
-        System.out.println(request);
+//    public Page<InventoryResponse> searchInventory(List<SearchInventoryByBookIdRequest> request, int page, int size) {
+//        List<String> bookIds = request.stream()
+//                .map(SearchInventoryByBookIdRequest::getBookId)
+//                .collect(Collectors.toList());
+////        System.out.println(request);
 //        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateUpdated"));
-//        Page<Inventory> inventoryPage = inventoryRepository.findByBookIdIn(request., pageRequest);
-
+//        Page<Inventory> inventoryPage = inventoryRepository.findByBookIdIn(bookIds, pageRequest);
+//
 //        return inventoryPage.map(inventoryMapper::toInventoryResponse);
+//    }
+
+    public Page<InventoryResponse> searchInventory(String keyword, int page, int size) {
+        var apiResponse = productServiceClient.searchIdsBook(keyword);
+
+        List<String> bookIds = apiResponse.getData().stream()
+                .map(SearchInventoryByBookIdResponse::getBookId)
+                .collect(Collectors.toList());
+//        System.out.println(request);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateUpdated"));
+        Page<Inventory> inventoryPage = inventoryRepository.findByBookIdIn(bookIds, pageRequest);
+
+        return inventoryPage.map(inventoryMapper::toInventoryResponse);
     }
 
     public InventoryResponse update(String id, UpdateInventoryRequest request){
@@ -109,8 +130,23 @@ public class InventoryService {
         return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
     }
 
-    public void delete(String id){
-        inventoryRepository.deleteById(id);
+    public String delete(String bookId){
+        var inventory = inventoryRepository.findInventoriesByBookId(bookId)
+                .orElseThrow(() ->new AppException(ErrorCode.INVENTORY_NOT_FOUND));
+
+        System.out.println(bookId);
+        if(inventory.getReceivedQuantity() == 0){
+            inventoryRepository.deleteInventoriesByBookId(bookId);
+            return "Delete success";
+        }
+        if(inventory.getReceivedQuantity() > 0){
+            System.out.println("can not delete");
+            return "Can not delete. Because Received quantity greater than 0";
+        }
+        return "Delete Fail";
+
+//        inventoryRepository.deletById(id);
+
     }
 
 

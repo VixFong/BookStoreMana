@@ -42,6 +42,7 @@ public class ImageService {
 
             // Check file size
             if (file.getSize() > MAX_FILE_SIZE) {
+                System.out.println("file qua lon");
                 throw new AppException(ErrorCode.IMAGE_SIZE_INVALID);
             }
 

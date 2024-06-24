@@ -15,6 +15,7 @@ import com.example.productservice.repo.BookRepository;
 import com.example.productservice.repo.Category.CategoryRepository;
 import com.example.productservice.repo.Publisher.PublisherRepository;
 import com.example.productservice.repo.ServiceClient.ImageServiceClient;
+import com.example.productservice.repo.ServiceClient.InventoryServiceClient;
 import com.example.productservice.service.Category.CategoryService;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -59,6 +60,9 @@ public class BookService {
     private ImageServiceClient imageServiceClient;
 
     @Autowired
+    private InventoryServiceClient inventoryServiceClient;
+
+    @Autowired
     private BookMapper bookMapper;
 
     @Autowired
@@ -100,7 +104,7 @@ public class BookService {
         book.setPriceDiscount(discountPrice);
 
 //      Set info
-        System.out.println("Info " + request.getInfo());
+//        System.out.println("Info " + request.getInfo());
         if(request.getInfo() != null || !request.getInfo().isEmpty()){
 
             bookDetail.setInfo(request.getCustomFieldsMap());
@@ -111,6 +115,8 @@ public class BookService {
 
 
         // Send message to RabbitMQ
+
+//        System.out.println("order quan " +request.getQuantity());
         CreateInventoryRequest message = CreateInventoryRequest.builder()
                 .bookId(id)
                 .orderedQuantity(request.getQuantity())
@@ -118,7 +124,7 @@ public class BookService {
                 .build();
 //        message.setBookId(id);
         rabbitTemplate.convertAndSend(BOOK_QUEUE, message);
-        System.out.println("Books id " + message.getBookId());
+//        System.out.println("Books id " + message.getBookId());
 
 
         updateBookCounts(bookDetail.getCategories());
@@ -153,7 +159,7 @@ public class BookService {
 
     public List<SearchBook_InventoryResponse> searchIdsBook(String keyword){
         var bookIds = bookRepository.findBookIdsByTitle(keyword);
-        System.out.println("ids book "+bookIds.get(0));
+//        System.out.println("ids book "+bookIds.get(0));
         return bookIds.stream()
                 .map(bookId -> SearchBook_InventoryResponse.builder()
                         .bookId(bookId.getBookId())
@@ -193,7 +199,7 @@ public class BookService {
         BookDetail bookDetail =bookDetailRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
-        System.out.println("Update file " + request.getFiles());
+//        System.out.println("Update file " + request.getFiles());
 //        if(request.getFiles() != null || !request.getFiles().isEmpty()){
 
 //            setImageIfHavingFiles(book, request.getFiles());
@@ -226,7 +232,7 @@ public class BookService {
         book.setPriceDiscount(discountPrice);
 
 //      Set info
-        System.out.println("Info " + request.getInfo());
+//        System.out.println("Info " + request.getInfo());
         if(request.getInfo() != null || !request.getInfo().isEmpty()){
 
             bookDetail.setInfo(request.getCustomFieldsMap());
@@ -241,18 +247,37 @@ public class BookService {
         return bookMapper.toBookInfoResponse(bookRepository.save(book), bookDetailRepository.save(bookDetail));
     }
 
-    public void delete(String id){
+    public String delete(String id){
         BookDetail bookDetail = bookDetailRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
 
         Set<String> categoryIds = bookDetail.getCategories();
+        ApiResponse<String> apiResponse = inventoryServiceClient.delete(id);
 
-        bookRepository.deleteById(id);
-        bookDetailRepository.deleteById(id);
 
-        // Update book counts
-        updateBookCounts(categoryIds);
+//        System.out.println("Delete" + apiResponse.getCode());
+//        System.out.println("Delete" + apiResponse.getMessage());
+//        System.out.println("Delete" + apiResponse.getData());
+//        check the received quantity = 0 or not in inventory service
+        if(apiResponse.getCode() == 200 && apiResponse.getData().equals("Delete success")){
+
+            bookRepository.deleteById(id);
+            bookDetailRepository.deleteById(id);
+
+            // Update book counts
+            updateBookCounts(categoryIds);
+//            System.out.println("Delete Success");
+            return "Delete success";
+        }
+        else if(apiResponse.getData().equals("Can not delete. Because Received quantity greater than 0")){
+//            System.out.println("Can not delete");
+
+            return "Can not delete";
+        }
+
+        return "Delete fail";
+
     }
 
 
@@ -372,7 +397,7 @@ public class BookService {
                 String quantityStr = getCellValue(row.getCell(7));
                 if (!quantityStr.isEmpty()) {
                     String[] parts = quantityStr.split("\\.");
-                    System.out.println(parts[0]);
+//                    System.out.println(parts[0]);
                     request.setQuantity(Integer.parseInt(parts[0]));
                 }
 
@@ -387,8 +412,8 @@ public class BookService {
                 // Assume files will not be included in Excel import for simplicity
                 request.setFiles(null);
 
-                System.out.println("quantity "+request.getQuantity());
-                System.out.println("TOtal price "+request.getTotalPrice());
+//                System.out.println("quantity "+request.getQuantity());
+//                System.out.println("TOtal price "+request.getTotalPrice());
 
 //                System.out.println(request.getCategories());
 //                System.out.println(request.getAuthor());

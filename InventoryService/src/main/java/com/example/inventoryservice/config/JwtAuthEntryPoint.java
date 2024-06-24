@@ -1,7 +1,7 @@
-package com.example.productservice.config;
+package com.example.inventoryservice.config;
 
-import com.example.productservice.dto.response.ApiResponse;
-import com.example.productservice.exception.ErrorCode;
+import com.example.inventoryservice.dto.response.ApiResponse;
+import com.example.inventoryservice.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -37,7 +37,7 @@ public class BookController {
 
     @GetMapping("/search")
     public ApiResponse<Page<BookResponse>> searchBook(@RequestParam String keyword, @RequestParam int page, @RequestParam int size){
-        System.out.println("Controller");
+//        System.out.println("Controller");
         return ApiResponse.<Page<BookResponse>>builder()
                 .data(bookService.searchBook(keyword, page, size))
                 .build();
@@ -60,7 +60,7 @@ public class BookController {
 
     @GetMapping("{id}/bookData")
     public ApiResponse<Book_InventoryResponse> getBookData(@PathVariable String id){
-        System.out.println("Controller getBookData");
+//        System.out.println("Controller getBookData");
 
         return ApiResponse.<Book_InventoryResponse>builder()
                 .data(bookService.getBookData(id))
@@ -77,9 +77,9 @@ public class BookController {
 
     @DeleteMapping("{id}")
     public ApiResponse<String> delete(@PathVariable String id){
-        bookService.delete(id);
+        System.out.println(id);
         return ApiResponse.<String>builder()
-                .data("Delete book success")
+                .data(bookService.delete(id))
                 .build();
     }
 
