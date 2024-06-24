@@ -4,17 +4,14 @@ import { Sidebar } from '../Component/AdminComponent/SideBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthorManagement from '../Component/AdminComponent/AuthorManagement';
 import PublisherManagement from '../Component/AdminComponent/PublisherManagement';
+import Management from '../Component/AdminComponent/Management';
 
 export const Category = () => {
   return (
     <div className="d-flex">
         <Sidebar/>
         <div className="content-container flex-grow-1">
-          <CategoryManagement/>
-          <AuthorManagement/> 
-        </div>
-        <div className="author-container">
-          <PublisherManagement/>
+          <Management/>
         </div>
     </div>
   );

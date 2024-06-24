@@ -236,7 +236,7 @@ export const InventoryManagement = () => {
                     <h3>Inventory</h3>
                 </Col>
                 <Col className="text-end">
-                    <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end">
                         <input
                             type='text'
                             className='form-control w-50'
@@ -253,9 +253,6 @@ export const InventoryManagement = () => {
                             Search
                         </Button>
                     </div>
-                    {/* <Button variant="primary" onClick={() => setShowAddModal(true)}>
-                        Create
-                    </Button> */}
                 </Col>
             </Row>
             <Row>
@@ -362,7 +359,7 @@ export const InventoryManagement = () => {
                             transition: transform 0.2s ease-in-out;
                             cursor: pointer;
                             height: 350px;
-                            width: 100%; 
+                            width: 100%;
                             max-width: 350px;
                             margin: auto;
                         }
