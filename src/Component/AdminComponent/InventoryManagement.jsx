@@ -236,22 +236,23 @@ export const InventoryManagement = () => {
                     <h3>Inventory</h3>
                 </Col>
                 <Col className="text-end">
-
-                     <Button variant="primary" onClick={() => fetchInventory(page,size,search)}>
-                        Search
-                    </Button>
-                    <input
-                        type='text'
-                        className='form-control w-25'
-                        placeholder='Search book...'
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                fetchInventory(page, size, search);
-                            }
-                        }}
-                    />
+                    <div className="d-flex justify-content-end">
+                        <input
+                            type='text'
+                            className='form-control w-50'
+                            placeholder='Search book...'
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    fetchInventory(page, size, search);
+                                }
+                            }}
+                        />
+                        <Button variant="primary" onClick={() => fetchInventory(page, size, search)}>
+                            Search
+                        </Button>
+                    </div>
                     {/* <Button variant="primary" onClick={() => setShowAddModal(true)}>
                         Create
                     </Button> */}
@@ -360,12 +361,13 @@ export const InventoryManagement = () => {
                             overflow: hidden;
                             transition: transform 0.2s ease-in-out;
                             cursor: pointer;
-                            height: 300px;
-                            width: 250px;
-
+                            height: 350px;
+                            width: 100%; 
+                            max-width: 350px;
+                            margin: auto;
                         }
                         .inventory-item:hover {
-                            transform: translateY(-5px);
+                            // transform: translateY(-5px);
                             border: 1px solid black;
                         }
             
