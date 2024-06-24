@@ -48,7 +48,7 @@ export const CategoryManagement = () => {
                 category: newCategoryName,
                 // productsCount: 0,
             };
-            const response = await axios.post("/api/products/categories", newCategory,{
+            await axios.post("/api/products/categories", newCategory,{
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -81,7 +81,7 @@ export const CategoryManagement = () => {
     const handleSaveEdit = async (id) => {
         try {
             const updatedCategory = { category: editCategoryName };
-            const response = await axios.put(`/api/products/categories/${id}`, updatedCategory, {
+            await axios.put(`/api/products/categories/${id}`, updatedCategory, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -134,35 +134,50 @@ export const CategoryManagement = () => {
 
     return (
         <div className="container-fluid mt-5 category-management">
+            
+
             <style>
                 {`
-                .category-table th, .category-table td {
-                    padding: 1rem;
-                    vertical-align: middle;
-                }
-                .category-table th {
-                    background-color: #B8B8B8;
-                    color: black;
-                    text-align: center;
-                }
-                .category-table td {
-                    text-align: center;
-                }
-                .category-table td:first-child {
-                    text-align: center;
-                }
-                .category-table .btn {
-                    margin-right: 5px;
-                }
-                .category-management h4 {
-                    text-align: left;
-                    color: #000000;
-                    margin-bottom: 20px;
-                }
-                .category-management .btn-danger {
-                    background-color: #ff4d4f;
-                    border-color: #ff4d4f;
-                }
+                    .category-management {
+                        background: #f0f0f0;
+                        padding: 20px;
+                        border-radius: 8px;
+                    }
+                    .category-table th, .category-table td {
+                        padding: 1rem;
+                        vertical-align: middle;
+                    }
+                    .category-table th {
+                        background-color:#B8B8B8;
+                        color: black;
+                        text-align: center;
+                    }
+                    .category-table td {
+                        text-align: center;
+                    }
+                    .category-table td:first-child {
+                        text-align: center;
+                    }
+                    .category-table .btn {
+                        margin-right: 5px;
+                    }
+                    .category-management h4 {
+                        text-align: left;
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+                    .category-management .btn-danger {
+                        background-color: #ff4d4f;
+                        border-color: #ff4d4f;
+                    }
+                    .category-management .btn-warning {
+                        background-color: #ffc107;
+                        border-color: #ffc107;
+                    }
+                    .category-management .btn-success {
+                        background-color: #28a745;
+                        border-color: #28a745;
+                    }
                 `}
             </style>
             <h4>Category</h4>

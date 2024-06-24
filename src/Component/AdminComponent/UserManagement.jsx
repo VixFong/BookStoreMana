@@ -96,17 +96,17 @@ export const UserManagement = () => {
         setPage(newPage);
     };
 
-    const handleNextPage = () => {
-        if (page < totalPages - 1) {
-            setPage(page + 1);
-        }
-    };
+    // const handleNextPage = () => {
+    //     if (page < totalPages - 1) {
+    //         setPage(page + 1);
+    //     }
+    // };
 
-    const handlePreviousPage = () => {
-        if (page > 0) {
-            setPage(page - 1);
-        }
-    };
+    // const handlePreviousPage = () => {
+    //     if (page > 0) {
+    //         setPage(page - 1);
+    //     }
+    // };
 
     const handleSearchInputChange = (event) => {
         const value = event.target.value;
@@ -149,7 +149,7 @@ export const UserManagement = () => {
     };
 
     return (
-        <div className="d-flex">
+        <div className="d-flex container-fluid mt-5 user-management">
             <Sidebar />
             <div className="flex-grow-1 p-3">
                 <h4 className="mb-3">User Management</h4>
@@ -168,17 +168,32 @@ export const UserManagement = () => {
                 <style>
                     {`
                         body {
-                            font-family: 'Roboto', sans-serif;
+                            // font-family: 'Roboto', sans-serif;
+                            margin-left: 220px;
+                        }
+
+                        .user-management {
+                            margin-left: 100px; 
+                            background: #f0f0f0;
+                            padding: 20px;
+                            border-radius: 8px;
                         }
 
                         .table {
                             width: 100%;
                             margin: 10px 0;
+                           
                         }
                 
                         .table td, .table th {
                             vertical-align: middle;
                             padding: 10px;
+                        }
+
+                        .table th{
+                            background-color:#B8B8B8;
+                            color: black;
+                            text-align: center;
                         }
                         .table img {
                             width: 70px;
@@ -191,11 +206,20 @@ export const UserManagement = () => {
                             border-radius: 20px; 
                         }
                 
-                        .btn-primary {
-                            background-color: #0d6efd;
-                            border-color: #0d6efd;
+                        // .btn-primary {
+                        //     // background-color: #0d6efd;
+                        //     border-color: #0d6efd;
+                        // }
+                        .page-link{
+                            color: #000;
                         }
-                
+
+                        .active>.page-link, .page-link.active {
+                            z-index: 3;
+                            color: var(--bs-pagination-active-color);
+                            background-color: #dc3545;
+                            border-color: #dc3545;
+                        }
                         .btn-danger {
                             background-color: #dc3545;
                             border-color: #dc3545;
@@ -266,17 +290,17 @@ export const UserManagement = () => {
                     </tbody>
                 </table>
                 <div className="d-flex justify-content-between align-items-center">
-                    <button className="btn btn-primary" onClick={handlePreviousPage} disabled={page === 0}>Previous</button>
+                    {/* <button className="btn btn-primary" onClick={handlePreviousPage} disabled={page === 0}>Previous</button> */}
                     <nav>
                         <ul className="pagination">
                             {Array.from({ length: totalPages }, (_, index) => (
                                 <li key={index} className={`page-item ${index === page ? 'active' : ''}`}>
-                                    <button className="page-link" onClick={() => handlePageChange(index)}>{index + 1}</button>
+                                    <button className="page-link background-color:  " onClick={() => handlePageChange(index)}>{index + 1}</button>
                                 </li>
                             ))}
                         </ul>
                     </nav>
-                    <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button>
+                    {/* <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button> */}
                 </div>
             </div>
             <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>

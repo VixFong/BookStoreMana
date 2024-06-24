@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Card, Col, Container, Row, Modal } from 'react-bootstrap';
+import { Button, Card, Col, Container, Row, Modal,Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,13 +15,13 @@ export const InventoryManagement = () => {
     const [search, setSearch] = useState('');
 
     const [page, setPage] = useState();
-    const [size, setSize] = useState(10);
+    const [size, setSize] = useState(12);
     const [totalPages, setTotalPages] = useState(0);
 
 
     const [error, setError] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
-
+    const [showModal, setShowModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
@@ -35,15 +35,38 @@ export const InventoryManagement = () => {
     },[page, size])
 
 
-    const fetchInventory = async (page, size) => {
+    const fetchInventory = async (page, size, keyword=null) => {
         try {
-        
-            const response = await axios.get('/api/inventory/inventories', {
-                params: {page, size},
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            let response ;
+            if(keyword === null || keyword.trim() === ''){
+                setShowModal(true);
+
+                response = await axios.get('/api/inventory/inventories', {
+                    params: {page, size},
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+            else{
+                setShowModal(true);
+
+                // const bookIds = await axios.get('/api/products/books/bookIds',{
+                //     params: {keyword: search},
+                //     headers: {
+                //         Authorization: `Bearer ${token}`
+                //     }
+                // });
+                response = await axios.get(`/api/inventory/search`, {
+                    params:{keyword, page, size},
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                
+                
+                console.log("aaaaa", response.data.data);
+            } 
             const inventoryData = response.data.data.content;
             setTotalPages(response.data.data.totalPages);
             console.log(inventoryData)
@@ -61,8 +84,11 @@ export const InventoryManagement = () => {
             );
 
             setInventory(updatedInventory);
+            setShowModal(false); 
         } catch (error) {
+            setShowModal(false);
             setError(error.response?.data?.message);
+            showErrorModal(true)
         }
     };
 
@@ -76,48 +102,17 @@ export const InventoryManagement = () => {
             });
             setPublishers(response.data.data);
         } catch (error) {
-            setError(error.response?.data?.message);
-        }
-    };
-
-    const searchBook = async(search) =>{
-        try {
-            const response = await axios.get('/api/products/books/bookIds',{
-                params: {keyword: search},
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-           
-            
-            console.log('book ids ',response.data.data)
-            sendBookIds(response.data.data);
-        } catch (error) {
-            console.log(error);
-            setError(error.response?.data?.message);
-            setShowErrorModal(true);
-        }
-    }
-    const sendBookIds = async(response) =>{
-        console.log(response)
-        try {
-            await axios.get(`/api/inventory/search`, {
-                response,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            console.log("aaaaa");
-        }
         
-        catch (error) {
-            console.log(error);
+            setError(error.response?.data?.message);
+            showErrorModal(true)
+        
         }
-    
     };
 
-    console.log(inventory);
-    console.log(publishers);
+ 
+
+    // console.log(inventory);
+    // console.log(publishers);
 
     const getPublisherName = (publisherIds) => {
         
@@ -189,33 +184,35 @@ export const InventoryManagement = () => {
         setShowEditModal(true);
     };
 
-    const handleDeleteClick = (item) => {
-        setItemToDelete(item);
-        if (item.receivedQuantity > 0) {
-            toast.error(`The ${item.title} inventory is greater than 0`);
-        } else {
-            setShowDeleteModal(true);
-        }
-    };
+    // const handleDeleteClick = (item) => {
+    //     setItemToDelete(item);
+    //     if (item.receivedQuantity > 0) {
+    //         toast.error(`The ${item.title} inventory is greater than 0`);
+    //     } else {
+    //         setShowDeleteModal(true);
+    //     }
+    // };
 
-    const handleConfirmDelete = async() => {
-        try {
-            await axios.delete(`/api/inventory/${itemToDelete.id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+    // const handleConfirmDelete = async() => {
+    //     try {
+    //         await axios.delete(`/api/inventory/${itemToDelete.id}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
             
-            setShowDeleteModal(false);
-            fetchInventory(page);
-            toast.success('Item deleted successfully');
-        } catch (error) {
-            setError(error.response?.data?.message);
-            setShowErrorModal(true);
+    //         setShowDeleteModal(false);
+    //         fetchInventory(page);
+    //         toast.success('Item deleted successfully');
+    //     } catch (error) {
+    //         setError(error.response?.data?.message);
+    //         setShowErrorModal(true);
 
-        }
+    //     }
         
-    };
+    // };
+
+
 
     const formatDate = (dateString) => {
         if(dateString != null){
@@ -240,7 +237,7 @@ export const InventoryManagement = () => {
                 </Col>
                 <Col className="text-end">
 
-                     <Button variant="primary" onClick={() => searchBook(search)}>
+                     <Button variant="primary" onClick={() => fetchInventory(page,size,search)}>
                         Search
                     </Button>
                     <input
@@ -249,20 +246,25 @@ export const InventoryManagement = () => {
                         placeholder='Search book...'
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                fetchInventory(page, size, search);
+                            }
+                        }}
                     />
-                    <Button variant="primary" onClick={() => setShowAddModal(true)}>
+                    {/* <Button variant="primary" onClick={() => setShowAddModal(true)}>
                         Create
-                    </Button>
+                    </Button> */}
                 </Col>
             </Row>
             <Row>
                 {inventory.map((item, index) => (
                     <Col lg={3} md={4} sm={6} xs={12}className="mb-4" key={index}>
                         <Card className="inventory-item h-100">
-                            <FaTimes 
+                            {/* <FaTimes 
                                 className="delete-icon" 
                                 onClick={() => handleDeleteClick(item)} 
-                            />
+                            /> */}
                       
                         
                             <Card.Img 
@@ -282,8 +284,8 @@ export const InventoryManagement = () => {
                             <Card.Body onClick={() => handleCardClick(item)}>
                                 <Card.Title>{item.title}</Card.Title>
                                 <Card.Text>
-                                    <strong>Price:</strong> {item.totalPrice}<br />
-                                    <strong>Quantity:</strong> {item.receivedQuantity} / {item.orderedQuantity} <br />
+                                    <strong>Total Price:</strong> {item.totalPrice}$<br />
+                                    <strong>Quantity:</strong> {item.receivedQuantity} /{item.orderedQuantity} <br />
                                     <strong>Publisher:</strong> {getPublisherName(item.publishers)}<br />
                                     <strong>Date Created:</strong> {formatDate(item.dateCreated)}<br />
                                     <strong>Date Updated:</strong> {formatDate(item.dateUpdated)}<br />
@@ -321,13 +323,21 @@ export const InventoryManagement = () => {
                     </nav>
                     {/* <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button> */}
                 </div>
-            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className="mt-3">Loading, Please Wait...</p>
+                    </Modal.Body>
+                </Modal>
+            {/* <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
                 <Modal.Body className="text-center">
                     <p>Are you sure you want to delete this item?</p>
                     <Button variant="danger" onClick={handleConfirmDelete}>Yes</Button>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
             <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">
@@ -390,6 +400,17 @@ export const InventoryManagement = () => {
                         }
                         .status.in-stock {
                             color: #ffffff;
+                        }
+
+                        .page-link{
+                            color: #000;
+                        }
+
+                        .active>.page-link, .page-link.active {
+                            z-index: 3;
+                            color: var(--bs-pagination-active-color);
+                            background-color: #dc3545;
+                            border-color: #dc3545;
                         }
             `}</style>
         </Container>

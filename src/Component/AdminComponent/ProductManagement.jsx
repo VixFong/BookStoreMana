@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Modal, Button, Table, Form, Toast, ToastContainer } from 'react-bootstrap';
+import {Modal, Spinner,Button, Table, Form, Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,6 +17,9 @@ export const ProductManagement = () => {
     const [size, setSize] = useState(4);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+
+    const [showModal, setShowModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
 
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [bookToDelete, setBookToDelete] = useState(null); 
@@ -59,6 +62,7 @@ export const ProductManagement = () => {
 
     const fetchBooks = async(page,size,keyword) => {
         try {
+            setShowModal(true);
             const response = await axios.get('/api/products/books/search',{
                 params: {page, size, keyword},
                 headers: {
@@ -68,11 +72,14 @@ export const ProductManagement = () => {
             console.log(response.data.data)
             setProducts(response.data.data.content);
             setTotalPages(response.data.data.totalPages);
+            setShowModal(false);
 
 
 
         } catch (error) {
+            setShowModal(false);
             setError(error.response?.data?.message);
+            setShowErrorModal(true);
             
         }
     };
@@ -91,15 +98,26 @@ export const ProductManagement = () => {
 
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`/api/products/books/${bookToDelete.bookId}`, {
+            setShowModal(true);
+            const response = await axios.delete(`/api/products/books/${bookToDelete.bookId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             setShowDeleteModal(false);
+            if(response.data.data == "Can not delete"){
+                setError("Can not delete. Because its received quantity greater than 0")
+                setShowErrorModal(true);
+                
+            }
+
             fetchBooks(page, size, search);
+            setShowModal(false);
+
         } catch (error) {
+            setShowModal(false);
             setError(error.response?.data?.message);
+            setShowErrorModal(true);
         }
     };
 
@@ -129,6 +147,8 @@ export const ProductManagement = () => {
         } catch (error) {
             setError(error.response?.data?.message);
             
+            setShowErrorModal(true);
+            
         }
    
     };
@@ -138,7 +158,9 @@ export const ProductManagement = () => {
             await toggleFlashSale(bookToToggleFlashSale.bookId, !bookToToggleFlashSale.flashSale);
             setShowFlashSaleModal(false);
         } catch (error) {
-            setError(error.response?.data?.message);           
+            setError(error.response?.data?.message);  
+            setShowErrorModal(true);
+
         }
     };
 
@@ -165,9 +187,9 @@ export const ProductManagement = () => {
             fetchBooks(page, size, search);
             
         } catch (error) {
-            if(error.response && error.response.data && error.response.data.message){
-                setError(error.response.data.message);
-            }
+            setError(error.response.data.message);
+            setShowErrorModal(true);
+            
         }
     };
 
@@ -213,12 +235,21 @@ export const ProductManagement = () => {
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                         padding: 20px;
                     }
+
+                    // .product-table{
+                    //     width: 100%;
+                    //     margin: 10px 0;
+                    // }
                     .product-table th, .product-table td {
                         padding: 1rem;
                         vertical-align: middle;
                     }
                     .product-table th {
                         background-color:#B8B8B8;
+                        // margin-left:50px;
+                        padding-left: 30px;
+                        padding-right: 30px;
+
                         color: black;
 
                         text-align: center;
@@ -248,12 +279,21 @@ export const ProductManagement = () => {
                         }
                         
                     .form-check-input {
-                            width: 2.25em;  
-                            height: 1.25em; 
-                            margin-left: -1em; 
-                        }
+                         width: 2.25em;  
+                        height: 1.25em; 
+                        margin-left: -1em; 
+                    }
                  
-                        
+                    .page-link{
+                        color: #000;
+                    }
+
+                    .active>.page-link, .page-link.active {
+                         z-index: 3;
+                        color: var(--bs-pagination-active-color);
+                        background-color: #dc3545;
+                        border-color: #dc3545;
+                    }    
         
                         
                      
@@ -361,6 +401,27 @@ export const ProductManagement = () => {
                     </nav>
                     {/* <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button> */}
                 </div>
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className="mt-3">Loading, Please Wait...</p>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </div>
+                        <h4>Error</h4>
+                        <p>{error}</p>
+                        <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
+                    </Modal.Body>
+            
+            </Modal>
 
                 <Modal show={showDeleteModal} onHide={handleDeleteModalClose} centered>
                     <Modal.Header closeButton>

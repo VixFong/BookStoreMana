@@ -80,7 +80,9 @@ export const AddProd = () => {
                 }));
                 setPublisherOptions(options); // Set publisher options
             } catch (error) {
-                console.error('There was an error fetching the publishers!', error);
+                // console.error('There was an error fetching the publishers!', error);
+                setError('There was an error fetching the publishers!');
+                setShowErrorModal(true);
             }
         };
 
@@ -98,7 +100,8 @@ export const AddProd = () => {
                 }));
                 setAuthorOptions(options); // Set author options
             } catch (error) {
-                console.error('There was an error fetching the authors!', error);
+                setError('There was an error fetching the authors!');
+                setShowErrorModal(true);
             }
         };
 
@@ -128,14 +131,12 @@ export const AddProd = () => {
                 },
             });
             setShowModal(false); 
-            setMessage('File uploaded successfully');
             setShowSuccessModal(true);
             setTimeout(() => {
             setShowSuccessModal(false);
             }, 1000);
           console.log('Response:', response.data);
         } catch (error) {
-            setMessage('Failed to upload file');
             setShowModal(false);
             setError(error.response?.data?.message || 'An error occurred');
             setShowErrorModal(true);
@@ -143,10 +144,10 @@ export const AddProd = () => {
       };
 
       const handleFileChange = (event) => {
-        console.log(1);
+        
         setFile(event.target.files[0]);
         setIsUploading(true);
-        console.log(file)
+        
       };
 
        const handleDeleteFile = () => {
@@ -170,7 +171,9 @@ export const AddProd = () => {
         formData.append('price', price);
         formData.append('discount', discount);
         formData.append('totalPrice', totalPrice);
-        formData.append('orderedQuantity', quantity);
+
+        console.log('quantity ', quantity );
+        formData.append('quantity', quantity);
 
         formData.append('description', description);
         images.forEach((image) => {
@@ -184,7 +187,7 @@ export const AddProd = () => {
             return acc;
         }, {});
         formData.append('info', JSON.stringify(customFieldsObject));
-        console.log(customFields)
+     
         try {
             setShowModal(true); 
             const response = await axios.post('api/products/books', formData, {
@@ -200,6 +203,7 @@ export const AddProd = () => {
             }, 1000);
             console.log('Book added successfully:', response.data);
         } catch (error) {
+            console.log(error);
             setShowModal(false);
             setError(error.response?.data?.message || 'An error occurred');
             setShowErrorModal(true);

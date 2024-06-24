@@ -11,7 +11,7 @@ export const Sidebar = () => {
     const [ProductMenu, setProductMenu] = useState(false);
     const [InventoryMenu, setInventoryMenu] = useState(false);
     const [ItemOrderMenu, setItemOrderMenu] = useState(false);
-    const [email, setEmail] = useState('');
+    // const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
 
     const [profilePicture, setProfilePicture] = useState('');
@@ -77,9 +77,9 @@ export const Sidebar = () => {
                 console.log(response.data)
                 if (response.data.code === 200) {
                     const userProfilePicture = response.data.data.profilePicture;
-                    const userEmail = response.data.data.email;
-                    const emailWithoutDomain = userEmail.split('@')[0];
-                    setEmail(emailWithoutDomain);
+                    // const userEmail = response.data.data.email;
+                    // const emailWithoutDomain = userEmail.split('@')[0];
+                    // setEmail(emailWithoutDomain);
                     setProfilePicture(userProfilePicture);
                     setFullName(response.data.data.fullName)
                     setRoles(response.data.data.roles.map(role => role.name));
@@ -98,6 +98,24 @@ export const Sidebar = () => {
 
     return (
         <div className="sidebar-container">
+          <style>
+                    {`
+                        .sidebar-container {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 200px; 
+                            height: 100vh;
+                            overflow-y: auto;
+                            z-index: 1000; 
+                            background-color: #343a40; 
+                        }
+                        .content-container {
+                            margin-left: 220px;
+                            padding: 20px;
+                        }
+                    `}
+        </style>  
         <div className="bg-dark text-white vh-100 d-flex flex-column justify-content-between">
             <div className="p-3">
                 <h4 className="text-center">BOOKSTORE</h4>
@@ -218,5 +236,6 @@ export const Sidebar = () => {
     </div>
     );
 };
+
 
 export default Sidebar;
