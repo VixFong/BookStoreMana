@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS={"/books/"};
+    private final String[] PUBLIC_ENDPOINTS={"/books/search_client","/categories", "/authors","/publishers/publisherData"};
 
 
     @Autowired
@@ -28,8 +28,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(req -> req
-//                .requestMatchers(HttpMethod.POST, ).permitAll()
-                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS ).permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS ).permitAll()
+//                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS ).permitAll()
                 .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->

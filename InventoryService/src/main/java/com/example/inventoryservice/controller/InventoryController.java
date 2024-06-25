@@ -6,6 +6,7 @@ import com.example.inventoryservice.dto.request.UpdateInventoryRequest;
 import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
 import com.example.inventoryservice.dto.response.ApiResponse;
 import com.example.inventoryservice.dto.response.InventoryResponse;
+import com.example.inventoryservice.dto.response.InventoryStatusResponse;
 import com.example.inventoryservice.model.Inventory;
 import com.example.inventoryservice.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,14 @@ public class InventoryController {
                 .data(inventoryService.searchInventory(keyword, page, size))
                 .build();
 
+    }
+
+    @PostMapping("status")
+    public ApiResponse<List<InventoryStatusResponse>> getBookIdAndStatusByBookIds(@RequestBody List<String> bookIds){
+        System.out.println("Status");
+        return ApiResponse.<List<InventoryStatusResponse>>builder()
+                .data(inventoryService.getBookIdAndStatusByBookIds(bookIds))
+                .build();
     }
 
 //    @PostMapping("/search")

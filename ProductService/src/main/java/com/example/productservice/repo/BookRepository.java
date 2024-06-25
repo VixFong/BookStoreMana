@@ -18,7 +18,6 @@ public interface BookRepository extends MongoRepository<Book, String> {
 
 
 //  Lấy ra danh sách id của book
-//    @Query("{ 'title': { $regex: ?0, $options: 'i' } }", fields = "{ '_id': 1 }")
     @Query(value = "{ 'title': { $regex: ?0, $options: 'i' } }", fields = "{ '_id': 1 }")
     List<SearchBook_InventoryResponse> findBookIdsByTitle(String keyword);
 }

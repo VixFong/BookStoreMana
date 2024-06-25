@@ -43,6 +43,27 @@ public class BookController {
                 .build();
     }
 
+//    @GetMapping("/search_client")
+//    public ApiResponse<Page<BookClientResponse>> searchBookClient(@RequestParam String keyword, @RequestParam int page, @RequestParam int size){
+//        System.out.println("Controller client");
+//        return ApiResponse.<Page<BookClientResponse>>builder()
+//                .data(bookService.searchBookClient(keyword, page, size))
+//                .build();
+//    }
+
+    @GetMapping("/search_client")
+    public ApiResponse<Page<BookClientResponse>> searchBookClient(
+            @RequestParam String keyword,
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(defaultValue = "title") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
+            ){
+        System.out.println("Controller client");
+        return ApiResponse.<Page<BookClientResponse>>builder()
+                .data(bookService.searchBookClient(keyword, page, size, sortField, sortDirection))
+                .build();
+    }
     @GetMapping("/bookIds")
     public ApiResponse<List<SearchBook_InventoryResponse>> searchIdsBook(@RequestParam String keyword){
         return ApiResponse.<List<SearchBook_InventoryResponse>>builder()

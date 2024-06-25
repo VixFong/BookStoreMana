@@ -5,6 +5,7 @@ import com.example.inventoryservice.dto.request.SearchInventoryByBookIdRequest;
 import com.example.inventoryservice.dto.request.UpdateInventoryRequest;
 import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
 import com.example.inventoryservice.dto.response.InventoryResponse;
+import com.example.inventoryservice.dto.response.InventoryStatusResponse;
 import com.example.inventoryservice.dto.response.SearchInventoryByBookIdResponse;
 import com.example.inventoryservice.exception.AppException;
 import com.example.inventoryservice.exception.ErrorCode;
@@ -102,6 +103,11 @@ public class InventoryService {
         System.out.println("After "+ inventory.getDateUpdated());
 
         return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
+    }
+
+
+    public List<InventoryStatusResponse> getBookIdAndStatusByBookIds(List<String> bookIds) {
+        return inventoryRepository.findBookIdAndStatusByBookIds(bookIds);
     }
 
     private void updateStatus(Inventory inventory, int receivedQuantity){

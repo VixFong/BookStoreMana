@@ -20,4 +20,6 @@ public interface PublisherRepository extends MongoRepository<Publisher,String> {
     @Query(value = "{ }", fields = "{ '_id': 1, 'name': 1 }")
     List<Publisher> findAllIdAndName();
 
+
+
 }

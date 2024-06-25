@@ -157,6 +157,28 @@ public class BookService {
         return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
     }
 
+//    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size){
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
+//        Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
+//        return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
+//    }
+
+
+    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection){
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+//        Sort sort;
+//        if ("price".equals(sortField)) {
+//            System.out.println("sort price");
+//            sort = Sort.by(Sort.Direction.fromString(sortDirection), "price", "priceDiscount");
+//        } else {
+//            System.out.println("sort title");
+//            sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+//        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
+        return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
+    }
     public List<SearchBook_InventoryResponse> searchIdsBook(String keyword){
         var bookIds = bookRepository.findBookIdsByTitle(keyword);
 //        System.out.println("ids book "+bookIds.get(0));

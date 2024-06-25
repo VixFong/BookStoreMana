@@ -2,6 +2,7 @@ package com.example.productservice.mapper;
 
 import com.example.productservice.dto.request.CreateBookRequest;
 import com.example.productservice.dto.request.UpdateBookRequest;
+import com.example.productservice.dto.response.BookClientResponse;
 import com.example.productservice.dto.response.BookDetailResponse;
 import com.example.productservice.dto.response.BookInfoResponse;
 import com.example.productservice.dto.response.BookResponse;
@@ -19,6 +20,9 @@ public interface BookMapper {
     @Mapping(target = "priceDiscount", ignore = true)
     BookResponse toBookResponse(Book book);
 
+    @Mapping(target = "priceDiscount", ignore = true)
+    BookClientResponse toBookClientResponse(Book book);
+
     default BookResponse toBookResponseWithConditionalFields(Book book) {
         BookResponse response = toBookResponse(book);
         if (book.isFlashSale()) {
@@ -29,6 +33,15 @@ public interface BookMapper {
         return response;
     }
 
+    default BookClientResponse toBookResponseWithConditionalFieldsClient(Book book) {
+        BookClientResponse response = toBookClientResponse(book);
+        if (book.isFlashSale()) {
+            response.setPriceDiscount(book.getPriceDiscount());
+        } else {
+            response.setPriceDiscount(0);
+        }
+        return response;
+    }
 
     @Mapping(target = "info", expression = "java(request.getCustomFieldsMap())")
     BookDetail toBookDetail(CreateBookRequest request);
