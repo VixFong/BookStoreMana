@@ -55,7 +55,7 @@ export const Shop = () => {
     const [totalElements, setTotalElements] = useState(0);
 
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(4);
+    const [size, setSize] = useState(12);
     const [error, setError] = useState('');
     const [keyword, setKeyword] = useState('');
 

@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Login } from './Login';
 import { Cart } from './Cart';
 
@@ -63,6 +63,13 @@ export const Heading = () => {
         );
         setCartItems(updatedCartItems);
     };
+
+    useEffect(() => {
+        document.body.style.paddingTop = '70px';
+        return () => {
+            document.body.style.paddingTop = '0px';
+        };
+    }, []);
 
     return (
         <div>
