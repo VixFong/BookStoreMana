@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaCheckSquare, FaPencilAlt } from 'react-icons/fa';
 import { Container, Row, Col, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer } from 'react-bootstrap';
 
 export const PurchaseOrder = () => {
@@ -45,7 +46,6 @@ export const PurchaseOrder = () => {
     {
       id: 'PO3WF4022225',
       supplier: 'Kim Biên',
-      warehouse: '184/38/33 ...',
       paymentAmount: 'VND 80,000.00',
       trackingNo: '--',
       createTime: '24 Jun 2024 01:31',
@@ -55,7 +55,6 @@ export const PurchaseOrder = () => {
     {
       id: 'PO3WF4022226',
       supplier: 'Supplier 2',
-      warehouse: 'Warehouse 2',
       paymentAmount: 'VND 120,000.00',
       trackingNo: '--',
       createTime: '25 Jun 2024 02:31',
@@ -127,7 +126,7 @@ export const PurchaseOrder = () => {
         </Col>
         <Col className="text-end">
           <Button variant="secondary" className="me-2">Import & Export</Button>
-          <Button variant="success">+ Add Purchase Order</Button>
+          <Button variant="success" href='/addpurchase'>+ Add Purchase Order</Button>
         </Col>
       </Row>
       <Row>
@@ -137,7 +136,6 @@ export const PurchaseOrder = () => {
               <th><Form.Check type="checkbox" /></th>
               <th>Purchase No</th>
               <th>Supplier</th>
-              <th>Warehouse</th>
               <th>Payment Amount</th>
               <th>Tracking No.</th>
               <th>Time</th>
@@ -151,7 +149,6 @@ export const PurchaseOrder = () => {
                   <td><Form.Check type="checkbox" /></td>
                   <td>{order.id}</td>
                   <td>{order.supplier}</td>
-                  <td>{order.warehouse}</td>
                   <td>{order.paymentAmount}</td>
                   <td>{order.trackingNo}</td>
                   <td>
@@ -160,8 +157,8 @@ export const PurchaseOrder = () => {
                   </td>
                   <td>
                     <Button variant="light" onClick={() => toggleDetails(order.id)}>Details</Button>
-                    <Button variant="secondary" className="ms-2"><i className="bi bi-pencil"></i></Button>
-                    <Button variant="danger" className="ms-2"><i className="bi bi-trash"></i></Button>
+                    <FaCheckSquare className="ms-2" />
+                    <FaPencilAlt className="ms-2" />
                   </td>
                 </tr>
                 {detailsOpen && openOrderId === order.id && (
@@ -174,7 +171,7 @@ export const PurchaseOrder = () => {
                               <Card className="detail-card">
                                 <Card.Img variant="top" src={product.imgSrc} />
                                 <Card.Body>
-                                  <Card.Title>SKU: COBE000{idx + 1}</Card.Title>
+                                  <Card.Title>Name: Books{idx + 1}</Card.Title>
                                   <Card.Text>
                                     {product.title} <br />
                                     Author: {product.authors} <br />
