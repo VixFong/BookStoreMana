@@ -34,31 +34,9 @@ export const ProductManagement = () => {
     const token = localStorage.getItem("authToken");
     const navigate = useNavigate();
     useEffect(() => {
-        // if(!token){
-            
-        //     navigate('/');
-        
-        // }
-        // checkToken(token)
         fetchBooks(page, size, search);
 
     }, [page, size, search, token]);
-
-    // const checkToken = async(token) =>{
-    //     try {
-    //         const response = await axios.post('api/identity/auth/introspect', {
-    //             token : token
-    //         })
-
-    //         const isValid = response.data.data.valid;
-    //         if(!isValid){
-    //             console.log("aaaaaa")
-    //             navigate('/');        
-    //         }
-    //     } catch (error) {
-    //         setError(error.response?.data?.message);
-    //     }
-    // }
 
     const fetchBooks = async(page,size,keyword) => {
         try {
@@ -70,10 +48,12 @@ export const ProductManagement = () => {
                 }
             });
             console.log(response.data.data)
-            setProducts(response.data.data.content);
+            const books = response.data.data.content;
+            setProducts(books);
             setTotalPages(response.data.data.totalPages);
-            setShowModal(false);
-
+            // setShowModal(false);
+            const bookIds = books.map(book => book.bookId);
+            fetchInventoryStatus(bookIds);
 
 
         } catch (error) {
@@ -83,6 +63,39 @@ export const ProductManagement = () => {
             
         }
     };
+
+    const fetchInventoryStatus = async(bookIds)=>{
+        try {
+            // setShowModal(true);
+            console.log('book id ', bookIds)
+            const response = await axios.post('/api/inventory/status', 
+                bookIds,{
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }    
+            });
+
+            console.log('status',response.data.data);
+            
+            const statusMap = response.data.data.reduce((acc, item) => {
+                acc[item.bookId] = item.status;
+                return acc;
+            }, {});
+            setProducts(prevProducts => prevProducts.map(product => ({
+                ...product,
+                status: statusMap[product.bookId] || 'Unknown'
+            })));
+            setShowModal(false);
+
+
+        } catch (error) {
+            console.log(error);
+            setShowModal(false);
+            setError(error.response?.data?.message);
+            setShowErrorModal(true);
+        }
+    }
+
     const handleSearchInputChange = (event) => {
         const value = event.target.value;
         setSearch(value);
@@ -91,10 +104,7 @@ export const ProductManagement = () => {
     const handlePageChange = (newPage) => {
         setPage(newPage);
     };
-    // const handleEdit = (id) => {
-    //     // Handle edit logic
-    //     // console.log(`Edit product with ID: ${id}`);
-    // };
+
 
     const handleDeleteConfirm = async () => {
         try {
@@ -321,11 +331,11 @@ export const ProductManagement = () => {
                         <tr>
                             <th>Image</th>
                             <th>Title</th>
-                            {/* <th>Category</th> */}
                             <th>Price</th>
                             <th>Discount</th>
                             <th>Flash Sale</th>
                             <th>Lock</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -346,7 +356,7 @@ export const ProductManagement = () => {
                                         product.price
                                     )}
                                 </td>
-                                {/* <td>{product.author}</td> */}
+                               
                                 <td >{product.discount}%</td>
                                 <td className='form-check-input'>
                                     <Form.Check
@@ -360,27 +370,26 @@ export const ProductManagement = () => {
                                 <td>
                                     <Form.Check
                                         type="switch"
-                                        // id={`lock-${product.id}`}
+                                    
                                         checked={product.lock}
                                         onChange={() => handleLockModalOpen(product)}
                                     />
                                 </td>
+                                
+                                <td className="text-danger fw-bolder">{product.status || 'Loading...'}</td>
                                 <td>
                                     <Button
                                         variant="warning"
                                         className="me-2"
-                                        // onClick={() => handleEdit(product.id)}
                                         
                                     >
                                         <Link to={`/editproduct/${product.bookId}`}><i className="fas fa-edit"></i></Link>
-                                    {/* <FaEdit /> */}
                                     </Button>
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDeleteModalOpen(product)}
                                     >
                                         <i className="fas fa-trash-alt"></i>
-                                    {/* <FaTrashAlt /> */}
                                     </Button>
                                 </td>
                             </tr>

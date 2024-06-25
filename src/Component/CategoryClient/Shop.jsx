@@ -4,66 +4,70 @@ import { Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 're
 import axios from 'axios'
 
 const filters = {
-    categories: ['Arts & Photography', 'Baby', 'Biographies & Memoirs', 'Biography', 'Business & Money', 'BWafts', 'Children', 'Christian Books & Bibles'],
-    authors: [
-        { name: 'Anna Banks', count: 5 },
-        { name: 'James Patterson', count: 3 },
-        { name: 'John Grisham', count: 4 }
-    ],
+    // categories: ['Arts & Photography', 'Baby', 'Biographies & Memoirs', 'Biography', 'Business & Money', 'BWafts', 'Children', 'Christian Books & Bibles'],
+    // authors: [
+    //     { name: 'Anna Banks', count: 5 },
+    //     { name: 'James Patterson', count: 3 },
+    //     { name: 'John Grisham', count: 4 }
+    // ],
     formats: [
         { name: 'Hardcover', count: 10 },
         { name: 'Kindle', count: 12 },
         { name: 'Paperback', count: 12 }
     ],
-    products: [
-        {
-            title: 'All You Can Ever Know: A Memoir',
-            author: 'Anna Banks',
-            price: '$29.95 - $59.95',
-            image: 'https://via.placeholder.com/150',
-            format: 'HARDCOVER, KINDLE, PAPERBACK'
-        },
-        {
-            title: 'Blindside (Michael Bennett Book 12)',
-            author: 'James Patterson',
-            price: '$15.99',
-            image: 'https://via.placeholder.com/150',
-            format: 'KINDLE'
-        },
-        {
-            title: 'Camino Winds',
-            author: 'John Grisham',
-            price: '$12.99',
-            image: 'https://via.placeholder.com/150',
-            format: 'PAPERBACK'
-        },
-        {
-            title: 'Dark Matter: A Mind-Blowing Twisted Thriller',
-            author: 'Blake Crouch',
-            price: '$13.30',
-            image: 'https://via.placeholder.com/150',
-            format: 'PAPERBACK'
-        }
-    ]
+    // products: [
+    //     {
+    //         title: 'All You Can Ever Know: A Memoir',
+    //         author: 'Anna Banks',
+    //         price: '$29.95 - $59.95',
+    //         image: 'https://via.placeholder.com/150',
+    //         format: 'HARDCOVER, KINDLE, PAPERBACK'
+    //     },
+    //     {
+    //         title: 'Blindside (Michael Bennett Book 12)',
+    //         author: 'James Patterson',
+    //         price: '$15.99',
+    //         image: 'https://via.placeholder.com/150',
+    //         format: 'KINDLE'
+    //     },
+    //     {
+    //         title: 'Camino Winds',
+    //         author: 'John Grisham',
+    //         price: '$12.99',
+    //         image: 'https://via.placeholder.com/150',
+    //         format: 'PAPERBACK'
+    //     },
+    //     {
+    //         title: 'Dark Matter: A Mind-Blowing Twisted Thriller',
+    //         author: 'Blake Crouch',
+    //         price: '$13.30',
+    //         image: 'https://via.placeholder.com/150',
+    //         format: 'PAPERBACK'
+    //     }
+    // ]
 };
 
 export const Shop = () => {
 
     const [products, setProducts] = useState([]);
 
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
 
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(4);
     const [error, setError] = useState('');
-    const [search, setSearch] = useState('');
+    const [keyword, setKeyword] = useState('');
 
-    const [category, setCategory] = useState([])
-    const [publisher, setPubliser] = useState([])
-    const [author, setAuthor] = useState([])
+    const [categories, setCategories] = useState([])
+    const [publishers, setPublishers] = useState([])
+    const [authors, setAuthors] = useState([])
 
     const [sortOption, setSortOption] = useState('Default sorting');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedAuthors, setSelectedAuthors] = useState([]);
+    const [selectedPublishers, setSelectedPublishers] = useState([]);
+
     const [selectedFormats, setSelectedFormats] = useState([]);
     const [priceRange, setPriceRange] = useState(70);
 
@@ -71,15 +75,102 @@ export const Shop = () => {
     // const token = localStorage.getItem("authToken");
     useEffect(() => {
 
-        fetchBooks(page, size, search);
+        fetchCategories();
+        fetchAuthors();
+        fetchPublishers();
+        fetchBooks(sortOption);
 
-    }, [page, size, search, token]);
+    //     fetchBooks(page, size, search);
+
+    }, [page]);
 
     
+    const fetchCategories = async () => {
+        try {
+            console.log('aaaaa')
+            const response = await axios.get('/api/products/categories', {
+            
+            });
+
+            setCategories(response.data.data); 
+            
+            console.log(response.data.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            setError(error.response?.data?.message);
+            // setShowErrorModal(true);
+        }
+    };
 
 
-    const handleSortChange = (option) => {
-        setSortOption(option);
+    const fetchAuthors = async () => {
+        try {
+            console.log('aaaaa')
+            const response = await axios.get('/api/products/authors', {
+            });
+
+            setAuthors(response.data.data); 
+            
+            console.log(response.data.data);
+        } catch (error) {
+            console.error('Error fetching authors:', error);
+            setError(error.response?.data?.message);
+            // setShowErrorModal(true);
+        }
+    };
+
+    const fetchPublishers = async () => {
+        try {
+            console.log('aaaaa')
+            const response = await axios.get('/api/products/publishers/publisherData', {
+               
+            });
+
+            setPublishers(response.data.data); 
+            
+            console.log('publishers',response.data.data);
+        } catch (error) {
+            console.error('Error fetching publishers:', error);
+            setError(error.response?.data?.message);
+            // setShowErrorModal(true);
+        }
+    };
+
+    const fetchBooks = async (sortOption) => {
+        let sortField = "title";
+        let sortDirection = "asc";
+        if (sortOption === "Sort by price: low to high") {
+            sortField = "price";
+            sortDirection = "asc";
+        } else if (sortOption === "Sort by price: high to low") {
+            sortField = "price";
+            sortDirection = "desc";
+        }
+        
+        try {
+            console.log('sort field', sortField);
+            console.log('sort direction', sortDirection);
+            const response = await axios.get('/api/products/books/search_client', {
+               params:{keyword, page, size,sortField, sortDirection}
+            });
+
+            setProducts(response.data.data.content); 
+            setTotalPages(response.data.data.totalPages);
+            setTotalElements(response.data.data.totalElements);
+            console.log('books',response.data.data);
+            console.log('keyword', keyword);
+        } catch (error) {
+            console.error('Error fetching publishers:', error);
+            setError(error.response?.data?.message);
+            // setShowErrorModal(true);
+        }
+    };
+
+    // console.log(response.data.data);
+
+    const handleSortChange = (eventKey) => {
+        setSortOption(eventKey);
+        fetchBooks(eventKey);
     };
 
     const handleCategoryChange = (category) => {
@@ -95,6 +186,15 @@ export const Shop = () => {
             prev.includes(author)
                 ? prev.filter((auth) => auth !== author)
                 : [...prev, author]
+        );
+    };
+
+
+    const handlePublisherChange = (publisher) => {
+        setSelectedPublishers((prev) =>
+            prev.includes(publisher)
+                ? prev.filter((pub) => pub !== publisher)
+                : [...prev, pub]
         );
     };
 
@@ -118,38 +218,58 @@ export const Shop = () => {
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Categories</Accordion.Header>
                             <Accordion.Body>
-                                {filters.categories.map((category, index) => (
+                                {/* {filters.categories.map((category, index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
                                         label={category}
                                         onChange={() => handleCategoryChange(category)}
                                     />
-                                ))}
+                                ))} */}
+
+                                    {categories.map((category,index) => (
+                                    <Form.Check
+                                        key={index}
+                                        type="checkbox"
+                                        value={category.id}
+                                        label={`${category.category} (${category.bookCount})`}
+                                        onChange={() => handleCategoryChange(category.category)}
+                                    />
+                                 ))} 
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey="1">
                             <Accordion.Header>Author</Accordion.Header>
                             <Accordion.Body>
-                                {filters.authors.map((author, index) => (
+                                {authors.map((author, index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        label={`${author.name} (${author.count})`}
-                                        onChange={() => handleAuthorChange(author.name)}
+                                        value={author.id}
+                                        label={`${author.authorName}`}
+                                        onChange={() => handleAuthorChange(author.authorName)}
                                     />
                                 ))}
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey="2">
-                            <Accordion.Header>Format</Accordion.Header>
+                            <Accordion.Header>Publisher</Accordion.Header>
                             <Accordion.Body>
-                                {filters.formats.map((format, index) => (
+                                {/* {filters.formats.map((format, index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
                                         label={`${format.name} (${format.count})`}
                                         onChange={() => handleFormatChange(format.name)}
+                                    />
+                                ))} */}
+                                   {publishers.map((publisher, index) => (
+                                    <Form.Check
+                                        key={index}
+                                        type="checkbox"
+                                        value={publisher.id}
+                                        label={`${publisher.name}`}
+                                        onChange={() => handlePublisherChange(publisher.name)}
                                     />
                                 ))}
                             </Accordion.Body>
@@ -174,7 +294,7 @@ export const Shop = () => {
                 <Col md={9}>
                     <Row className="mb-3">
                         <Col>
-                            <span>Showing all 20 results</span>
+                            <span>Showing all {totalElements} results</span>
                         </Col>
                         <Col className="text-end">
                             <Dropdown onSelect={handleSortChange}>
@@ -190,24 +310,54 @@ export const Shop = () => {
                         </Col>
                     </Row>
                     <Row>
-                        {filters.products.map((product, index) => (
+                        {products.map((product, index) => (
                             <Col md={3} className="mb-4" key={index}>
                                 <Card className="h-100">
-                                    <Card.Img variant="top" src={product.image} />
+                                    <Card.Img variant="top" src={product.images[0]} />
                                     <Card.Body>
                                         <Card.Title>{product.title}</Card.Title>
                                         <Card.Text>
-                                            <strong className="product-format">{product.format}</strong><br />
-                                            {product.author}<br />
-                                            <strong className="product-price">{product.price}</strong>
+                                            {/* <strong className="product-format">{product.format}</strong><br />
+                                            {product.author}<br /> */}
+
+                                            {product.priceDiscount !=0 ?(
+                                                <div>
+                                                  
+                                                    <strong style={{ textDecoration: 'line-through' }}>{product.price}$</strong>   <strong> - {product.discount}%</strong>
+                                                    <br />
+                                                    <strong style={{ color: 'red' }}>{product.priceDiscount.toFixed(2)}$</strong>
+                                                </div>
+                                            ):(
+                                            
+                                                <strong className="product-price">{product.price}$</strong>
+                                            )}
+
+                                            
+
+
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>
                             </Col>
                         ))}
                     </Row>
+                    <div className="d-flex justify-content-between align-items-center">
+                    {/* <button className="btn btn-primary" onClick={handlePreviousPage} disabled={page === 0}>Previous</button> */}
+                    <nav>
+                        <ul className="pagination">
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <li key={index} className={`page-item ${index === page ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => setPage(index)}>{index + 1}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                    {/* <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button> */}
+                </div>
                 </Col>
             </Row>
+            
+           
             <style>{`
                 .card {
                     border: 0.5px solid transparent;
@@ -232,9 +382,14 @@ export const Shop = () => {
                 .product-price {
                     color: black;
                 }
+                .image-container {
+                    height: 250px; 
+                    overflow: hidden;
+                }
                 .card-img-top {
                     height: 200px;
                     object-fit: cover;
+                   
                 }
                 .accordion-button:not(.collapsed) {
                     color: #000;
@@ -253,6 +408,15 @@ export const Shop = () => {
                 .btn-link {
                     color: #ff4d4f;
                 }
+                .page-link{
+                    color: #000;
+                }
+                .active>.page-link, .page-link.active {
+                    z-index: 3;
+                    color: var(--bs-pagination-active-color);
+                    background-color: #dc3545;
+                    border-color: #dc3545;
+                }                                 
             `}</style>
         </Container>
     );
