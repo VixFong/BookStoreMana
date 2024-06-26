@@ -1,51 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 'react-bootstrap';
+import {Modal, Spinner, Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 'react-bootstrap';
 import axios from 'axios'
+import qs from 'qs';
 
-const filters = {
-    // categories: ['Arts & Photography', 'Baby', 'Biographies & Memoirs', 'Biography', 'Business & Money', 'BWafts', 'Children', 'Christian Books & Bibles'],
-    // authors: [
-    //     { name: 'Anna Banks', count: 5 },
-    //     { name: 'James Patterson', count: 3 },
-    //     { name: 'John Grisham', count: 4 }
-    // ],
-    formats: [
-        { name: 'Hardcover', count: 10 },
-        { name: 'Kindle', count: 12 },
-        { name: 'Paperback', count: 12 }
-    ],
-    // products: [
-    //     {
-    //         title: 'All You Can Ever Know: A Memoir',
-    //         author: 'Anna Banks',
-    //         price: '$29.95 - $59.95',
-    //         image: 'https://via.placeholder.com/150',
-    //         format: 'HARDCOVER, KINDLE, PAPERBACK'
-    //     },
-    //     {
-    //         title: 'Blindside (Michael Bennett Book 12)',
-    //         author: 'James Patterson',
-    //         price: '$15.99',
-    //         image: 'https://via.placeholder.com/150',
-    //         format: 'KINDLE'
-    //     },
-    //     {
-    //         title: 'Camino Winds',
-    //         author: 'John Grisham',
-    //         price: '$12.99',
-    //         image: 'https://via.placeholder.com/150',
-    //         format: 'PAPERBACK'
-    //     },
-    //     {
-    //         title: 'Dark Matter: A Mind-Blowing Twisted Thriller',
-    //         author: 'Blake Crouch',
-    //         price: '$13.30',
-    //         image: 'https://via.placeholder.com/150',
-    //         format: 'PAPERBACK'
-    //     }
-    // ]
-};
+// const filters = {
+  
+//     formats: [
+//         { name: 'Hardcover', count: 10 },
+//         { name: 'Kindle', count: 12 },
+//         { name: 'Paperback', count: 12 }
+//     ],
+  
+// };
 
 export const Shop = () => {
 
@@ -55,7 +22,7 @@ export const Shop = () => {
     const [totalElements, setTotalElements] = useState(0);
 
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(12);
+    const [size, setSize] = useState(20);
     const [error, setError] = useState('');
     const [keyword, setKeyword] = useState('');
 
@@ -63,16 +30,18 @@ export const Shop = () => {
     const [publishers, setPublishers] = useState([])
     const [authors, setAuthors] = useState([])
 
+    const [showModal, setShowModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+
     const [sortOption, setSortOption] = useState('Default sorting');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedAuthors, setSelectedAuthors] = useState([]);
     const [selectedPublishers, setSelectedPublishers] = useState([]);
 
-    const [selectedFormats, setSelectedFormats] = useState([]);
+    // const [selectedFormats, setSelectedFormats] = useState([]);
     const [priceRange, setPriceRange] = useState(70);
 
 
-    // const token = localStorage.getItem("authToken");
     useEffect(() => {
 
         fetchCategories();
@@ -80,59 +49,63 @@ export const Shop = () => {
         fetchPublishers();
         fetchBooks(sortOption);
 
-    //     fetchBooks(page, size, search);
-
-    }, [page]);
+    }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption]);
 
     
     const fetchCategories = async () => {
         try {
-            console.log('aaaaa')
+            setShowModal(true);
             const response = await axios.get('/api/products/categories', {
             
             });
 
             setCategories(response.data.data); 
+            setShowModal(false);
             
-            console.log(response.data.data);
+            // console.log(response.data.data);
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            setShowModal(false);
+            // console.error('Error fetching categories:', error);
             setError(error.response?.data?.message);
-            // setShowErrorModal(true);
+            setShowErrorModal(true);
         }
     };
 
 
     const fetchAuthors = async () => {
         try {
-            console.log('aaaaa')
+            setShowModal(true);
             const response = await axios.get('/api/products/authors', {
             });
 
             setAuthors(response.data.data); 
+            setShowModal(false);
             
-            console.log(response.data.data);
+            // console.log(response.data.data);
         } catch (error) {
-            console.error('Error fetching authors:', error);
+            setShowModal(false);
+            // console.error('Error fetching authors:', error);
             setError(error.response?.data?.message);
-            // setShowErrorModal(true);
+            setShowErrorModal(true);
         }
     };
 
     const fetchPublishers = async () => {
         try {
-            console.log('aaaaa')
+            setShowModal(true);
             const response = await axios.get('/api/products/publishers/publisherData', {
                
             });
 
             setPublishers(response.data.data); 
             
-            console.log('publishers',response.data.data);
+            // console.log('publishers',response.data.data);
+            setShowModal(false);
         } catch (error) {
-            console.error('Error fetching publishers:', error);
+            setShowModal(false);
+            // console.error('Error fetching publishers:', error);
             setError(error.response?.data?.message);
-            // setShowErrorModal(true);
+            setShowErrorModal(true);
         }
     };
 
@@ -150,19 +123,37 @@ export const Shop = () => {
         try {
             console.log('sort field', sortField);
             console.log('sort direction', sortDirection);
+            console.log('sort cate', selectedCategories);
+            console.log('sort author', selectedAuthors);
+            console.log('sort publish', selectedPublishers);
+            setShowModal(true);
             const response = await axios.get('/api/products/books/search_client', {
-               params:{keyword, page, size,sortField, sortDirection}
+               params:{
+                    keyword, 
+                    page, 
+                    size,
+                    sortField, 
+                    sortDirection,
+                    categories: selectedCategories.length > 0 ? selectedCategories : null,
+                    authors: selectedAuthors.length > 0 ? selectedAuthors : null,
+                    publishers: selectedPublishers.length > 0 ? selectedPublishers : null,
+                },
+                paramsSerializer: params => {
+                    return qs.stringify(params, { arrayFormat: 'repeat' });
+                }
             });
 
             setProducts(response.data.data.content); 
             setTotalPages(response.data.data.totalPages);
             setTotalElements(response.data.data.totalElements);
             console.log('books',response.data.data);
-            console.log('keyword', keyword);
+            setShowModal(false);
+            // console.log('keyword', keyword);
         } catch (error) {
-            console.error('Error fetching publishers:', error);
+            setShowModal(false);
+            console.error('Error fetching books:', error);
             setError(error.response?.data?.message);
-            // setShowErrorModal(true);
+            setShowErrorModal(true);
         }
     };
 
@@ -173,12 +164,14 @@ export const Shop = () => {
         fetchBooks(eventKey);
     };
 
-    const handleCategoryChange = (category) => {
+    const handleCategoryChange = (categoryId) => {
         setSelectedCategories((prev) =>
-            prev.includes(category)
-                ? prev.filter((cat) => cat !== category)
-                : [...prev, category]
+            prev.includes(categoryId)
+                ? prev.filter((cat) => cat !== categoryId)
+                : [...prev, categoryId]    
         );
+        // console.log('select cate',selectedCategories)
+
     };
 
     const handleAuthorChange = (author) => {
@@ -187,27 +180,33 @@ export const Shop = () => {
                 ? prev.filter((auth) => auth !== author)
                 : [...prev, author]
         );
+        // console.log('select author',selectedAuthors)
+
     };
 
 
     const handlePublisherChange = (publisher) => {
+        console.log('publisher',publisher)
+        
         setSelectedPublishers((prev) =>
             prev.includes(publisher)
                 ? prev.filter((pub) => pub !== publisher)
-                : [...prev, pub]
+                : [...prev, publisher]
         );
+        // console.log('select publisher',selectedPublishers)
     };
 
-    const handleFormatChange = (format) => {
-        setSelectedFormats((prev) =>
-            prev.includes(format)
-                ? prev.filter((fmt) => fmt !== format)
-                : [...prev, format]
-        );
-    };
+    // const handleFormatChange = (format) => {
+    //     setSelectedFormats((prev) =>
+    //         prev.includes(format)
+    //             ? prev.filter((fmt) => fmt !== format)
+    //             : [...prev, format]
+    //     );
+    // };
 
     const handlePriceChange = (e) => {
         setPriceRange(e.target.value);
+        // console.log('price',priceChange)
     };
 
     return (
@@ -218,22 +217,13 @@ export const Shop = () => {
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Categories</Accordion.Header>
                             <Accordion.Body>
-                                {/* {filters.categories.map((category, index) => (
-                                    <Form.Check
-                                        key={index}
-                                        type="checkbox"
-                                        label={category}
-                                        onChange={() => handleCategoryChange(category)}
-                                    />
-                                ))} */}
-
                                     {categories.map((category,index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        value={category.id}
-                                        label={`${category.category} (${category.bookCount})`}
-                                        onChange={() => handleCategoryChange(category.category)}
+                                        // value={category.id}
+                                        label={category.category}
+                                        onChange={() => handleCategoryChange(category.id)}
                                     />
                                  ))} 
                             </Accordion.Body>
@@ -245,9 +235,9 @@ export const Shop = () => {
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        value={author.id}
+                                        // value={author.id}
                                         label={`${author.authorName}`}
-                                        onChange={() => handleAuthorChange(author.authorName)}
+                                        onChange={() => handleAuthorChange(author.id)}
                                     />
                                 ))}
                             </Accordion.Body>
@@ -267,9 +257,9 @@ export const Shop = () => {
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        value={publisher.id}
+                                        // value={publisher.id}
                                         label={`${publisher.name}`}
-                                        onChange={() => handlePublisherChange(publisher.name)}
+                                        onChange={() => handlePublisherChange(publisher.id)}
                                     />
                                 ))}
                             </Accordion.Body>
@@ -356,7 +346,28 @@ export const Shop = () => {
                 </div>
                 </Col>
             </Row>
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className="mt-3">Loading, Please Wait...</p>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
+                    <Modal.Body className="text-center">
+                        <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </div>
+                        <h4>Error</h4>
+                        {/* <p>{error}</p> */}
+                        <p>Something wrong!</p>
+                        <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
+                    </Modal.Body>
             
+            </Modal>
            
             <style>{`
                 .card {

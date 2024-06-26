@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Modal, Spinner,Button, Table, Form, Toast, ToastContainer } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -36,9 +35,9 @@ export const ProductManagement = () => {
     useEffect(() => {
         fetchBooks(page, size, search);
 
-    }, [page, size, search, token]);
+    }, [page, size]);
 
-    const fetchBooks = async(page,size,keyword) => {
+    const fetchBooks = async(page, size, keyword) => {
         try {
             setShowModal(true);
             const response = await axios.get('/api/products/books/search',{
@@ -51,9 +50,9 @@ export const ProductManagement = () => {
             const books = response.data.data.content;
             setProducts(books);
             setTotalPages(response.data.data.totalPages);
-            // setShowModal(false);
             const bookIds = books.map(book => book.bookId);
             fetchInventoryStatus(bookIds);
+            setShowModal(false);
 
 
         } catch (error) {
@@ -96,10 +95,10 @@ export const ProductManagement = () => {
         }
     }
 
-    const handleSearchInputChange = (event) => {
-        const value = event.target.value;
-        setSearch(value);
-    };
+    // const handleSearchInputChange = (event) => {
+    //     const value = event.target.value;
+    //     setSearch(value);
+    // };
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -322,7 +321,13 @@ export const ProductManagement = () => {
                         className='form-control w-25'
                         placeholder='Search book...'
                         value={search}
-                        onChange={handleSearchInputChange}
+                        // onChange={handleSearchInputChange}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                fetchBooks(search);
+                            }
+                        }}
                     />
             </div>
             <div className="table-responsive">

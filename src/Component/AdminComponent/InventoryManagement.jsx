@@ -249,9 +249,9 @@ export const InventoryManagement = () => {
                                 }
                             }}
                         />
-                        <Button variant="primary" onClick={() => fetchInventory(page, size, search)}>
+                        {/* <Button variant="primary" onClick={() => fetchInventory(page, size, search)}>
                             Search
-                        </Button>
+                        </Button> */}
                     </div>
                 </Col>
             </Row>
@@ -272,13 +272,7 @@ export const InventoryManagement = () => {
                                 className="inventory-img"
                             />
 
-                            {/* <div className="image-container">
-                                <img
-                                    src={item.image}
-                                    alt={`Product ${index}`}
-                                    className="inventory-img"
-                                />
-                            </div> */}
+                           
                             <Card.Body onClick={() => handleCardClick(item)}>
                                 <Card.Title>{item.title}</Card.Title>
                                 <Card.Text>
@@ -352,13 +346,24 @@ export const InventoryManagement = () => {
             <ToastContainer />
                  <style>{`
                         .inventory-item {
+                            // position: relative;
+                            // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                            // border-radius: 5px;
+                            // overflow: hidden;
+                            // transition: transform 0.2s ease-in-out;
+                            // cursor: pointer;
+                            // height: 350px;
+                            // width: 100%;
+                            // max-width: 350px;
+                            // margin: auto;
+
                             position: relative;
                             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                             border-radius: 5px;
                             overflow: hidden;
                             transition: transform 0.2s ease-in-out;
                             cursor: pointer;
-                            height: 350px;
+                            height: 200px;
                             width: 100%;
                             max-width: 350px;
                             margin: auto;
@@ -369,14 +374,13 @@ export const InventoryManagement = () => {
                         }
             
 
-                        .image-container {
-                            height: 250px; 
-                            overflow: hidden;
-                        }
+                        
                         .inventory-img {
-                            width: 250px;
-                            height: 250px;
+                            width: 100%;
+                            height: 300px;
                             object-fit: cover;
+                            // text-align:center
+                            
                         }  
                         .card-title {
                             font-size: 1rem;
