@@ -152,8 +152,12 @@ public class BookService {
     }
     @PreAuthorize("hasRole('Admin')")
     public Page<BookResponse> searchBook(String keyword, int page, int size) {
+
+        System.out.println("keyword"+ keyword);
         Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
         Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
+
+
         return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
     }
 
@@ -164,21 +168,86 @@ public class BookService {
 //    }
 
 
-    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection){
+//    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection){
+//        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+////        Sort sort;
+////        if ("price".equals(sortField)) {
+////            System.out.println("sort price");
+////            sort = Sort.by(Sort.Direction.fromString(sortDirection), "price", "priceDiscount");
+////        } else {
+////            System.out.println("sort title");
+////            sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+////        }
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//        Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
+//        return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
+//    }
+
+    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection, Set<String> categories, Set<String> authors, Set<String> publishers){
+
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
-//        Sort sort;
-//        if ("price".equals(sortField)) {
-//            System.out.println("sort price");
-//            sort = Sort.by(Sort.Direction.fromString(sortDirection), "price", "priceDiscount");
-//        } else {
-//            System.out.println("sort title");
-//            sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+
+        // Using keyword to find list of bookId
+        List<SearchBook_InventoryResponse> bookIdsByTitle = bookRepository.findBookIdsByTitle(keyword);
+        Set<String> bookIds = bookIdsByTitle.stream().map(SearchBook_InventoryResponse::getBookId).collect(Collectors.toSet());
+
+        // Filter out locked books
+        bookIds.removeIf(bookId -> isBookLocked(bookId));
+
+//        if(!categories.isEmpty() && !authors.isEmpty() && !publishers.isEmpty()){
+//            // Using list of categories, authors and publishers to find suitable bookIds
+//            List<BookIdsFromFilterResponse> bookDetailIdsByFilters = bookDetailRepository.findBookDetailIdsByFilters(categories, authors, publishers);
+//            Set<String> bookDetailIds = bookDetailIdsByFilters.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
+//            bookIds.retainAll(bookDetailIds);
 //        }
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Book> bookPage = bookRepository.findBookByTitle(keyword, pageable);
+        if (!categories.isEmpty()) {
+            System.out.println("category " + categories);
+            List<BookIdsFromFilterResponse> bookDetailIdsByCategories = bookDetailRepository.findBookDetailIdsByCategories(categories);
+            Set<String> bookDetailIds = bookDetailIdsByCategories.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
+            bookIds.retainAll(bookDetailIds);
+        }
+
+        if (!authors.isEmpty()) {
+            System.out.println("author " + authors);
+
+            List<BookIdsFromFilterResponse> bookDetailIdsByAuthors = bookDetailRepository.findBookDetailIdsByAuthors(authors);
+            Set<String> bookDetailIds = bookDetailIdsByAuthors.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
+            System.out.println(bookDetailIds.toString());
+            bookIds.retainAll(bookDetailIds);
+        }
+
+        if (!publishers.isEmpty()) {
+            System.out.println("publisher " + publishers);
+
+            List<BookIdsFromFilterResponse> bookDetailIdsByPublishers = bookDetailRepository.findBookDetailIdsByPublishers(publishers);
+            Set<String> bookDetailIds = bookDetailIdsByPublishers.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
+            bookIds.retainAll(bookDetailIds);
+        }
+
+//        if(maxPrice != null){
+//            List<BookIdsFromFilterResponse> bookIdByPriceRange = bookRepository.findByIdsAndPriceRange(bookIds, minPrice, maxPrice);
+////            Set<String> bookDetailIds = bookDetailIdsByPublishers.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
+//            bookIds.retainAll(bookDetailIds);
+//        }
+
+
+        Page<Book> bookPage = bookRepository.findBooksByIdIn(bookIds, pageable);
+
         return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
     }
+
+    private boolean isBookLocked(String bookId){
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        return book.isLock();
+    }
+
+
     public List<SearchBook_InventoryResponse> searchIdsBook(String keyword){
         var bookIds = bookRepository.findBookIdsByTitle(keyword);
 //        System.out.println("ids book "+bookIds.get(0));

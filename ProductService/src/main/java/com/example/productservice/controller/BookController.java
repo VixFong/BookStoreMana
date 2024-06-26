@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/books")
@@ -51,17 +53,46 @@ public class BookController {
 //                .build();
 //    }
 
+//    @GetMapping("/search_client")
+//    public ApiResponse<Page<BookClientResponse>> searchBookClient(
+//            @RequestParam String keyword,
+//            @RequestParam int page,
+//            @RequestParam int size,
+//            @RequestParam(defaultValue = "title") String sortField,
+//            @RequestParam(defaultValue = "asc") String sortDirection
+//            ){
+//        System.out.println("Controller client");
+//        return ApiResponse.<Page<BookClientResponse>>builder()
+//                .data(bookService.searchBookClient(keyword, page, size, sortField, sortDirection))
+//                .build();
+//    }
+
     @GetMapping("/search_client")
     public ApiResponse<Page<BookClientResponse>> searchBookClient(
             @RequestParam String keyword,
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(defaultValue = "title") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
-            ){
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) Set<String> categories,
+            @RequestParam(required = false) Set<String> authors,
+            @RequestParam(required = false) Set<String> publishers
+//            @RequestParam(required = false, defaultValue = "0") double minPrice,
+//            @RequestParam(required = false, defaultValue = "0") double maxPrice
+    ){
+
+//        if (categories == null) {
+//            categories = Collections.emptySet(); // or set a default value
+//        }
+//        if (authors == null) {
+//            authors = Collections.emptySet(); // or set a default value
+//        }
+//        if (publishers == null) {
+//            publishers = Collections.emptySet(); // or set a default value
+//        }
         System.out.println("Controller client");
         return ApiResponse.<Page<BookClientResponse>>builder()
-                .data(bookService.searchBookClient(keyword, page, size, sortField, sortDirection))
+                .data(bookService.searchBookClient(keyword, page, size, sortField, sortDirection, categories, authors, publishers))
                 .build();
     }
     @GetMapping("/bookIds")
