@@ -1,90 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Modal, Spinner, Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 'react-bootstrap';
-import axios from 'axios'
+import { Modal, Spinner, Container, Row, Col, Card, Dropdown, Form, Button, Accordion } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import qs from 'qs';
 
-// const filters = {
-  
-//     formats: [
-//         { name: 'Hardcover', count: 10 },
-//         { name: 'Kindle', count: 12 },
-//         { name: 'Paperback', count: 12 }
-//     ],
-  
-// };
-
-export const Shop = () => {
+export const Shop = ({ searchKeyword }) => {
 
     const [products, setProducts] = useState([]);
-
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
-
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(20);
     const [error, setError] = useState('');
     const [keyword, setKeyword] = useState('');
 
-    const [categories, setCategories] = useState([])
-    const [publishers, setPublishers] = useState([])
-    const [authors, setAuthors] = useState([])
+    const [categories, setCategories] = useState([]);
+    const [publishers, setPublishers] = useState([]);
+    const [authors, setAuthors] = useState([]);
 
     const [showModal, setShowModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
-
+    
     const [sortOption, setSortOption] = useState('Default sorting');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedAuthors, setSelectedAuthors] = useState([]);
     const [selectedPublishers, setSelectedPublishers] = useState([]);
 
-    // const [selectedFormats, setSelectedFormats] = useState([]);
     const [priceRange, setPriceRange] = useState(70);
 
+    const location = useLocation();
 
     useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const searchKeyword = queryParams.get('search');
+        if (searchKeyword) {
+            setKeyword(searchKeyword);
+        }
+    }, [location.search]);
 
+    useEffect(() => {
         fetchCategories();
         fetchAuthors();
         fetchPublishers();
         fetchBooks(sortOption);
+    }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption, keyword]);
 
-    }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption]);
-
-    
     const fetchCategories = async () => {
         try {
             setShowModal(true);
-            const response = await axios.get('/api/products/categories', {
-            
-            });
-
+            const response = await axios.get('/api/products/categories', {});
             setCategories(response.data.data); 
             setShowModal(false);
-            
-            // console.log(response.data.data);
         } catch (error) {
             setShowModal(false);
-            // console.error('Error fetching categories:', error);
             setError(error.response?.data?.message);
             setShowErrorModal(true);
         }
     };
 
-
     const fetchAuthors = async () => {
         try {
             setShowModal(true);
-            const response = await axios.get('/api/products/authors', {
-            });
-
+            const response = await axios.get('/api/products/authors', {});
             setAuthors(response.data.data); 
             setShowModal(false);
-            
-            // console.log(response.data.data);
         } catch (error) {
             setShowModal(false);
-            // console.error('Error fetching authors:', error);
             setError(error.response?.data?.message);
             setShowErrorModal(true);
         }
@@ -93,17 +75,11 @@ export const Shop = () => {
     const fetchPublishers = async () => {
         try {
             setShowModal(true);
-            const response = await axios.get('/api/products/publishers/publisherData', {
-               
-            });
-
+            const response = await axios.get('/api/products/publishers/publisherData', {});
             setPublishers(response.data.data); 
-            
-            // console.log('publishers',response.data.data);
             setShowModal(false);
         } catch (error) {
             setShowModal(false);
-            // console.error('Error fetching publishers:', error);
             setError(error.response?.data?.message);
             setShowErrorModal(true);
         }
@@ -121,15 +97,10 @@ export const Shop = () => {
         }
         
         try {
-            console.log('sort field', sortField);
-            console.log('sort direction', sortDirection);
-            console.log('sort cate', selectedCategories);
-            console.log('sort author', selectedAuthors);
-            console.log('sort publish', selectedPublishers);
             setShowModal(true);
             const response = await axios.get('/api/products/books/search_client', {
-               params:{
-                    keyword, 
+                params: {
+                    keyword: searchKeyword,
                     page, 
                     size,
                     sortField, 
@@ -146,18 +117,13 @@ export const Shop = () => {
             setProducts(response.data.data.content); 
             setTotalPages(response.data.data.totalPages);
             setTotalElements(response.data.data.totalElements);
-            console.log('books',response.data.data);
             setShowModal(false);
-            // console.log('keyword', keyword);
         } catch (error) {
             setShowModal(false);
-            console.error('Error fetching books:', error);
             setError(error.response?.data?.message);
             setShowErrorModal(true);
         }
     };
-
-    // console.log(response.data.data);
 
     const handleSortChange = (eventKey) => {
         setSortOption(eventKey);
@@ -170,8 +136,6 @@ export const Shop = () => {
                 ? prev.filter((cat) => cat !== categoryId)
                 : [...prev, categoryId]    
         );
-        // console.log('select cate',selectedCategories)
-
     };
 
     const handleAuthorChange = (author) => {
@@ -180,33 +144,18 @@ export const Shop = () => {
                 ? prev.filter((auth) => auth !== author)
                 : [...prev, author]
         );
-        // console.log('select author',selectedAuthors)
-
     };
 
-
     const handlePublisherChange = (publisher) => {
-        console.log('publisher',publisher)
-        
         setSelectedPublishers((prev) =>
             prev.includes(publisher)
                 ? prev.filter((pub) => pub !== publisher)
                 : [...prev, publisher]
         );
-        // console.log('select publisher',selectedPublishers)
     };
-
-    // const handleFormatChange = (format) => {
-    //     setSelectedFormats((prev) =>
-    //         prev.includes(format)
-    //             ? prev.filter((fmt) => fmt !== format)
-    //             : [...prev, format]
-    //     );
-    // };
 
     const handlePriceChange = (e) => {
         setPriceRange(e.target.value);
-        // console.log('price',priceChange)
     };
 
     return (
@@ -217,15 +166,14 @@ export const Shop = () => {
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Categories</Accordion.Header>
                             <Accordion.Body>
-                                    {categories.map((category,index) => (
+                                {categories.map((category, index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        // value={category.id}
                                         label={category.category}
                                         onChange={() => handleCategoryChange(category.id)}
                                     />
-                                 ))} 
+                                ))} 
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey="1">
@@ -235,8 +183,7 @@ export const Shop = () => {
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        // value={author.id}
-                                        label={`${author.authorName}`}
+                                        label={author.authorName}
                                         onChange={() => handleAuthorChange(author.id)}
                                     />
                                 ))}
@@ -245,20 +192,11 @@ export const Shop = () => {
                         <Accordion.Item eventKey="2">
                             <Accordion.Header>Publisher</Accordion.Header>
                             <Accordion.Body>
-                                {/* {filters.formats.map((format, index) => (
+                                {publishers.map((publisher, index) => (
                                     <Form.Check
                                         key={index}
                                         type="checkbox"
-                                        label={`${format.name} (${format.count})`}
-                                        onChange={() => handleFormatChange(format.name)}
-                                    />
-                                ))} */}
-                                   {publishers.map((publisher, index) => (
-                                    <Form.Check
-                                        key={index}
-                                        type="checkbox"
-                                        // value={publisher.id}
-                                        label={`${publisher.name}`}
+                                        label={publisher.name}
                                         onChange={() => handlePublisherChange(publisher.id)}
                                     />
                                 ))}
@@ -303,28 +241,26 @@ export const Shop = () => {
                         {products.map((product, index) => (
                             <Col md={3} className="mb-4" key={index}>
                                 <Card className="h-100">
-                                    <Card.Img variant="top" src={product.images[0]} />
+                                    <div className="position-relative">
+                                        <Card.Img variant="top" src={product.images[0]} />
+                                        {product.discount > 0 && (
+                                            <div className="sale-tag position-absolute top-0 end-0 bg-danger text-white p-1">
+                                                {product.discount}%
+                                            </div>
+                                        )}
+                                    </div>
                                     <Card.Body>
                                         <Card.Title>{product.title}</Card.Title>
                                         <Card.Text>
-                                            {/* <strong className="product-format">{product.format}</strong><br />
-                                            {product.author}<br /> */}
-
-                                            {product.priceDiscount !=0 ?(
+                                            {product.priceDiscount !== 0 ? (
                                                 <div>
-                                                  
-                                                    <strong style={{ textDecoration: 'line-through' }}>{product.price}$</strong>   <strong> - {product.discount}%</strong>
+                                                    <strong style={{ textDecoration: 'line-through' }}>{product.price}$</strong>
                                                     <br />
                                                     <strong style={{ color: 'red' }}>{product.priceDiscount.toFixed(2)}$</strong>
                                                 </div>
-                                            ):(
-                                            
+                                            ) : (
                                                 <strong className="product-price">{product.price}$</strong>
                                             )}
-
-                                            
-
-
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>
@@ -332,43 +268,38 @@ export const Shop = () => {
                         ))}
                     </Row>
                     <div className="d-flex justify-content-between align-items-center">
-                    {/* <button className="btn btn-primary" onClick={handlePreviousPage} disabled={page === 0}>Previous</button> */}
-                    <nav>
-                        <ul className="pagination">
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <li key={index} className={`page-item ${index === page ? 'active' : ''}`}>
-                                    <button className="page-link" onClick={() => setPage(index)}>{index + 1}</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                    {/* <button className="btn btn-primary" onClick={handleNextPage} disabled={page === totalPages - 1}>Next</button> */}
-                </div>
+                        <nav>
+                            <ul className="pagination">
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <li key={index} className={`page-item ${index === page ? 'active' : ''}`}>
+                                        <button className="page-link" onClick={() => setPage(index)}>{index + 1}</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </div>
                 </Col>
             </Row>
-                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                    <Modal.Body className="text-center">
-                        <Spinner animation="border" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </Spinner>
-                        <p className="mt-3">Loading, Please Wait...</p>
-                    </Modal.Body>
-                </Modal>
-                <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
-                    <Modal.Body className="text-center">
-                        <div className="mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
-                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                            </svg>
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Body className="text-center">
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                    <p className="mt-3">Loading, Please Wait...</p>
+                </Modal.Body>
+            </Modal>
+            <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
+                <Modal.Body className="text-center">
+                    <div className="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
                         </div>
                         <h4>Error</h4>
-                        {/* <p>{error}</p> */}
                         <p>Something wrong!</p>
                         <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
                     </Modal.Body>
-            
-            </Modal>
-           
+                </Modal>
             <style>{`
                 .card {
                     border: 0.5px solid transparent;
@@ -400,7 +331,6 @@ export const Shop = () => {
                 .card-img-top {
                     height: 200px;
                     object-fit: cover;
-                   
                 }
                 .accordion-button:not(.collapsed) {
                     color: #000;
@@ -427,7 +357,18 @@ export const Shop = () => {
                     color: var(--bs-pagination-active-color);
                     background-color: #dc3545;
                     border-color: #dc3545;
-                }                                 
+                }
+                .sale-tag {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    background-color: #dc3545;
+                    color: #fff;
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.9rem;
+                    font-weight: bold;
+                    border-radius: 0 0 0 5px;
+                }
             `}</style>
         </Container>
     );

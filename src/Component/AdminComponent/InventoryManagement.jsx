@@ -367,6 +367,7 @@ export const InventoryManagement = () => {
                             width: 100%;
                             max-width: 350px;
                             margin: auto;
+                            margin-top:10px;
                         }
                         .inventory-item:hover {
                             // transform: translateY(-5px);

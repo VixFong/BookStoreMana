@@ -1,11 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Login } from './Login';
 import { Cart } from './Cart';
 
-export const Heading = () => {
+export const Heading = ({ onSearch }) => {
     const [showLogin, setShowLogin] = useState(false);
     const [showCart, setShowCart] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const navigate = useNavigate();
+
     const [cartItems, setCartItems] = useState([
         {
             image: 'https://via.placeholder.com/100',
@@ -53,6 +57,21 @@ export const Heading = () => {
         setShowCart(!showCart);
     };
 
+    const handleSearchSubmit = () => {
+        if (searchKeyword) {
+            if (onSearch) {
+                onSearch(searchKeyword);
+            }
+            navigate(`/shop?search=${searchKeyword}`);
+        }
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit(e);
+        }
+    };
+
     const handleRemove = (index) => {
         setCartItems(cartItems.filter((_, i) => i !== index));
     };
@@ -96,9 +115,16 @@ export const Heading = () => {
                             </li>
                         </ul>
 
-                        <form className="d-flex mx-auto w-50 pe-3 ms-3">
-                            <input className="form-control me-2" type="text" placeholder="Search"/>
-                            <button className="btn btn-primary" type="button">Search</button>
+                        <form className="d-flex mx-auto w-50 pe-3 ms-3" onSubmit={(e) => {e.preventDefault(); handleSearchSubmit();}}>
+                            <input 
+                                className="form-control me-2" 
+                                type="text" 
+                                placeholder="Search" 
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)} 
+                                onKeyDown={handleKeyDown}
+                            />
+                            <button className="btn btn-primary" type="button" onClick={handleSearchSubmit}>Search</button>
                         </form>
                         <button className="btn btn-outline-light ms-2 me-2" onClick={handleLoginClick}>Login</button>
                         <p className="text-white mt-3" onClick={toggleCart} style={{cursor: 'pointer'}}>
