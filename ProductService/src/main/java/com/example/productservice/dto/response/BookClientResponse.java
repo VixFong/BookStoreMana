@@ -13,7 +13,7 @@ public class BookClientResponse {
     private String bookId;
     private String title;
     private int discount;
-    private List<String> images;
+    private String image;
     private double price;
     private double priceDiscount;
 }

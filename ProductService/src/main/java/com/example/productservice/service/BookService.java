@@ -184,7 +184,7 @@ public class BookService {
 //        return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
 //    }
 
-    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection, Set<String> categories, Set<String> authors, Set<String> publishers){
+    public Page<BookClientResponse> searchBookClient(String keyword, int page,int size,  String sortField, String sortDirection, Set<String> categories, Set<String> authors, Set<String> publishers, Double maxPrice){
 
 
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
@@ -197,13 +197,6 @@ public class BookService {
 
         // Filter out locked books
         bookIds.removeIf(bookId -> isBookLocked(bookId));
-
-//        if(!categories.isEmpty() && !authors.isEmpty() && !publishers.isEmpty()){
-//            // Using list of categories, authors and publishers to find suitable bookIds
-//            List<BookIdsFromFilterResponse> bookDetailIdsByFilters = bookDetailRepository.findBookDetailIdsByFilters(categories, authors, publishers);
-//            Set<String> bookDetailIds = bookDetailIdsByFilters.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
-//            bookIds.retainAll(bookDetailIds);
-//        }
 
         if (!categories.isEmpty()) {
             System.out.println("category " + categories);
@@ -229,11 +222,43 @@ public class BookService {
             bookIds.retainAll(bookDetailIds);
         }
 
-//        if(maxPrice != null){
-//            List<BookIdsFromFilterResponse> bookIdByPriceRange = bookRepository.findByIdsAndPriceRange(bookIds, minPrice, maxPrice);
-////            Set<String> bookDetailIds = bookDetailIdsByPublishers.stream().map(BookIdsFromFilterResponse::getBookDetailId).collect(Collectors.toSet());
-//            bookIds.retainAll(bookDetailIds);
-//        }
+        if(maxPrice != null){
+
+//            var books = bookRepository.findBooksByIdIn(bookIds);
+//            Iterator<String> iterator = bookIds.iterator();
+
+//            Set<String> bookIdPrice = null;
+//            for (String id : bookIds) {
+//                var book = bookRepository.findById(id);
+//                if(book.get().isFlashSale()){
+//                    var bookDiscountPrice = book.get().getPriceDiscount() < maxPrice;
+//                    bookIdPrice.add(book.get().getBookId());
+//                }
+//                else{
+//                    var
+//                }
+//            }
+
+//            var bookIdsPrice = books.stream()
+//                    .filter(
+//                        book ->{
+//                            if(book.isFlashSale())
+//                                return book.getPriceDiscount() <= maxPrice;
+//                            else
+//                                return book.getPrice() <= maxPrice;
+//                        }
+//                    ).map(Book::getBookId).collect(Collectors.toList());
+
+
+//            System.out.println(maxPrice);
+            List<SearchBook_InventoryResponse> bookIdByPriceRange = bookRepository.findByIdsAndPriceRange(bookIds, 0, maxPrice);
+//            System.out.println(bookIdByPriceRange.stream().toList());
+
+            Set<String> bookIdsByPrice = bookIdByPriceRange.stream().map(SearchBook_InventoryResponse::getBookId).collect(Collectors.toSet());
+//            System.out.println("price: " + bookIdsByPrice);
+
+            bookIds.retainAll(bookIdsByPrice);
+        }
 
 
         Page<Book> bookPage = bookRepository.findBooksByIdIn(bookIds, pageable);

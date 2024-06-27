@@ -20,6 +20,8 @@ public interface BookRepository extends MongoRepository<Book, String> {
     @Query(value = "{ '_id': { $in: ?0 } }")
     Page<Book> findBooksByIdIn(Set<String> ids, Pageable pageable);
 
+
+//    List<Book> findBooksByIdIn(Set<String> ids);
     @Query(value = "{ '_id': ?0 }", fields = "{ 'title': 1, 'images': 1 }")
     Book findBookById(String id);
 
@@ -29,5 +31,5 @@ public interface BookRepository extends MongoRepository<Book, String> {
     List<SearchBook_InventoryResponse> findBookIdsByTitle(String keyword);
 
     @Query("{ '_id': { $in: ?0 }, 'price': { $gte: ?1, $lte: ?2 } }")
-    List<BookIdsFromFilterResponse> findByIdsAndPriceRange(List<String> ids, double minPrice, double maxPrice);
+    List<SearchBook_InventoryResponse> findByIdsAndPriceRange(Set<String> ids, double minPrice, double maxPrice);
 }

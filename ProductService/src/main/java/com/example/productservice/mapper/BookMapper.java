@@ -37,9 +37,13 @@ public interface BookMapper {
         BookClientResponse response = toBookClientResponse(book);
         if (book.isFlashSale()) {
             response.setPriceDiscount(book.getPriceDiscount());
+            response.setDiscount(book.getDiscount());
         } else {
             response.setPriceDiscount(0);
+            response.setDiscount(0);
         }
+
+        response.setImage(book.getImages().get(0));
         return response;
     }
 
