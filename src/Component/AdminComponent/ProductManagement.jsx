@@ -37,16 +37,17 @@ export const ProductManagement = () => {
 
     }, [page, size]);
 
-    const fetchBooks = async(page, size, keyword) => {
+    const fetchBooks = async(page, size, search) => {
         try {
+            console.log(search);
             setShowModal(true);
             const response = await axios.get('/api/products/books/search',{
-                params: {page, size, keyword},
+                params: {page, size, keyword:search},
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response.data.data)
+            console.log('search',response.data.data)
             const books = response.data.data.content;
             setProducts(books);
             setTotalPages(response.data.data.totalPages);
@@ -56,6 +57,7 @@ export const ProductManagement = () => {
 
 
         } catch (error) {
+            console.log(error);
             setShowModal(false);
             setError(error.response?.data?.message);
             setShowErrorModal(true);
@@ -325,7 +327,7 @@ export const ProductManagement = () => {
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
-                                fetchBooks(search);
+                                fetchBooks(page,size, search);
                             }
                         }}
                     />

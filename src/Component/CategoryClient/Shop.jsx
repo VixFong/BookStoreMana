@@ -32,17 +32,31 @@ export const Shop = ({ searchKeyword }) => {
     const location = useLocation();
 
     useEffect(() => {
+        fetchCategories();
+        fetchAuthors();
+        fetchPublishers();
+    }, []);
+
+    // useEffect(() => {
+
+    //     const queryParams = new URLSearchParams(location.search);
+    //     const searchKeyword = queryParams.get('keyword');
+    //     if (searchKeyword) {
+    //         setKeyword(searchKeyword);
+    //     }
+    //     fetchBooks(sortOption);
+    // }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption, keyword, location.search]);
+
+
+    useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const searchKeyword = queryParams.get('search');
+        const searchKeyword = queryParams.get('keyword');
         if (searchKeyword) {
             setKeyword(searchKeyword);
         }
     }, [location.search]);
 
     useEffect(() => {
-        fetchCategories();
-        fetchAuthors();
-        fetchPublishers();
         fetchBooks(sortOption);
     }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption, keyword]);
 
@@ -95,6 +109,8 @@ export const Shop = ({ searchKeyword }) => {
             sortField = "price";
             sortDirection = "desc";
         }
+        console.log('price ',priceRange);
+        console.log('key ',searchKeyword);
         
         try {
             setShowModal(true);
@@ -108,13 +124,15 @@ export const Shop = ({ searchKeyword }) => {
                     categories: selectedCategories.length > 0 ? selectedCategories : null,
                     authors: selectedAuthors.length > 0 ? selectedAuthors : null,
                     publishers: selectedPublishers.length > 0 ? selectedPublishers : null,
+                    maxPrice: priceRange
                 },
                 paramsSerializer: params => {
                     return qs.stringify(params, { arrayFormat: 'repeat' });
                 }
             });
 
-            setProducts(response.data.data.content); 
+            setProducts(response.data.data.content);
+            console.log(products) 
             setTotalPages(response.data.data.totalPages);
             setTotalElements(response.data.data.totalElements);
             setShowModal(false);
@@ -156,6 +174,10 @@ export const Shop = ({ searchKeyword }) => {
 
     const handlePriceChange = (e) => {
         setPriceRange(e.target.value);
+    };
+
+    const handleFilterClick = () => {
+        fetchBooks(sortOption);
     };
 
     return (
@@ -212,7 +234,7 @@ export const Shop = ({ searchKeyword }) => {
                                     onChange={handlePriceChange}
                                 />
                                 <div className="d-flex justify-content-between align-items-center mt-2">
-                                    <Button variant="danger">Filter</Button>
+                                    <Button variant="danger" onClick={handleFilterClick} >Filter</Button>
                                     <span>Price: ${0} — ${priceRange}</span>
                                 </div>
                             </Accordion.Body>
@@ -242,7 +264,7 @@ export const Shop = ({ searchKeyword }) => {
                             <Col md={3} className="mb-4" key={index}>
                                 <Card className="h-100">
                                     <div className="position-relative">
-                                        <Card.Img variant="top" src={product.images[0]} />
+                                        <Card.Img variant="top" src={product.image} />
                                         {product.discount > 0 && (
                                             <div className="sale-tag position-absolute top-0 end-0 bg-danger text-white p-1">
                                                 {product.discount}%
@@ -252,7 +274,7 @@ export const Shop = ({ searchKeyword }) => {
                                     <Card.Body>
                                         <Card.Title>{product.title}</Card.Title>
                                         <Card.Text>
-                                            {product.priceDiscount !== 0 ? (
+                                            {product.priceDiscount > 0 ? (
                                                 <div>
                                                     <strong style={{ textDecoration: 'line-through' }}>{product.price}$</strong>
                                                     <br />

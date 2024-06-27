@@ -62,7 +62,7 @@ export const Heading = ({ onSearch }) => {
             if (onSearch) {
                 onSearch(searchKeyword);
             }
-            navigate(`/shop?search=${searchKeyword}`);
+            navigate(`/categoryClient?keyword=${searchKeyword}`);
         }
     }
 
