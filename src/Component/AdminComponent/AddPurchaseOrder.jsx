@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Form, Button, InputGroup, Modal, Table, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, InputGroup, Modal, Table, Alert, ToastContainer, Toast} from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
-export const AddPurchaseOrder = ({ onSave }) => {
+export const AddPurchaseOrder = () => {
     const [showModal, setShowModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [supplier, setSupplier] = useState('');
     const [showAlert, setShowAlert] = useState(false);
-
+    const [showToast, setShowToast] = useState(false);
+    const [allSelected, setAllSelected] = useState(false);
+    const navigate = useNavigate();
     const items = [
         {
             name: 'Item 1',
@@ -40,6 +44,15 @@ export const AddPurchaseOrder = ({ onSave }) => {
             setSelectedItems([...selectedItems, { ...item, purchaseQty: 0 }]);
         }
     };
+    
+    const handleSelectAll = () => {
+        if (!allSelected) {
+            setSelectedItems(items.map(item => ({ ...item, purchaseQty: 0 })));
+        } else {
+            setSelectedItems([]);
+        }
+        setAllSelected(!allSelected);
+    };
 
     const handleRemoveItem = (item) => {
         setSelectedItems(selectedItems.filter(selectedItem => selectedItem.name !== item.name));
@@ -63,10 +76,29 @@ export const AddPurchaseOrder = ({ onSave }) => {
             createTime: new Date().toLocaleString(),
             updateTime: new Date().toLocaleString(),
         };
-        onSave(newOrder);
+        console.log('Saving order:', newOrder);
         setSelectedItems([]);
         setSupplier('');
         setShowAlert(false);
+        setShowToast(true);
+        setTimeout(() => {
+            navigate('/daftorder');
+        }, 2000);
+    };
+
+    const handleCancel = () => {
+        setShowCancelModal(true);
+    };
+
+    const confirmCancel = () => {
+        setShowCancelModal(false);
+        navigate('/daftorder');
+    };
+
+    const handleUnitPriceChange = (index, value) => {
+        const updatedItems = [...selectedItems];
+        updatedItems[index].unitPrice = value;
+        setSelectedItems(updatedItems);
     };
 
     return (
@@ -169,7 +201,10 @@ export const AddPurchaseOrder = ({ onSave }) => {
                     <div>
                         <span>Item Qty: {selectedItems.length}</span>
                     </div>
-                    <Button variant="primary" onClick={handleSave}>Save</Button>
+                    <div className="d-flex">
+                        <Button variant="primary" onClick={handleSave} className="me-2">Save</Button>
+                        <Button variant="danger" onClick={handleCancel}>Cancel</Button>
+                    </div>
                 </div>
                 <div className="text-center">
                     <p>{selectedItems.length > 0 ? `${selectedItems.length} items selected` : 'There is no item'}</p>
@@ -206,6 +241,14 @@ export const AddPurchaseOrder = ({ onSave }) => {
                                             min="0"
                                         />
                                     </td>
+                                    <td>
+                                        <Form.Control
+                                            type="number"
+                                            value={item.unitPrice}
+                                            onChange={(e) => handleUnitPriceChange(index, parseFloat(e.target.value))}
+                                            min="0"
+                                        />
+                                    </td>
                                     <td>USD {item.unitPrice}</td>
                                     <td>USD {item.unitPrice * item.purchaseQty}</td>
                                     <td>
@@ -231,6 +274,13 @@ export const AddPurchaseOrder = ({ onSave }) => {
                             </InputGroup>
                         </Form.Group>
                     </Form>
+                    <Form.Check
+                        type="checkbox"
+                        label="Select All"
+                        checked={allSelected}
+                        onChange={handleSelectAll}
+                        className="mt-3 mb-3"
+                    />
                     <Row className="mt-3">
                         {items.map((item, index) => (
                             <Col md={6} key={index} className="mb-3">
@@ -245,6 +295,7 @@ export const AddPurchaseOrder = ({ onSave }) => {
                                             </div>
                                         </div>
                                     }
+                                    checked={selectedItems.some(selectedItem => selectedItem.name === item.name)}
                                     onChange={() => handleSelectItem(item)}
                                 />
                             </Col>
@@ -252,8 +303,28 @@ export const AddPurchaseOrder = ({ onSave }) => {
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
                     <Button variant="primary" onClick={() => setShowModal(false)}>Confirm</Button>
+                </Modal.Footer>
+            </Modal>
+            <ToastContainer position="top-end" className="p-3">
+                <Toast show={showToast} onClose={() => setShowToast(false)} delay={3000} autohide>
+                    <Toast.Header>
+                        <strong className="me-auto">Success</strong>
+                    </Toast.Header>
+                    <Toast.Body>Purchase Order added successfully!</Toast.Body>
+                </Toast>
+            </ToastContainer>
+            <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Cancellation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to cancel the order?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowCancelModal(false)}>No</Button>
+                    <Button variant="danger" onClick={confirmCancel}>Yes</Button>
                 </Modal.Footer>
             </Modal>
         </Container>

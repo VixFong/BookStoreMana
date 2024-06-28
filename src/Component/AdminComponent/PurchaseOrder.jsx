@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaCheckSquare, FaPencilAlt } from 'react-icons/fa';
-import { Container, Row, Col, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer, Toast } from 'react-bootstrap';
 import AddPurchaseOrder from './AddPurchaseOrder';
+import { useNavigate } from 'react-router-dom';
 
 export const PurchaseOrder = () => {
   const [warehouse, setWarehouse] = useState('All');
@@ -13,25 +14,36 @@ export const PurchaseOrder = () => {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [openOrderId, setOpenOrderId] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [showAddOrderModal, setShowAddOrderModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     console.log('Searching for', searchValue);
   };
 
   const handleSaveOrder = (newOrder) => {
+    console.log('New order received:', newOrder);
     setOrders([...orders, newOrder]);
+    setShowToast(true);
+    setShowAddOrderModal(false); 
+    setTimeout(() => {
+      navigate('/draftorder');
+    }, 2000);
   };
 
   const toggleDetails = (orderId) => {
     setDetailsOpen(!detailsOpen);
     setOpenOrderId(orderId);
   };
+  
 
   return (
     <Container className="mt-5">
       <Row>
         <Col>
-          <h4>Ordinary Purchase Order</h4>
+          <h4>Purchase Order</h4>
         </Col>
       </Row>
       <Row className="mb-3">
@@ -163,7 +175,6 @@ export const PurchaseOrder = () => {
           <Button variant="primary">Next</Button>
         </Col>
       </Row>
-      <ToastContainer />
       {detailsOpen && <AddPurchaseOrder onSave={handleSaveOrder} />}
     </Container>
   );
