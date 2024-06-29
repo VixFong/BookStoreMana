@@ -27,6 +27,7 @@ import { CategoryCli } from './Pages/CategoryCli.jsx'
 import { DaftOrder } from './Pages/DaftOrder.jsx'
 import { AddPurchase } from './Pages/AddPurchase.jsx'
 import { OnTheWay } from './Pages/OnTheWay.jsx'
+import { OTWEdit } from './Pages/OTWEdit.jsx'
 
   const router = createBrowserRouter([
     {
@@ -162,6 +163,14 @@ import { OnTheWay } from './Pages/OnTheWay.jsx'
         element: (
             <ProtectedRoute>
                 <OnTheWay/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'onthewayedit',
+        element: (
+            <ProtectedRoute>
+                <OTWEdit/>
             </ProtectedRoute>
         ),
     },

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, Table, Button, InputGroup, Dropdown, DropdownButton, Pagination, Modal } from 'react-bootstrap';
 
-export const OnTheWay = () => {
+export const OnTheWayList = () => {
     const [searchType, setSearchType] = useState('Purchase No');
     const [searchValue, setSearchValue] = useState('');
     const [timeFilter, setTimeFilter] = useState('Create Time');
@@ -68,9 +68,6 @@ export const OnTheWay = () => {
         }
     };
 
-    const handleEdit = (orderId) => {
-        console.log(`Editing order: ${orderId}`);
-    };
 
     const handleCancel = (orderId) => {
         setOrderToCancel(orderId);
@@ -175,7 +172,7 @@ export const OnTheWay = () => {
                                         <Button variant="light" onClick={() => toggleDetails(order.id)}>
                                             {detailsOpen && openOrderId === order.id ? 'Hide Details' : 'Details'}
                                         </Button>
-                                        <Button variant="warning" onClick={() => handleEdit(order.id)} className="mx-1">
+                                        <Button variant="warning" href='onthewayedit' className="mx-1">
                                             Edit
                                         </Button>
                                         <Button variant="danger" onClick={() => handleCancel(order.id)}>
@@ -221,7 +218,6 @@ export const OnTheWay = () => {
                 </Col>
             </Row>
 
-            {/* Cancel Confirmation Modal */}
             <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Cancellation</Modal.Title>
@@ -238,4 +234,4 @@ export const OnTheWay = () => {
     );
 };
 
-export default OnTheWay;
+export default OnTheWayList;
