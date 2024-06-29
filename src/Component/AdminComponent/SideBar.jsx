@@ -216,7 +216,7 @@ export const Sidebar = () => {
                                     <Link className="nav-link text-white" to="/daftorder">Daft</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link text-white" to="#">On The Way</Link>
+                                    <Link className="nav-link text-white" to="/ontheway">On The Way</Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link text-white" to="#">Completed</Link>

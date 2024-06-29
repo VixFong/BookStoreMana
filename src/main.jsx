@@ -26,6 +26,7 @@ import { AddInventory } from './Pages/AddInventory.jsx'
 import { CategoryCli } from './Pages/CategoryCli.jsx'
 import { DaftOrder } from './Pages/DaftOrder.jsx'
 import { AddPurchase } from './Pages/AddPurchase.jsx'
+import { OnTheWay } from './Pages/OnTheWay.jsx'
 
   const router = createBrowserRouter([
     {
@@ -153,6 +154,14 @@ import { AddPurchase } from './Pages/AddPurchase.jsx'
         element: (
             <ProtectedRoute>
                 <AddPurchase/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'ontheway',
+        element: (
+            <ProtectedRoute>
+                <OnTheWay/>
             </ProtectedRoute>
         ),
     },
