@@ -11,6 +11,7 @@
         <module name="PublisherService" />
         <module name="ProductService" />
         <module name="InventoryService" />
+        <module name="OrderService" />
         <module name="AccountService" />
         <module name="ImageService" />
         <module name="ApiGateway" />
@@ -24,6 +25,7 @@
       <module name="DiscoveryServer" options="-parameters" />
       <module name="ImageService" options="-parameters" />
       <module name="InventoryService" options="-parameters" />
+      <module name="OrderService" options="-parameters" />
       <module name="ProductService" options="-parameters" />
       <module name="PublisherService" options="-parameters" />
     </option>

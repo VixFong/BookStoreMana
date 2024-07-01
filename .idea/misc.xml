@@ -11,6 +11,7 @@
         <option value="$PROJECT_DIR$/ProductService/pom.xml" />
         <option value="$PROJECT_DIR$/InventoryService/pom.xml" />
         <option value="$PROJECT_DIR$/PublisherService/pom.xml" />
+        <option value="$PROJECT_DIR$/OrderService/pom.xml" />
       </list>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

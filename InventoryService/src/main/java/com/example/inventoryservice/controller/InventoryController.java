@@ -7,6 +7,7 @@ import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
 import com.example.inventoryservice.dto.response.ApiResponse;
 import com.example.inventoryservice.dto.response.InventoryResponse;
 import com.example.inventoryservice.dto.response.InventoryStatusResponse;
+import com.example.inventoryservice.dto.response.SearchInventory_OrderResponse;
 import com.example.inventoryservice.model.Inventory;
 import com.example.inventoryservice.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,17 @@ public class InventoryController {
         System.out.println(keyword);
         return ApiResponse.<Page<InventoryResponse>>builder()
                 .data(inventoryService.searchInventory(keyword, page, size))
+                .build();
+
+    }
+
+    @GetMapping("/search-order")
+    public ApiResponse<List<SearchInventory_OrderResponse>> searchInventory_Order(
+            @RequestParam String keyword)
+             {
+        System.out.println(keyword);
+        return ApiResponse.<List<SearchInventory_OrderResponse>>builder()
+                .data(inventoryService.searchInventory_order(keyword))
                 .build();
 
     }

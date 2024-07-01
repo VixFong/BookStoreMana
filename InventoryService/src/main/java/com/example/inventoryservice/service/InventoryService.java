@@ -7,6 +7,7 @@ import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
 import com.example.inventoryservice.dto.response.InventoryResponse;
 import com.example.inventoryservice.dto.response.InventoryStatusResponse;
 import com.example.inventoryservice.dto.response.SearchInventoryByBookIdResponse;
+import com.example.inventoryservice.dto.response.SearchInventory_OrderResponse;
 import com.example.inventoryservice.exception.AppException;
 import com.example.inventoryservice.exception.ErrorCode;
 import com.example.inventoryservice.mapper.InventoryMapper;
@@ -88,6 +89,18 @@ public class InventoryService {
         Page<Inventory> inventoryPage = inventoryRepository.findByBookIdIn(bookIds, pageRequest);
 
         return inventoryPage.map(inventoryMapper::toInventoryResponse);
+    }
+    public List<SearchInventory_OrderResponse> searchInventory_order(String keyword){
+        var apiResponse = productServiceClient.searchIdsBook(keyword);
+
+        List<String> bookIds = apiResponse.getData().stream()
+                .map(SearchInventoryByBookIdResponse::getBookId)
+                .collect(Collectors.toList());
+
+
+        var inventory_order = inventoryRepository.findByBookIdIn(bookIds);
+
+        return inventory_order;
     }
 
     public InventoryResponse update(String id, UpdateInventoryRequest request){

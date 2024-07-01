@@ -110,6 +110,15 @@ public class BookController {
                 .build();
     }
 
+    @GetMapping("/bookData_Order/{id}")
+    public ApiResponse<Book_OrderResponse> getBookData_Order(@PathVariable String id){
+//        System.out.println("Controller getBookData");
+
+        return ApiResponse.<Book_OrderResponse>builder()
+                .data(bookService.getBookDataForOrder(id))
+                .build();
+    }
+
     @PutMapping("{id}")
     public ApiResponse<BookInfoResponse> updateBook(@PathVariable String id, @ModelAttribute UpdateBookRequest request){
         System.out.println("Update");

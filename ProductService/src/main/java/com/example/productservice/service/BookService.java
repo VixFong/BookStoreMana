@@ -308,6 +308,24 @@ public class BookService {
         return bookInventoryResponse;
 
     }
+
+
+    public Book_OrderResponse getBookDataForOrder(String id){
+        var book = bookRepository.findBookById2(id);
+//        var bookDetail = bookDetailRepository.findBookDetailById(id);
+//        var publihsers = publisherRepository.findAll();
+
+        System.out.println("book " + book.getPrice());
+        Book_OrderResponse bookOrderResponse = Book_OrderResponse.builder()
+                .title(book.getTitle())
+                .image(book.getImages().get(0))
+                .price(book.getPrice())
+                .build();
+        System.out.println("order book "+ bookOrderResponse.getPrice());
+        return bookOrderResponse;
+
+    }
+
     public BookInfoResponse update(String id, UpdateBookRequest request){
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));

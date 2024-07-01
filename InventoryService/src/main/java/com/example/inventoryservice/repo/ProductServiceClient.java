@@ -17,4 +17,6 @@ import java.util.List;
 public interface ProductServiceClient {
     @GetMapping(value = "/products/books/bookIds", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<List<SearchInventoryByBookIdResponse>> searchIdsBook(@RequestParam String keyword);
+
+
 }

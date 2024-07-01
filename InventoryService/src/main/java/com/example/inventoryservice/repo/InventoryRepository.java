@@ -1,6 +1,7 @@
 package com.example.inventoryservice.repo;
 
 import com.example.inventoryservice.dto.response.InventoryStatusResponse;
+import com.example.inventoryservice.dto.response.SearchInventory_OrderResponse;
 import com.example.inventoryservice.model.Inventory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,7 @@ public interface InventoryRepository extends MongoRepository<Inventory, String> 
     List<InventoryStatusResponse> findBookIdAndStatusByBookIds(List<String> bookIds);
 
     void deleteInventoriesByBookId(String bookId);
+
+//
+    List<SearchInventory_OrderResponse> findByBookIdIn(List<String> bookIds);
 }

@@ -10,10 +10,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Book_InventoryResponse {
+public class Book_OrderResponse {
     private String title;
     private String image;
-    private Set<String> publishers;
+    private double price;
 
 
 }
