@@ -28,6 +28,7 @@ import { DaftOrder } from './Pages/DaftOrder.jsx'
 import { AddPurchase } from './Pages/AddPurchase.jsx'
 import { OnTheWay } from './Pages/OnTheWay.jsx'
 import { OTWEdit } from './Pages/OTWEdit.jsx'
+import EditPurchaseOrder from './Component/AdminComponent/EditPurchaseOrder.jsx'
 
   const router = createBrowserRouter([
     {
@@ -171,6 +172,14 @@ import { OTWEdit } from './Pages/OTWEdit.jsx'
         element: (
             <ProtectedRoute>
                 <OTWEdit/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'editpurchaseorder',
+        element: (
+            <ProtectedRoute>
+                <EditPurchaseOrder/>
             </ProtectedRoute>
         ),
     },

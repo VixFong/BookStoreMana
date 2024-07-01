@@ -196,8 +196,9 @@ export const PurchaseOrder = () => {
                   <td className="text-danger fw-bolder" >{order.status}</td>
                   <td>
                     <Button variant="light" onClick={() => toggleDetails(order.id)}>Details</Button>
-                    <FaCheckSquare className="ms-2" />
-                    <FaPencilAlt className="ms-2" />
+                    <Button variant="warning" href='editpurchaseorder' className="mx-1">
+                        Edit
+                    </Button>
                   </td>
                 </tr>
                 {detailsOpen && openOrderId === order.id && (
