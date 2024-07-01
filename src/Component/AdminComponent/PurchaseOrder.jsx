@@ -30,6 +30,7 @@ export const PurchaseOrder = () => {
   const [showAddOrderModal, setShowAddOrderModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const navigate = useNavigate();
   const token =  localStorage.getItem('authToken');
 
@@ -102,6 +103,13 @@ export const PurchaseOrder = () => {
     }
     return;
 };
+    const handleImportClick = () => {
+      setShowImportModal(true);
+    };
+
+    const handleImportConfirm = () => {
+      setShowImportModal(false);
+    };
 
   return (
     <Container className="mt-5">
@@ -161,8 +169,14 @@ export const PurchaseOrder = () => {
           <Button variant="danger" className="ms-2">Delete</Button>
         </Col>
         <Col className="text-end">
-          <Button variant="secondary" className="me-2">Import & Export</Button>
-          <Button variant="success" href='/addpurchase'>+ Add Purchase Order</Button>
+        <Button variant="success" className="me-2"  href='/addpurchase'>+ Add Purchase Order</Button>
+        <DropdownButton id="dropdown-basic-button" title="Import & Export" variant="secondary" className="me-2"> 
+            <Dropdown.Item onClick={handleImportClick}>Import Purchase Orders</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item>Export Selected</Dropdown.Item>
+            <Dropdown.Item>Export All</Dropdown.Item>
+          </DropdownButton>
+            
         </Col>
       </Row>
       <Row>
@@ -278,6 +292,26 @@ export const PurchaseOrder = () => {
                         <p>{error}</p>
                         <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
                     </Modal.Body> */}
+              <Modal show={showImportModal} onHide={() => setShowImportModal(false)} centered> {/* Added Import Modal */}
+        <Modal.Header closeButton>
+          <Modal.Title>Import Purchase Orders</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="fileUpload">
+              <Form.Label>Upload File</Form.Label>
+              <Form.Control type="file" />
+              <Form.Text className="text-muted">
+                Download a <a href="#">Template</a> to see the format required. Up to 5,000 lines each file.
+              </Form.Text>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowImportModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleImportConfirm}>Confirm</Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
@@ -325,6 +359,9 @@ const styles = `
         background-color: #dc3545;
         border-color: #dc3545;
       } 
+      .d-flex.justify-content-between.align-items-center .text-end .me-2 {
+        margin-right: 10px;
+      }  
 `;
 
 // Inject the styles into the page
