@@ -51,12 +51,7 @@ export const InventoryManagement = () => {
             else{
                 setShowModal(true);
 
-                // const bookIds = await axios.get('/api/products/books/bookIds',{
-                //     params: {keyword: search},
-                //     headers: {
-                //         Authorization: `Bearer ${token}`
-                //     }
-                // });
+        
                 response = await axios.get(`/api/inventory/search`, {
                     params:{keyword, page, size},
                     headers: {
@@ -222,8 +217,8 @@ export const InventoryManagement = () => {
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
     
-            const hour = String(date.getHours());
-            const minute = String(date.getMinutes());
+            const hour = String(date.getHours()).padStart(2, '0');
+            const minute = String(date.getMinutes()).padStart(2, '0');
     
             return `${day}-${month}-${year}  ${hour}:${minute}` ;
         }
@@ -323,13 +318,7 @@ export const InventoryManagement = () => {
                         <p className="mt-3">Loading, Please Wait...</p>
                     </Modal.Body>
                 </Modal>
-            {/* <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-                <Modal.Body className="text-center">
-                    <p>Are you sure you want to delete this item?</p>
-                    <Button variant="danger" onClick={handleConfirmDelete}>Yes</Button>
-                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
-                </Modal.Body>
-            </Modal> */}
+        
             <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">

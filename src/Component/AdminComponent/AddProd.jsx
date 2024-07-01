@@ -133,7 +133,7 @@ export const AddProd = () => {
             setShowModal(false); 
             setShowSuccessModal(true);
             setTimeout(() => {
-            setShowSuccessModal(false);
+                setShowSuccessModal(false);
             }, 1000);
           console.log('Response:', response.data);
         } catch (error) {
@@ -362,6 +362,7 @@ export const AddProd = () => {
                                     options={categoryOptions}
                                     isMulti
                                     onChange={(selectedOptions) => setCategory(selectedOptions.map(option => option.value))}
+                                    isLoading={!categoryOptions.length}
                                     
                                     isDisabled={isUploading}
                                 
@@ -378,6 +379,7 @@ export const AddProd = () => {
                                     options={publisherOptions}
                                     isMulti
                                     onChange={(selectedOptions) => setSelectedPublishers(selectedOptions.map(option => option.value))}
+                                    isLoading={!publisherOptions.length}
                                     isDisabled={isUploading}
                                 />
                             </Form.Group>
@@ -391,6 +393,8 @@ export const AddProd = () => {
                                     
                                     // isMulti
                                     // onChange={(selectedOptions) => setSelectedAuthors(selectedOptions.map(option => option.value))}
+                                    isLoading={!authorOptions.length}
+                                    
                                     isDisabled={isUploading}
                                     
                                 />
