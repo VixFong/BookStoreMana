@@ -255,7 +255,7 @@ export const PurchaseOrder = () => {
         </nav>
         {/* <span>1 - {orders.length} of {orders.length}</span> */}
       </Row>
-      {detailsOpen && <AddPurchaseOrder onSave={handleSaveOrder} />}
+      {detailsOpen}
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                     <Modal.Body className="text-center">
