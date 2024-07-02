@@ -40,6 +40,8 @@ public class OrderResponse {
     private String note;
 
     private String status;
-//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+
+    private List<OrderItemResponse> orderItems;
+
+//    private List<OrderItem> orderItems;
 }

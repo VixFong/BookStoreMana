@@ -54,6 +54,9 @@ public class Order {
     @JoinColumn(name = "order_id")
     private List<OrderItem> orderItems;
 
-
+//    public void addOrderItem(OrderItem item) {
+//        orderItems.add(item);
+//        item.setOrder(this);
+//    }
 
 }
