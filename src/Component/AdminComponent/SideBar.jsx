@@ -219,7 +219,7 @@ export const Sidebar = () => {
                                     <Link className="nav-link text-white" to="/ontheway">On The Way</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link text-white" to="#">Completed</Link>
+                                    <Link className="nav-link text-white" to="/completeorder">Completed</Link>
                                 </li>
                             </ul>
                         </div>
