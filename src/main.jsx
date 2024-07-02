@@ -176,7 +176,7 @@ import EditPurchaseOrder from './Component/AdminComponent/EditPurchaseOrder.jsx'
         ),
     },
     {
-        path: 'editpurchaseorder',
+        path: 'editpurchaseorder/:id',
         element: (
             <ProtectedRoute>
                 <EditPurchaseOrder/>

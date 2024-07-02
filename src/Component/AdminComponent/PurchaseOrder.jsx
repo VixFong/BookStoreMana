@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaCheckSquare, FaPencilAlt } from 'react-icons/fa';
 import { Container, Row, Col, Modal, Spinner, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer, Toast } from 'react-bootstrap';
 import AddPurchaseOrder from './AddPurchaseOrder';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const PurchaseOrder = () => {
@@ -17,8 +17,14 @@ export const PurchaseOrder = () => {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [openOrderId, setOpenOrderId] = useState(null);
   const [orders, setOrders] = useState([]);
-  const [status, setStatus] = useState('PENDING');
   
+  const [selectedOrderIds, setSelectedOrderIds] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [allSelected, setAllSelected] = useState(false);
+  
+  const [status, setStatus] = useState('PENDING');
+  const [file, setFile] = useState(null);
+
 
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
@@ -38,14 +44,22 @@ export const PurchaseOrder = () => {
   useEffect(() => {
     fetchOrders(page, size, search);
 
-}, [page]);
+}, [page,dateRange]);
 
   const fetchOrders = async(page, size, search) => {
     try {
         console.log(search);
         setShowModal(true);
         const response = await axios.get('/api/orders/search',{
-            params: {keyword:search, status, page, size},
+            params: {
+              keyword:search, 
+              status, 
+              page, 
+          
+              size,
+              timeFilter,
+              dateRange
+            },
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -53,6 +67,8 @@ export const PurchaseOrder = () => {
         console.log('search',response.data.data)
         setOrders(response.data.data.content);
         setTotalPages(response.data.data.totalPages);
+        setTotalElements(response.data.data.totalElements);
+
         // const bookIds = books.map(book => book.bookId);
         // fetchInventoryStatus(bookIds);
         setShowModal(false);
@@ -72,6 +88,66 @@ export const PurchaseOrder = () => {
 
     fetchOrders(page, size, searchValue);
   };
+
+  const handleCheckboxChange = (orderId) => {
+    setSelectedOrderIds(prevSelectedOrderIds => 
+      prevSelectedOrderIds.includes(orderId) 
+        ? prevSelectedOrderIds.filter(id => id !== orderId) 
+        : [...prevSelectedOrderIds, orderId]
+    );
+  };
+
+  const handleExportSelected = async() => {
+    // Send selectedOrderIds to the backend
+    console.log(selectedOrderIds.length);
+    if(!selectedOrderIds.length){
+      
+      setError("Please select order");
+      setShowErrorModal(true);
+      return;
+    }
+    try {
+      
+      setShowModal(true);
+      
+      console.log('Export selected orders:', selectedOrderIds);
+      const response = await axios.post('/api/orders/export',
+        selectedOrderIds
+      ,{
+          headers: {
+              Authorization: `Bearer ${token}`,
+               'Content-Type': 'application/json'
+          },
+          // responseType: 'arraybuffer'
+              responseType: 'blob'
+      });
+      setShowModal(false);
+      console.log(response.data)
+      setSelectedOrderIds([]);
+      // const url = window.URL.createObjectURL(new Blob([response.data]));
+      // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'orders.xlsx'); // Filename for the downloaded file
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up the temporary link element
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      setShowModal(false);
+      console.log(error);
+      setError(error.response?.data?.message);
+      setShowErrorModal(true);
+    }
+
+
+    // Add your export logic here (e.g., make an API call to the backend)
+  };
+
+
 
   const handleSaveOrder = (newOrder) => {
     console.log('New order received:', newOrder);
@@ -103,12 +179,49 @@ export const PurchaseOrder = () => {
     }
     return;
 };
+
+const handleUpload = async () => {
+  if (!file) {
+      setError('Choose file excel');
+
+      setShowErrorModal(true);
+  //   return;
+  }
+
+  setShowModal(true); 
+  const formData = new FormData();
+  formData.append('file', file);
+  console.log(file)
+  try {
+      const response = await axios.post('api/orders/import', formData, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+          },
+      });
+      // setShowModal(false); 
+      // setShowSuccessModal(true);
+      // setTimeout(() => {
+      //     setShowSuccessModal(false);
+      // }, 1000);
+    setShowModal(false);
+    fetchOrders(page, size, searchValue);
+
+
+    console.log('Response:', response.data);
+  } catch (error) {
+      setShowModal(false);
+      setError(error.response?.data?.message || 'An error occurred');
+      setShowErrorModal(true);
+  }
+};
     const handleImportClick = () => {
       setShowImportModal(true);
     };
 
     const handleImportConfirm = () => {
       setShowImportModal(false);
+      handleUpload();
     };
 
   return (
@@ -173,12 +286,15 @@ export const PurchaseOrder = () => {
         <DropdownButton id="dropdown-basic-button" title="Import & Export" variant="secondary" className="me-2"> 
             <Dropdown.Item onClick={handleImportClick}>Import Purchase Orders</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>Export Selected</Dropdown.Item>
-            <Dropdown.Item>Export All</Dropdown.Item>
+            <Dropdown.Item onClick={handleExportSelected}>Export Selected</Dropdown.Item>
+            <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item>
           </DropdownButton>
             
         </Col>
       </Row>
+        <Col>
+            <span>Showing all {totalElements} results</span>
+        </Col>
       <Row>
         <Table striped bordered hover>
           <thead>
@@ -187,7 +303,7 @@ export const PurchaseOrder = () => {
               <th>Code</th>
               <th>Supplier</th>
               <th>Payment Amount</th>
-              {/* <th>Tracking No.</th> */}
+              
               <th>Time</th>
               <th>Status</th>
               <th>Action</th>
@@ -197,12 +313,18 @@ export const PurchaseOrder = () => {
             {orders.map((order, index) => (
               <>
                 <tr key={order.id}>
-                  <td><Form.Check type="checkbox" /></td>
+                  <td>
+                    <Form.Check 
+                      type="checkbox" 
+                      checked={selectedOrderIds.includes(order.id)}
+                      onChange={() => handleCheckboxChange(order.id)}
+                    />
+                  </td>
                   {/* <td>{index + 1}</td> */}
                   <td>{order.orderCode}</td>
                   <td>{order.publisher}</td>
                   <td>{order.orderItems.reduce((total, item) => total + ((item.price  * order.taxFee / 100).toFixed(2) * item.purchaseQty + order.shipFee  +(order.otherFee ? order.otherFee : 0) || 0), 0)}$</td>
-                  {/* <td>{order.trackingNumber}</td> */}
+           
                   <td>
                     <div>Create Time: {formatDate(order.dateCreated)}</div>
                     <div>Update Time: {formatDate(order.dateUpdated)}</div>
@@ -210,8 +332,13 @@ export const PurchaseOrder = () => {
                   <td className="text-danger fw-bolder" >{order.status}</td>
                   <td>
                     <Button variant="light" onClick={() => toggleDetails(order.id)}>Details</Button>
-                    <Button variant="warning" href='editpurchaseorder' className="mx-1">
-                        Edit
+                    <Button 
+                      variant="warning" 
+                      // href='editpurchaseorder' 
+                      className="mx-1"
+                      >
+                        <Link to={`/editpurchaseorder/${order.id}`}><i className="fas fa-edit"></i></Link>
+                        
                     </Button>
                   </td>
                 </tr>
@@ -281,7 +408,7 @@ export const PurchaseOrder = () => {
                     </Modal.Body>
                 </Modal>
         
-            {/* <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
+            <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)} centered>
                     <Modal.Body className="text-center">
                         <div className="mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="red" className="bi bi-x-circle" viewBox="0 0 16 16">
@@ -291,7 +418,9 @@ export const PurchaseOrder = () => {
                         <h4>Error</h4>
                         <p>{error}</p>
                         <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
-                    </Modal.Body> */}
+                    </Modal.Body>
+                </Modal>
+
               <Modal show={showImportModal} onHide={() => setShowImportModal(false)} centered> {/* Added Import Modal */}
         <Modal.Header closeButton>
           <Modal.Title>Import Purchase Orders</Modal.Title>
@@ -300,7 +429,11 @@ export const PurchaseOrder = () => {
           <Form>
             <Form.Group controlId="fileUpload">
               <Form.Label>Upload File</Form.Label>
-              <Form.Control type="file" />
+              <Form.Control 
+                type="file" 
+                accept=".xlsx, .xls, .csv"
+                onChange={(e)=> setFile(e.target.files[0])}
+              />
               <Form.Text className="text-muted">
                 Download a <a href="#">Template</a> to see the format required. Up to 5,000 lines each file.
               </Form.Text>

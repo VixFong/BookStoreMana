@@ -33,12 +33,12 @@ export const EditPurchaseOrder = () => {
     const itemsPerPage = 25;
     const token = localStorage.getItem('authToken');
     const navigate = useNavigate();
-    const { orderId } = useParams();
+    const { id } = useParams();
 
     useEffect(() => {
         fetchPublishers();
-        fetchOrderDetails(orderId);
-    }, [orderId]);
+        fetchOrderDetails(id);
+    }, [id]);
 
     const fetchPublishers = async () => {
         try {
@@ -57,9 +57,10 @@ export const EditPurchaseOrder = () => {
         }
     };
 
-    const fetchOrderDetails = async (orderId) => {
+    const fetchOrderDetails = async (id) => {
+        console.log('id', id);
         try {
-            const response = await axios.get(`/api/orders/${orderId}`, {
+            const response = await axios.get(`/api/orders/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -161,7 +162,8 @@ export const EditPurchaseOrder = () => {
                 purchaseQty: item.purchaseQty,
                 title: item.title
             }));
-            const response = await axios.put(`/api/orders/${orderId}`, {
+            console.log("order item " , orderItems);
+            const response = await axios.put(`/api/orders/${id}`, {
                 estimatedArrivalDate: date,
                 publisher: selectedPublishers,
                 numItems: selectedItems.length,
@@ -176,6 +178,7 @@ export const EditPurchaseOrder = () => {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log(response.data.data);
             setShowLoadingModal(false);
             setShowSuccessModal(true);
             setTimeout(() => {
@@ -184,6 +187,7 @@ export const EditPurchaseOrder = () => {
             }, 1000);
             setSelectedItems([]);
         } catch (error) {
+            console.log(error);
             setShowLoadingModal(false);
             setError(error.response?.data?.message || 'An error occurred');
             setShowErrorModal(true);
