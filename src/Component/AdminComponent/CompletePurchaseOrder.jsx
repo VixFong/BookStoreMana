@@ -181,7 +181,7 @@ export const CompletePurchaseOrder = () => {
                   <div>Receiving Time: {formatDate(order.dateUpdated)}</div>
                 </td>
                 <td>
-                  <Button variant="danger">Detail</Button>
+                  <Button variant="danger" href='/detailcompleteorder'>Detail</Button>
                 </td>
               </tr>
             ))}

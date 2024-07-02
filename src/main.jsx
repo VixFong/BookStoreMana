@@ -30,6 +30,7 @@ import { OnTheWay } from './Pages/OnTheWay.jsx'
 import { OTWEdit } from './Pages/OTWEdit.jsx'
 import EditPurchaseOrder from './Component/AdminComponent/EditPurchaseOrder.jsx'
 import { CompleteOrder } from './Pages/CompleteOrder.jsx'
+import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
 
   const router = createBrowserRouter([
     {
@@ -189,6 +190,14 @@ import { CompleteOrder } from './Pages/CompleteOrder.jsx'
         element: (
             <ProtectedRoute>
                 <CompleteOrder/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'detailcompleteorder',
+        element: (
+            <ProtectedRoute>
+                <DetailCompleteOrder/>
             </ProtectedRoute>
         ),
     },
