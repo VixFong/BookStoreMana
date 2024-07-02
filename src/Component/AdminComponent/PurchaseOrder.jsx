@@ -37,6 +37,8 @@ export const PurchaseOrder = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
   const navigate = useNavigate();
   const token =  localStorage.getItem('authToken');
 
@@ -224,6 +226,43 @@ const handleUpload = async () => {
       handleUpload();
     };
 
+    const handleSelectAll = () => {
+      if (allSelected) {
+        setSelectedOrderIds([]);
+      } else {
+        setSelectedOrderIds(orders.map(order => order.id));
+      }
+      setAllSelected(!allSelected);
+    };
+
+    const handleCancelClick = (orderId) => {
+      setOrderToDelete(orderId);
+      setShowCancelModal(true);
+    };
+
+    const handleConfirmCancel = async () => {
+      if (orderToDelete) {
+        setShowModal(true);
+        try {
+          await axios.delete(`/api/orders/${orderToDelete}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setShowModal(false);
+          setShowCancelModal(false);
+          setOrderToDelete(null);
+          fetchOrders(page, size, searchValue);
+        } catch (error) {
+          setShowModal(false);
+          setError(error.response?.data?.message || 'An error occurred');
+          setShowErrorModal(true);
+        }
+      }
+    };
+
+
+
   return (
     <Container className="mt-5">
       <Row>
@@ -231,8 +270,9 @@ const handleUpload = async () => {
           <h4>Purchase Order</h4>
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col>
+      <div className="header-container">
+      <Row className="align-items-center">
+        <Col md={3}>
           <Form.Group controlId="timeFilter">
             <Form.Label>Select Time</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={timeFilter}>
@@ -241,7 +281,7 @@ const handleUpload = async () => {
             </DropdownButton>
           </Form.Group>
         </Col>
-        <Col>
+        <Col md={3}>
           <Form.Group controlId="dateRange">
             <Form.Label>Date Range</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={dateRange}>
@@ -254,8 +294,8 @@ const handleUpload = async () => {
             </DropdownButton>
           </Form.Group>
         </Col>
-        <Col>
-          <Form.Group controlId="searchType">
+        <Col md={3} >
+          <Form.Group controlId="searchType" >
             <Form.Label>Search</Form.Label>
             {/* <Form.Control as="select" value={searchType} onChange={(e) => setSearchType(e.target.value)}>
               <option>Purchase No</option>
@@ -267,39 +307,45 @@ const handleUpload = async () => {
             placeholder="Search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            
           />
         </Col>
-        <Col className="d-flex align-items-end">
+        <Col md={3}>
           {/* <Button variant="primary" onClick={handleSearch}> */}
-          <Button variant="primary" onClick={handleSearch}>
-            Search
+          <Button variant="primary" onClick={handleSearch} className="search-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
           </Button>
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col>
+      <Row className="align-items-center mt-3">
+        <Col md={6}>
           <Button variant="primary">Submit</Button>
-          <Button variant="danger" className="ms-2">Delete</Button>
         </Col>
-        <Col className="text-end">
-        <Button variant="success" className="me-2"  href='/addpurchase'>+ Add Purchase Order</Button>
-        <DropdownButton id="dropdown-basic-button" title="Import & Export" variant="secondary" className="me-2"> 
-            <Dropdown.Item onClick={handleImportClick}>Import Purchase Orders</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={handleExportSelected}>Export Selected</Dropdown.Item>
-            <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item>
+        <Col md={6} className="d-flex">
+          <DropdownButton id="dropdown-basic-button" title="Import & Export" variant="secondary" className="me-2"> 
+              <Dropdown.Item onClick={handleImportClick}>Import Purchase Orders</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleExportSelected}>Export Selected</Dropdown.Item>
+              <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item>
           </DropdownButton>
-            
+          <Button variant="success"  href='/addpurchase'>+ Add Purchase Order</Button>
         </Col>
       </Row>
-        <Col>
-            <span>Showing all {totalElements} results</span>
-        </Col>
+      </div>
+      <Col className='mt-3'>
+        <span>Showing all {totalElements} results</span>
+      </Col>
       <Row>
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th><Form.Check type="checkbox" /></th>
+              <Form.Check
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={handleSelectAll}
+                />
               <th>Code</th>
               <th>Supplier</th>
               <th>Payment Amount</th>
@@ -340,6 +386,7 @@ const handleUpload = async () => {
                         <Link to={`/editpurchaseorder/${order.id}`}><i className="fas fa-edit"></i></Link>
                         
                     </Button>
+                    <Button variant="danger" onClick={() => handleCancelClick(order.id)}>Cancel</Button>
                   </td>
                 </tr>
                 {detailsOpen && openOrderId === order.id && (
@@ -445,6 +492,19 @@ const handleUpload = async () => {
           <Button variant="danger" onClick={handleImportConfirm}>Confirm</Button>
         </Modal.Footer>
       </Modal>
+      <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Cancellation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to cancel the order?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowCancelModal(false)}>No</Button>
+          <Button variant="danger" onClick={handleConfirmCancel}>Yes</Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 };
@@ -454,47 +514,64 @@ const handleUpload = async () => {
 export default PurchaseOrder;
 
 const styles = `
-      .purchase-order-table {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .detail-card {
-        border: 1px solid #eaeaea;
-        border-radius: 4px;
-        overflow: hidden;
-        text-align: center;
-      }
-      .detail-card img {
-        height: 150px;
-        width: 150px;
-        object-fit: cover;
-      }
-      .detail-card .card-body {
-        padding: 10px;
-      }
-      .detail-card .card-title {
-        font-size: 0.9rem;
-        font-weight: 600;
-      }
-      .detail-card .card-text {
-        font-size: 0.8rem;
-        line-height: 1.2;
-      }
-      .page-link{
-        color: #000;
-      }
-
-      .active>.page-link, .page-link.active {
-        z-index: 3;
-        color: var(--bs-pagination-active-color);
-        background-color: #dc3545;
-        border-color: #dc3545;
-      } 
-      .d-flex.justify-content-between.align-items-center .text-end .me-2 {
-        margin-right: 10px;
-      }  
+  .purchase-order-table {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .detail-card {
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    overflow: hidden;
+    text-align: center;
+  }
+  .detail-card img {
+    height: 150px;
+    width: 150px;
+    object-fit: cover;
+  }
+  .detail-card .card-body {
+    padding: 10px;
+  }
+  .detail-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .detail-card .card-text {
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+  .page-link {
+    color: #000;
+  }
+  .active>.page-link,
+  .page-link.active {
+    z-index: 3;
+    color: var(--bs-pagination-active-color);
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  .header-container {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .form-group {
+    margin-bottom: 0;
+  }
+  .dropdown-button {
+    width: 100%;
+  }
+  .search-button {
+    width: 25%;
+    margin-top: 30px;
+  }
+  .edit-link {
+    color: inherit;
+    text-decoration: none;
+  }
 `;
 
 // Inject the styles into the page
