@@ -45,6 +45,9 @@ public class OrderService {
         order.setOrderCode(generateOrderCode());
 
         order.setStatus(Order.STATUS_PENDING);
+
+        System.out.println("item req" + request.getOrderItems());
+
         return orderMapper.toOrderResponse(orderRepository.save(order));
 
     }
@@ -114,6 +117,7 @@ public class OrderService {
         System.out.println("time " + timeFilter);
         System.out.println("start date: " + startDate);
         System.out.println("end date: " + endDate);
+        System.out.println("status : " + status);
 
 //        Page<Order> ordersPage = orderRepository.findByFilters(keyword, status, timeFilter, startDate, endDate, pageable);
 
@@ -139,43 +143,43 @@ public class OrderService {
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
+        order.setDateUpdated(LocalDateTime.now());
+
         orderMapper.updateOrder(order, request);
         System.out.println("item req" + request.getOrderItems());
         System.out.println("item order" + order.getOrderItems());
 
-//        order.getOrderItems().clear();
-//        if (request.getOrderItems() != null) {
-//            for (OrderItem item : request.getOrderItems()) {
-//                order.addOrderItem(item); // Assuming addOrderItem handles the relationship
-//            }
-//        }
-
-//        var orderItemsReq = request.getOrderItems();
-//        var existOrderItem = order.getOrderItems();
-//
-//        // Remove items not in the update request
-//        List<OrderItem> itemsToRemove = existOrderItem.stream()
-//                .filter(item -> orderItemsReq.stream()
-//                        .noneMatch(itemReq -> itemReq.getItemId().equals(item.getItemId())))
-//                .collect(Collectors.toList());
-//
-//        existOrderItem.removeAll(itemsToRemove);
-//        orderRepository.deleteAll(itemsToRemove);
-//
-//
-//        for(OrderItem newItem : orderItemsReq){
-//
-//        }
+        if (request.getOrderItems() != null) {
+            order.getOrderItems().clear();
+            for (OrderItem item : request.getOrderItems()) {
+                order.addOrderItem(item); // Assuming addOrderItem handles the relationship
+            }
+        }
         return orderMapper.toOrderResponse(orderRepository.save(order));
 
 
     }
 
+    public void updateStatusOrder(List<String> ids){
+        List<Order> orders = findOrdersByIds(ids);
+
+        for(Order order : orders){
+
+            System.out.println("order: " + order.getOrderCode());
+            order.setStatus(Order.STATUS_DELIVERING);
+            order.setDateUpdated(LocalDateTime.now());
+            orderRepository.save(order);
+        }
+    }
 
 
     public List<Order> findOrdersByIds(List<String> ids) {
         List<Order> orders = orderRepository.findAllById(ids);
         return orders;
+    }
+
+    public void delete(String id){
+        orderRepository.deleteById(id);
     }
 
 

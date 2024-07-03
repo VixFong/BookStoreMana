@@ -81,6 +81,7 @@ public class OrderController {
                 .body(in.readAllBytes());
     }
 
+
     @PostMapping("/import")
     public ApiResponse<Void> importOrdersFromExcel(@RequestParam("file") MultipartFile file) {
         System.out.println("Import");
@@ -98,9 +99,23 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<OrderResponse> edit(@PathVariable String id, UpdateOrderRequest request){
+    public ApiResponse<OrderResponse> edit(@PathVariable String id, @RequestBody UpdateOrderRequest request){
         return ApiResponse.<OrderResponse>builder()
                 .data(orderService.edit(id, request))
+                .build();
+    }
+
+    @PutMapping("edit/status")
+    public ApiResponse<Void> updateStatusOrder(@RequestBody List<String> ids){
+        orderService.updateStatusOrder(ids);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> delete(@PathVariable String id){
+        orderService.delete(id);
+        return ApiResponse.<Void>builder()
                 .build();
     }
 

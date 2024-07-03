@@ -41,7 +41,7 @@ public class ExcelExportService {
                 Sheet sheet = workbook.createSheet("Orders");
 
                 Row headerRow = sheet.createRow(0);
-                String[] headers = {"ID", "Order Code", "Estimated Arrival Date", "Publisher", "Num Items", "Ship Fee", "Tax Fee", "Other Fee",  "Note", "Status", "Order Items"};
+                String[] headers = {"Order Code", "Estimated Arrival Date", "Publisher", "Num Items", "Ship Fee", "Tax Fee", "Other Fee",  "Note", "Status", "Order Items"};
                 for (int i = 0; i < headers.length; i++) {
                     Cell cell = headerRow.createCell(i);
                     cell.setCellValue(headers[i]);
@@ -50,21 +50,21 @@ public class ExcelExportService {
                 int rowNum = 1;
                 for (Order order : orders) {
                     Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(order.getId());
-                    row.createCell(1).setCellValue(order.getOrderCode());
-                    row.createCell(2).setCellValue(order.getEstimatedArrivalDate().toString());
-                    row.createCell(3).setCellValue(order.getPublisher());
-                    row.createCell(4).setCellValue(order.getNumItems());
-                    row.createCell(5).setCellValue(order.getShipFee());
-                    row.createCell(6).setCellValue(order.getTaxFee());
-                    row.createCell(7).setCellValue(order.getOtherFee());
-                    row.createCell(8).setCellValue(order.getNote());
-                    row.createCell(9).setCellValue(order.getStatus());
+//                    row.createCell(0).setCellValue(order.getId());
+                    row.createCell(0).setCellValue(order.getOrderCode());
+                    row.createCell(1).setCellValue(order.getEstimatedArrivalDate() != null ? order.getEstimatedArrivalDate().toString() : "");
+                    row.createCell(2).setCellValue(order.getPublisher());
+                    row.createCell(3).setCellValue(order.getNumItems() != null ? order.getNumItems() : 0);
+                    row.createCell(4).setCellValue(order.getShipFee() != null ? order.getShipFee() : 0.0);
+                    row.createCell(5).setCellValue(order.getTaxFee() != null ? order.getTaxFee() : 0);
+                    row.createCell(6).setCellValue(order.getOtherFee()  != null ? order.getOtherFee() : 0.0);
+                    row.createCell(7).setCellValue(order.getNote() != null ? order.getNote() : "");
+                    row.createCell(8).setCellValue(order.getStatus());
 
                     String orderItems = order.getOrderItems().stream()
                             .map(item -> String.format("Image: %s,Title: %s, Qty: %d, Price: %.2f", item.getImage(),item.getTitle(), item.getPurchaseQty(), item.getPrice()))
                             .collect(Collectors.joining("; "));
-                    row.createCell(10).setCellValue(orderItems);
+                    row.createCell(9).setCellValue(orderItems);
                 }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -101,21 +101,17 @@ public class ExcelExportService {
                     continue;
                 }
 
-//                Order order = new Order();
 
                 CreateOrderRequest order = new CreateOrderRequest();
-//                order.setId((long) row.getCell(0).getNumericCellValue());
-//                order.setOrderCode(row.getCell(1).getStringCellValue());
-                order.setEstimatedArrivalDate(LocalDate.parse(row.getCell(2).getStringCellValue(), formatter));
-                order.setPublisher(row.getCell(3).getStringCellValue());
-                order.setNumItems((int) row.getCell(4).getNumericCellValue());
-                order.setShipFee(row.getCell(5).getNumericCellValue());
-                order.setTaxFee((int)row.getCell(6).getNumericCellValue());
-                order.setOtherFee(row.getCell(7).getNumericCellValue());
-                order.setNote(row.getCell(8).getStringCellValue());
-//                order.setStatus(row.getCell(9).getStringCellValue());
+                order.setEstimatedArrivalDate(row.getCell(1) != null ? LocalDate.parse(row.getCell(1).getStringCellValue(), formatter) : null);
+                order.setPublisher(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : "");
+                order.setNumItems(row.getCell(3) != null ? (int)row.getCell(3).getNumericCellValue() : 0);
+                order.setShipFee(row.getCell(4)!= null ? row.getCell(4).getNumericCellValue() : 0.0);
+                order.setTaxFee(row.getCell(5) != null ? (int)row.getCell(5).getNumericCellValue() : 0);
+                order.setOtherFee(row.getCell(6)!= null ? row.getCell(6).getNumericCellValue() : 0.0);
+                order.setNote(row.getCell(7) != null ? row.getCell(7).getStringCellValue() : "");
 
-                String orderItemsString = row.getCell(10).getStringCellValue();
+                String orderItemsString = row.getCell(8).getStringCellValue();
                 List<OrderItem> orderItems = parseOrderItems(orderItemsString);
                 order.setOrderItems(orderItems);
 
