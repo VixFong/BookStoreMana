@@ -317,7 +317,7 @@ const handleUpload = async () => {
           </Form.Group>
         </Col>
 
-        <Col md={2}>
+        <Col md={2} className='date-range'>
           <Form.Group controlId="dateRange">
             <Form.Label>Date Range</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={dateRange}>
@@ -330,7 +330,7 @@ const handleUpload = async () => {
             </DropdownButton>
           </Form.Group>
         </Col>
-        <Col md={2}>
+        <Col md={3}>
           <Form.Group controlId="status">
             <Form.Label>Select Status</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={status}>
@@ -339,7 +339,7 @@ const handleUpload = async () => {
             </DropdownButton>
           </Form.Group>
         </Col>
-        <Col md={3} >
+        <Col md={3} className='search'>
           <Form.Group controlId="searchType" >
             <Form.Label>Search</Form.Label>
             {/* <Form.Control as="select" value={searchType} onChange={(e) => setSearchType(e.target.value)}>
@@ -380,7 +380,7 @@ const handleUpload = async () => {
               <Dropdown.Item onClick={handleExportSelected}>Export Selected</Dropdown.Item>
               <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item>
           </DropdownButton>
-          <Button variant="success"  href='/addpurchase'>+ Add Purchase Order</Button>
+          <Button variant="success"  href='/addpurchase'>+ Add Order</Button>
         </Col>
       </Row>
       ) : null}
@@ -401,7 +401,7 @@ const handleUpload = async () => {
         <span>Showing all {totalElements} results</span>
       </Col>
       <Row>
-        <Table striped bordered hover>
+        <Table striped bordered hover className={totalElements === 0 ? 'no-orders' : ''}>
           <thead>
             <tr>
               <Form.Check
@@ -642,6 +642,7 @@ const styles = `
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
   }
   .form-group {
     margin-bottom: 0;
@@ -649,13 +650,19 @@ const styles = `
   .dropdown-button {
     width: 100%;
   }
-  .search-button {
-    width: 25%;
-    margin-top: 30px;
-  }
   .edit-link {
     color: inherit;
     text-decoration: none;
+  }
+  .no-orders {
+    text-align: center;
+    color: grey;
+  }
+  .date-range{
+    margin-left: 50px;
+  }
+  .search {
+    margin-top: 5px;
   }
 `;
 
