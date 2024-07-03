@@ -17,6 +17,7 @@ export const InventoryManagement = () => {
     const [page, setPage] = useState();
     const [size, setSize] = useState(12);
     const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
 
 
     const [error, setError] = useState('');
@@ -64,6 +65,7 @@ export const InventoryManagement = () => {
             } 
             const inventoryData = response.data.data.content;
             setTotalPages(response.data.data.totalPages);
+            setTotalElements(response.data.data.totalElements);
             console.log(inventoryData)
 
             // Fetch book details for each inventory item
@@ -230,6 +232,7 @@ export const InventoryManagement = () => {
                 <Col>
                     <h3>Inventory</h3>
                 </Col>
+            
                 <Col className="text-end">
                 <div className="d-flex justify-content-end">
                         <input
@@ -251,6 +254,8 @@ export const InventoryManagement = () => {
                 </Col>
             </Row>
             <Row>
+            <span>Showing all {totalElements} results</span>
+
                 {inventory.map((item, index) => (
                     <Col lg={3} md={4} sm={6} xs={12}className="mb-4" key={index}>
                         <Card className="inventory-item h-100">

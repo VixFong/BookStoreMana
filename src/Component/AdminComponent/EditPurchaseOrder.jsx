@@ -193,7 +193,7 @@ export const EditPurchaseOrder = () => {
             setShowErrorModal(true);
         }
     };
-
+    console.log("order item: ", selectedItems);
     const handleCancel = () => {
         setShowCancelModal(true);
     };
@@ -306,7 +306,8 @@ export const EditPurchaseOrder = () => {
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                             />
-                            <Form.Text muted>{note.length} / 500</Form.Text>
+                            {/* {note.length} */}
+                            <Form.Text muted> / 500</Form.Text>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -337,6 +338,7 @@ export const EditPurchaseOrder = () => {
                                     <span className="text-primary bulk-edit" onClick={() => setShowBulkEditPriceModal(true)}>Bulk Edit</span>
                                 </th>
                                 <th>Value</th>
+                                <th>Stock-in Cost Price</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -369,6 +371,8 @@ export const EditPurchaseOrder = () => {
                                         />
                                     </td>
                                     <td>{(item.price * item.purchaseQty).toFixed(2)}$</td>
+                                    <td>{item.price}$</td>
+
                                     <td>
                                         <Button variant="danger" onClick={() => handleRemoveItem(item)}>
                                             <i className="fas fa-trash-alt"></i>

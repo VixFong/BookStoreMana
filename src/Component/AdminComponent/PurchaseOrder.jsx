@@ -9,10 +9,10 @@ import {Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const PurchaseOrder = () => {
-  const [warehouse, setWarehouse] = useState('All');
   const [timeFilter, setTimeFilter] = useState('Create Time');
+  // const [statusFilter, setTimeFilter] = useState('Create Time');
+
   const [dateRange, setDateRange] = useState('All');
-  const [searchType, setSearchType] = useState('Purchase No');
   const [searchValue, setSearchValue] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [openOrderId, setOpenOrderId] = useState(null);
@@ -29,7 +29,7 @@ export const PurchaseOrder = () => {
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(4);
+  const [size, setSize] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
 
   const [showToast, setShowToast] = useState(false);
@@ -46,18 +46,18 @@ export const PurchaseOrder = () => {
   useEffect(() => {
     fetchOrders(page, size, search);
 
-}, [page,dateRange]);
+}, [page, dateRange, status]);
 
   const fetchOrders = async(page, size, search) => {
     try {
-        console.log(search);
+        // console.log(search);
+        // console.log('status ' , status);
         setShowModal(true);
         const response = await axios.get('/api/orders/search',{
             params: {
               keyword:search, 
-              status, 
+              status: status, 
               page, 
-          
               size,
               timeFilter,
               dateRange
@@ -151,15 +151,15 @@ export const PurchaseOrder = () => {
 
 
 
-  const handleSaveOrder = (newOrder) => {
-    console.log('New order received:', newOrder);
-    setOrders([...orders, newOrder]);
-    setShowToast(true);
-    setShowAddOrderModal(false); 
-    setTimeout(() => {
-      navigate('/draftorder');
-    }, 2000);
-  };
+  // const handleSaveOrder = (newOrder) => {
+  //   console.log('New order received:', newOrder);
+  //   setOrders([...orders, newOrder]);
+  //   setShowToast(true);
+  //   setShowAddOrderModal(false); 
+  //   setTimeout(() => {
+  //     navigate('/draftorder');
+  //   }, 2000);
+  // };
 
   const toggleDetails = (orderId) => {
     setDetailsOpen(!detailsOpen);
@@ -261,7 +261,42 @@ const handleUpload = async () => {
       }
     };
 
+    const handleSubmit = async() =>{
+      selectedOrderIds
 
+      console.log(selectedOrderIds.length);
+      if(!selectedOrderIds.length){
+        
+        setError("Please select order");
+        setShowErrorModal(true);
+        return;
+      }
+      try {
+        
+        setShowModal(true);
+        
+        console.log('Export selected orders:', selectedOrderIds);
+        const response = await axios.put('/api/orders/edit/status',
+          selectedOrderIds
+        ,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        setShowModal(false);
+        fetchOrders(page, size, searchValue);
+        console.log(response.data)
+        setSelectedOrderIds([]);
+       
+  
+       
+      } catch (error) {
+        setShowModal(false);
+        console.log(error);
+        setError(error.response?.data?.message);
+        setShowErrorModal(true);
+      }
+    };
 
   return (
     <Container className="mt-5">
@@ -272,16 +307,17 @@ const handleUpload = async () => {
       </Row>
       <div className="header-container">
       <Row className="align-items-center">
-        <Col md={3}>
-          <Form.Group controlId="timeFilter">
+        <Col md={2}>
+          <Form.Group  controlId="timeFilter" >
             <Form.Label>Select Time</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={timeFilter}>
-              <Dropdown.Item onClick={() => setTimeFilter('Create Time')}>Create Time</Dropdown.Item>
-              <Dropdown.Item onClick={() => setTimeFilter('Update Time')}>Update Time</Dropdown.Item>
+              <Dropdown.Item onClick={() => setTimeFilter('Create Time')} >Create Time</Dropdown.Item>
+              <Dropdown.Item onClick={() => setTimeFilter('Update Time')} >Update Time</Dropdown.Item>
             </DropdownButton>
           </Form.Group>
         </Col>
-        <Col md={3}>
+
+        <Col md={2}>
           <Form.Group controlId="dateRange">
             <Form.Label>Date Range</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={dateRange}>
@@ -291,6 +327,15 @@ const handleUpload = async () => {
               <Dropdown.Item onClick={() => setDateRange('Last 7 days')}>Last 7 days</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Last 30 days')}>Last 30 days</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Custom Dates')}>Custom Dates</Dropdown.Item>
+            </DropdownButton>
+          </Form.Group>
+        </Col>
+        <Col md={2}>
+          <Form.Group controlId="status">
+            <Form.Label>Select Status</Form.Label>
+            <DropdownButton id="dropdown-basic-button" title={status}>
+              <Dropdown.Item onClick={() => setStatus('PENDING')}>Pending</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatus('Delivering')}>Delivering</Dropdown.Item>
             </DropdownButton>
           </Form.Group>
         </Col>
@@ -307,21 +352,26 @@ const handleUpload = async () => {
             placeholder="Search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                  fetchOrders(page,size,searchValue);
+              }
+          }}
             
           />
         </Col>
-        <Col md={3}>
-          {/* <Button variant="primary" onClick={handleSearch}> */}
-          <Button variant="primary" onClick={handleSearch} className="search-button">
+        {/* <Col md={3}>
+          <Button variant="default" onClick={handleSearch} className="search-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
           </Button>
-        </Col>
+        </Col> */}
       </Row>
+      {status === 'PENDING' ? (
       <Row className="align-items-center mt-3">
         <Col md={6}>
-          <Button variant="primary">Submit</Button>
+          <Button variant="success" onClick={handleSubmit}>Submit</Button>
         </Col>
         <Col md={6} className="d-flex">
           <DropdownButton id="dropdown-basic-button" title="Import & Export" variant="secondary" className="me-2"> 
@@ -333,7 +383,20 @@ const handleUpload = async () => {
           <Button variant="success"  href='/addpurchase'>+ Add Purchase Order</Button>
         </Col>
       </Row>
+      ) : null}
+
+      {status === 'Delivering' ? (
+
+        <Row className="align-items-center mt-3">
+          {/* <Col className="d-flex justify-content-end"> */}
+          <Col md={3} className="d-flex">
+
+            <Button variant="success" >Purchase Receiving</Button>
+          </Col>
+        </Row>
+        ) : null}
       </div>
+
       <Col className='mt-3'>
         <span>Showing all {totalElements} results</span>
       </Col>
@@ -349,14 +412,13 @@ const handleUpload = async () => {
               <th>Code</th>
               <th>Supplier</th>
               <th>Payment Amount</th>
-              
               <th>Time</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, index) => (
+            {orders.map((order) => (
               <>
                 <tr key={order.id}>
                   <td>
@@ -377,16 +439,33 @@ const handleUpload = async () => {
                   </td>
                   <td className="text-danger fw-bolder" >{order.status}</td>
                   <td>
-                    <Button variant="light" onClick={() => toggleDetails(order.id)}>Details</Button>
-                    <Button 
-                      variant="warning" 
-                      // href='editpurchaseorder' 
-                      className="mx-1"
+                    <Button variant="secondary" onClick={() => toggleDetails(order.id)}><i class="fa-solid fa-circle-info"></i></Button>
+                    {status === 'PENDING' ? (
+                      <Button 
+                        variant="warning" 
+                        className="mx-1"
                       >
                         <Link to={`/editpurchaseorder/${order.id}`}><i className="fas fa-edit"></i></Link>
+                          
+                      </Button>
+                    ) : null}
+
+                    {status === 'Delivering' ? (
+                      <Button 
+                        variant="warning" 
+                        // href='onthewayedit' 
+                        className="mx-1">
+                        <Link to={`/onthewayedit/${order.id}`}><i class="fa-solid fa-list-check"></i></Link>
+
                         
+                      </Button>
+                    ) : null}
+                    <Button 
+                      variant="danger" 
+                      onClick={() => handleCancelClick(order.id)}
+                    >
+                        <i className="fas fa-trash-alt"></i>
                     </Button>
-                    <Button variant="danger" onClick={() => handleCancelClick(order.id)}>Cancel</Button>
                   </td>
                 </tr>
                 {detailsOpen && openOrderId === order.id && (
@@ -402,8 +481,7 @@ const handleUpload = async () => {
                                   <Card.Title>{product.title}</Card.Title>
                                   <Card.Text>
                                     {product.title} <br />
-                                    {/* Author: {product.authors} <br /> */}
-                                    {/* Format: {product.formats} <br /> */}
+                              
                                     Price: {product.price} <br />
                                     Purchase Qty: {product.purchaseQty}
                                   </Card.Text>
@@ -424,15 +502,7 @@ const handleUpload = async () => {
       
 
       <Row className="d-flex justify-content-between align-items-center">
-        {/* <Col>
-          <Button variant="primary">Previous</Button>
-        </Col>
-        <Col className="text-center">
-          <span>1 - {orders.length} of {orders.length}</span>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary">Next</Button>
-        </Col> */}
+    
         <nav>
           <ul className="pagination">
             {Array.from({ length: totalPages }, (_, index) => (
@@ -442,7 +512,6 @@ const handleUpload = async () => {
             ))}
          </ul>
         </nav>
-        {/* <span>1 - {orders.length} of {orders.length}</span> */}
       </Row>
       {detailsOpen}
 
@@ -497,11 +566,11 @@ const handleUpload = async () => {
           <Modal.Title>Confirm Cancellation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to cancel the order?
+          Are you sure you want to delete the order?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCancelModal(false)}>No</Button>
-          <Button variant="danger" onClick={handleConfirmCancel}>Yes</Button>
+          <Button variant="secondary" onClick={() => setShowCancelModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleConfirmCancel}>Delete</Button>
         </Modal.Footer>
       </Modal>
 
@@ -514,6 +583,22 @@ const handleUpload = async () => {
 export default PurchaseOrder;
 
 const styles = `
+  .btn-primary{
+  background-color: #6c757d;
+  color: white !important;
+}
+
+// .custom-dropdown-item-create {
+//   background-color: red !important;
+//   color: black !important;
+// }
+
+// .custom-dropdown-item-update {
+//   background-color: lightcoral !important;
+//   color: white !important;
+// }
+
+
   .purchase-order-table {
     background-color: #fff;
     padding: 20px;

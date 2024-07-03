@@ -170,7 +170,7 @@ import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
         ),
     },
     {
-        path: 'onthewayedit',
+        path: '/onthewayedit/:id',
         element: (
             <ProtectedRoute>
                 <OTWEdit/>
