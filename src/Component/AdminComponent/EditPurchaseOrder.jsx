@@ -571,7 +571,7 @@ export const EditPurchaseOrder = () => {
                     margin-right: 8px;
                 }
                 .mt-5{
-                    margin-left:550px;
+                    margin-left:350px;
                 }
                 .text-center {
                     text-align: left;
