@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaCheckSquare, FaPencilAlt } from 'react-icons/fa';
 import { Container, Row, Col, Modal, Spinner, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer, Toast } from 'react-bootstrap';
 import AddPurchaseOrder from './AddPurchaseOrder';
+import PurchaseReceiving from './PurchaseReceiving';
 import {Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -39,6 +40,8 @@ export const PurchaseOrder = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
+
+  const [showReceivingModal, setShowReceivingModal] = useState(false);
   const navigate = useNavigate();
   const token =  localStorage.getItem('authToken');
 
@@ -298,6 +301,18 @@ const handleUpload = async () => {
       }
     };
 
+    const handlePurchaseReceiving = () => {
+      setShowReceivingModal(true);
+    };
+
+    const handleSaveReceiving = (receivingData) => {
+      setShowReceivingModal(false);
+    };
+
+    const handleCancelReceiving = () => {
+      setShowReceivingModal(false);
+    };
+
   return (
     <Container className="mt-5">
       <Row>
@@ -391,7 +406,7 @@ const handleUpload = async () => {
           {/* <Col className="d-flex justify-content-end"> */}
           <Col md={3} className="d-flex">
 
-            <Button variant="success" >Purchase Receiving</Button>
+            <Button variant="success" onClick={handlePurchaseReceiving}>Purchase Receiving</Button>
           </Col>
         </Row>
         ) : null}
@@ -573,6 +588,20 @@ const handleUpload = async () => {
           <Button variant="danger" onClick={handleConfirmCancel}>Delete</Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showReceivingModal} onHide={handleCancelReceiving} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Purchase Receiving</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <PurchaseReceiving
+            selectedOrders={orders.filter(order => selectedOrderIds.includes(order.id))}
+            onSave={handleSaveReceiving}
+            onCancel={handleCancelReceiving}
+          />
+        </Modal.Body>
+      </Modal>
+
 
     </Container>
   );
