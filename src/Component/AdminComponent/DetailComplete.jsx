@@ -321,7 +321,6 @@ export const DetailComplete = () => {
                 </Col>
                 <Col className="text-end">
                     <Button variant="secondary" onClick={handleDiscardChanges} className="me-2">Cancel</Button>
-                    <Button variant="primary" onClick={handleSave}>Save</Button>
                 </Col>
             </Row>
             <Row className="mt-3">

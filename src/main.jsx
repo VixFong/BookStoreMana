@@ -31,6 +31,7 @@ import { OTWEdit } from './Pages/OTWEdit.jsx'
 import EditPurchaseOrder from './Component/AdminComponent/EditPurchaseOrder.jsx'
 import { CompleteOrder } from './Pages/CompleteOrder.jsx'
 import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
+import { OrderManagement } from './Pages/OrderManagement.jsx'
 
   const router = createBrowserRouter([
     {
@@ -198,6 +199,14 @@ import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
         element: (
             <ProtectedRoute>
                 <DetailCompleteOrder/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'ordermanagement',
+        element: (
+            <ProtectedRoute>
+                <OrderManagement/>
             </ProtectedRoute>
         ),
     },
