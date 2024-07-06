@@ -65,7 +65,7 @@ export const OnTheWayEdit = () => {
     const calculateTotals = (selectedItems) => {
         console.log('items ', selectedItems);
         const totalQty = selectedItems.reduce((acc, item) => acc + item.purchaseQty, 0);
-        const totalPrice = selectedItems.reduce((acc, item) => acc + item.price, 0);
+        const totalPrice = selectedItems.reduce((acc, item) => acc + item.price, 0).toFixed(2);
         const itemQty = selectedItems.length;
 
         // console.log('total qty ',totalQty);

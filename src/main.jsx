@@ -194,7 +194,7 @@ import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
         ),
     },
     {
-        path: 'detailcompleteorder',
+        path: 'detailcompleteorder/:id',
         element: (
             <ProtectedRoute>
                 <DetailCompleteOrder/>

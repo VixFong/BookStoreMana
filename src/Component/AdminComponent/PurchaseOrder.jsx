@@ -23,7 +23,7 @@ export const PurchaseOrder = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [allSelected, setAllSelected] = useState(false);
   
-  const [status, setStatus] = useState('PENDING');
+  const [status, setStatus] = useState('PROCESSING');
   const [file, setFile] = useState(null);
 
 
@@ -156,15 +156,6 @@ export const PurchaseOrder = () => {
 
 
 
-  // const handleSaveOrder = (newOrder) => {
-  //   console.log('New order received:', newOrder);
-  //   setOrders([...orders, newOrder]);
-  //   setShowToast(true);
-  //   setShowAddOrderModal(false); 
-  //   setTimeout(() => {
-  //     navigate('/draftorder');
-  //   }, 2000);
-  // };
 
   const toggleDetails = (orderId) => {
     setDetailsOpen(!detailsOpen);
@@ -351,8 +342,10 @@ const handleUpload = async () => {
           <Form.Group controlId="status">
             <Form.Label>Select Status</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={status}>
-              <Dropdown.Item onClick={() => setStatus('PENDING')}>Pending</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatus('PROCESSING')}>Processing</Dropdown.Item>
               <Dropdown.Item onClick={() => setStatus('DELIVERING')}>Delivering</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatus('COMPLETE')}>Complete</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatus('INCOMPLETE')}>Incomplete</Dropdown.Item>
             </DropdownButton>
           </Form.Group>
         </Col>
@@ -385,7 +378,7 @@ const handleUpload = async () => {
           </Button>
         </Col> */}
       </Row>
-      {status === 'PENDING' ? (
+      {status === 'PROCESSING' ? (
       <Row className="align-items-center mt-3">
         <Col md={6}>
           <Button variant="success" onClick={handleSubmit}>Submit</Button>
@@ -402,7 +395,7 @@ const handleUpload = async () => {
       </Row>
       ) : null}
 
-      {status === 'DELIVERING' ? (
+      {status === 'DELIVERING' || status === 'INCOMPLETE' ?  (
 
         <Row className="align-items-center mt-3">
           {/* <Col className="d-flex justify-content-end"> */}
@@ -429,6 +422,11 @@ const handleUpload = async () => {
               <th>Code</th>
               <th>Supplier</th>
               <th>Payment Amount</th>
+
+              {status === 'COMPLETE' ? (
+                <th>Receive Qty</th>
+              ) : null}
+
               <th>Time</th>
               <th>Status</th>
               <th>Action</th>
@@ -450,6 +448,10 @@ const handleUpload = async () => {
                   <td>{order.publisher}</td>
                   <td>{order.orderItems.reduce((total, item) => total + ((item.price  * order.taxFee / 100).toFixed(2) * item.purchaseQty + order.shipFee  +(order.otherFee ? order.otherFee : 0) || 0), 0)}$</td>
            
+                  {status === 'COMPLETE' ? (
+                    <td>{order.orderItems.reduce((total, item) => total + (item.receiveQty), 0)} / {order.orderItems.reduce((total, item) => total + (item.purchaseQty), 0)}</td>
+                    
+                  ) : null}
                   <td>
                     <div>Create Time: {formatDate(order.dateCreated)}</div>
                     <div>Update Time: {formatDate(order.dateUpdated)}</div>
@@ -457,7 +459,7 @@ const handleUpload = async () => {
                   <td className="text-danger fw-bolder" >{order.status}</td>
                   <td>
                     <Button variant="secondary" onClick={() => toggleDetails(order.id)}><i class="fa-solid fa-circle-info"></i></Button>
-                    {status === 'PENDING' ? (
+                    {status === 'PROCESSING' ? (
                       <Button 
                         variant="warning" 
                         className="mx-1"
@@ -473,6 +475,17 @@ const handleUpload = async () => {
                         // href='onthewayedit' 
                         className="mx-1">
                         <Link to={`/onthewayedit/${order.id}`}><i class="fa-solid fa-list-check"></i></Link>
+
+                        
+                      </Button>
+                    ) : null}
+
+                    {status === 'COMPLETE' || status === 'INCOMPLETE' ? (
+                      <Button 
+                        variant="warning" 
+                        // href='onthewayedit' 
+                        className="mx-1">
+                        <Link to={`/detailcompleteorder/${order.id}`}><i class="fa-solid fa-list-check"></i></Link>
 
                         
                       </Button>
@@ -500,7 +513,9 @@ const handleUpload = async () => {
                                     {product.title} <br />
                               
                                     Price: {product.price} <br />
-                                    Purchase Qty: {product.purchaseQty}
+                                    Purchase Qty: {product.purchaseQty} <br />
+                                    Receive Qty :{product.receiveQty? product.receiveQty : 0}
+                                  
                                   </Card.Text>
                                 </Card.Body>
                               </Card>

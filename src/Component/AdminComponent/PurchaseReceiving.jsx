@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+const token = localStorage.getItem('authToken');
+
+
+
 
 const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
   const [receivingData, setReceivingData] = useState(
@@ -20,7 +25,7 @@ const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
           ? {
               ...order,
               receivingItems: order.receivingItems.map(item =>
-                item.id === itemId
+                item.itemId === itemId
                   ? { ...item, receivingQty: Number(value) }
                   : item
               ),
@@ -29,10 +34,34 @@ const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
       )
     );
   };
-
-  const handleSave = () => {
-    onSave(receivingData);
+  const handleSave = async() => {
+    try {
+      
+      for (const order of receivingData) {
+        
+        const updateReceiveQtyRequest = order.receivingItems.map(item => ({
+          itemId: item.itemId,
+          receiveQty: item.receivingQty,
+        }));
+        console.log('order id', receivingData.orderId);
+        console.log('item req', updateReceiveQtyRequest);
+        await axios.put(`/api/orders/receiveQty/${order.id}`, updateReceiveQtyRequest, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+      console.log('item;' );
+      onSave(receivingData);
+    } catch (error) {
+        console.error('Error updating order items:', error);
+    }
+    
+    // onSave(receivingData);
   };
+
+  console.log('data ',receivingData);
 
   return (
     <Container className="mt-5">
@@ -42,37 +71,38 @@ const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Title</th>
                 <th>Order Qty</th>
                 <th>Received Qty</th>
                 <th>Amount received</th>
-                <th>Operation</th>
+                {/* <th>Operation</th> */}
               </tr>
             </thead>
             <tbody>
               {order.receivingItems.map(item => (
-                <tr key={item.id}>
+                <tr key={item.itemId}>
                   <td>
-                    <div>
-                      <strong>Name:</strong> {item.title} <br />
-                    </div>
+                    {item.title}
+                    {/* <div>
+                      <strong></strong> <br />
+                    </div> */}
                   </td>
                   <td>{item.purchaseQty}</td>
-                  <td>{item.receivedQty || 0}</td>
+                  <td>{item.receiveQty|| 0}</td>
                   <td>
                     <Form.Control
                       type="number"
                       value={item.receivingQty}
                       onChange={e =>
-                        handleReceivingQtyChange(order.id, item.id, e.target.value)
+                        handleReceivingQtyChange(order.id, item.itemId, e.target.value)
                       }
                     />
                   </td>
-                  <td>
+                  {/* <td>
                     <Button variant="danger">
                       <i className="fas fa-trash-alt"></i>
                     </Button>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>
