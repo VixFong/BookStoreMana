@@ -2,6 +2,7 @@ package com.example.orderservice.controller;
 
 import com.example.orderservice.dto.request.CreateOrderRequest;
 import com.example.orderservice.dto.request.UpdateOrderRequest;
+import com.example.orderservice.dto.request.UpdateReceiveQtyRequest;
 import com.example.orderservice.dto.response.ApiResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.model.Order;
@@ -110,6 +111,15 @@ public class OrderController {
         orderService.updateStatusOrder(ids);
         return ApiResponse.<Void>builder()
                 .build();
+    }
+
+    @PutMapping("/receiveQty/{id}")
+    public ApiResponse<Void> updateReceiveQty(
+            @PathVariable String id,
+            @RequestBody List<UpdateReceiveQtyRequest> requests) {
+        System.out.println("order item");
+        orderService.updateReceivedQuantity(id,requests);
+        return ApiResponse.<Void>builder().build();
     }
 
     @DeleteMapping("/{id}")

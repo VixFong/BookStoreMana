@@ -103,15 +103,18 @@ public class ExcelExportService {
 
 
                 CreateOrderRequest order = new CreateOrderRequest();
-                order.setEstimatedArrivalDate(row.getCell(1) != null ? LocalDate.parse(row.getCell(1).getStringCellValue(), formatter) : null);
-                order.setPublisher(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : "");
-                order.setNumItems(row.getCell(3) != null ? (int)row.getCell(3).getNumericCellValue() : 0);
-                order.setShipFee(row.getCell(4)!= null ? row.getCell(4).getNumericCellValue() : 0.0);
-                order.setTaxFee(row.getCell(5) != null ? (int)row.getCell(5).getNumericCellValue() : 0);
-                order.setOtherFee(row.getCell(6)!= null ? row.getCell(6).getNumericCellValue() : 0.0);
-                order.setNote(row.getCell(7) != null ? row.getCell(7).getStringCellValue() : "");
+//                System.out.println(row.getCell(0));
 
-                String orderItemsString = row.getCell(8).getStringCellValue();
+                order.setEstimatedArrivalDate(row.getCell(0) != null ? LocalDate.parse(row.getCell(0).getStringCellValue(), formatter) : null);
+//                System.out.println(row.getCell(1));
+                order.setPublisher(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : "");
+                order.setNumItems(row.getCell(2) != null ? (int)row.getCell(2).getNumericCellValue() : 0);
+                order.setShipFee(row.getCell(3)!= null ? row.getCell(3).getNumericCellValue() : 0.0);
+                order.setTaxFee(row.getCell(4) != null ? (int)row.getCell(4).getNumericCellValue() : 0);
+                order.setOtherFee(row.getCell(5)!= null ? row.getCell(5).getNumericCellValue() : 0.0);
+                order.setNote(row.getCell(6) != null ? row.getCell(6).getStringCellValue() : "");
+
+                String orderItemsString = row.getCell(7).getStringCellValue();
                 List<OrderItem> orderItems = parseOrderItems(orderItemsString);
                 order.setOrderItems(orderItems);
 

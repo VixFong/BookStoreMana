@@ -2,6 +2,7 @@ package com.example.orderservice.service;
 
 import com.example.orderservice.dto.request.CreateOrderRequest;
 import com.example.orderservice.dto.request.UpdateOrderRequest;
+import com.example.orderservice.dto.request.UpdateReceiveQtyRequest;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.exception.AppException;
 import com.example.orderservice.exception.ErrorCode;
@@ -30,7 +31,7 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private OrderItemService orderItemService;
+    private OrderItemRepository orderItemRepository;
 
 
     @Autowired
@@ -44,7 +45,7 @@ public class OrderService {
 
         order.setOrderCode(generateOrderCode());
 
-        order.setStatus(Order.STATUS_PENDING);
+        order.setStatus(Order.STATUS_PROCESSING);
 
         System.out.println("item req" + request.getOrderItems());
 
@@ -170,6 +171,35 @@ public class OrderService {
             order.setDateUpdated(LocalDateTime.now());
             orderRepository.save(order);
         }
+    }
+
+    public void updateReceivedQuantity(String orderId, List<UpdateReceiveQtyRequest> requests){
+        System.out.println("update item");
+
+        boolean allItemsFullyReceived = true;
+        for(UpdateReceiveQtyRequest update : requests){
+            var orderItem = orderItemRepository.findById(update.getItemId())
+                       .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+            orderItem.setReceiveQty(update.getReceiveQty());
+            if(update.getReceiveQty() != orderItem.getPurchaseQty()){
+                allItemsFullyReceived = false;
+            }
+
+           System.out.println("item " + orderItem.getReceiveQty());
+
+
+           orderItemRepository.save(orderItem);
+       }
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(allItemsFullyReceived){
+            order.setStatus(Order.STATUS_COMPLETE);
+        }
+        else{
+            order.setStatus(Order.STATUS_INCOMPLETE);
+        }
+        orderRepository.save(order);
     }
 
 
