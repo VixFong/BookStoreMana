@@ -60,7 +60,7 @@ export const OnTheWayEdit = () => {
             setError('There was an error fetching the order details!');
         }
     };
-    console.log('items ', selectedItems);
+    // console.log('items ', selectedItems);
 
     const calculateTotals = (selectedItems) => {
         console.log('items ', selectedItems);
@@ -68,9 +68,9 @@ export const OnTheWayEdit = () => {
         const totalPrice = selectedItems.reduce((acc, item) => acc + item.price, 0);
         const itemQty = selectedItems.length;
 
-        console.log('total qty ',totalQty);
-        console.log('total price ',totalPrice);
-        console.log('item qty ',itemQty);
+        // console.log('total qty ',totalQty);
+        // console.log('total price ',totalPrice);
+        // console.log('item qty ',itemQty);
 
         setOrderData(prevData => ({
             ...prevData,
@@ -127,7 +127,7 @@ export const OnTheWayEdit = () => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={2}>Estimated Arrival Time</Form.Label>
                             <Col sm={10}>
-                                <Form.Control type="date" name="arrivalTime" value={date} onChange={handleInputChange} />
+                                <Form.Control type="date" name="arrivalTime" value={date}  />
                             </Col>
                         </Form.Group>
                         <h5>Fee Details</h5>
@@ -139,7 +139,7 @@ export const OnTheWayEdit = () => {
                             <Form.Label column sm={2}>Ship Fee</Form.Label>
                             <Col sm={2}>
                                 <InputGroup>
-                                    <Form.Control type="number" name="shipFee" value={shipFee} onChange={handleInputChange} />
+                                    <Form.Control type="number" name="shipFee" value={shipFee} onChange={(e) => setShipFee(e.target.value)} />
                                     <InputGroup.Text>$</InputGroup.Text>
                                 </InputGroup>
                             </Col>
@@ -149,14 +149,14 @@ export const OnTheWayEdit = () => {
                             <Form.Label column sm={2}>Other Fee</Form.Label>
                             <Col sm={2}>
                                 <InputGroup>
-                                    <Form.Control type="number" name="otherFee" value={otherFee} onChange={handleInputChange} />
+                                    <Form.Control type="number" name="otherFee" value={otherFee} onChange={(e) => setOtherFee(e.target.value)} />
                                     <InputGroup.Text>$</InputGroup.Text>
                                 </InputGroup>
                             </Col>
                             <Form.Label column sm={2}>Tax Fee</Form.Label>
                             <Col sm={2}>
                                 <InputGroup>
-                                    <Form.Control type="number" name="taxFee" value={taxFee} onChange={handleInputChange} />
+                                    <Form.Control type="number" name="taxFee" value={taxFee} onChange={(e) => setTaxFee(e.target.value)} />
                                     <InputGroup.Text>$</InputGroup.Text>
                                 </InputGroup>
                             </Col>

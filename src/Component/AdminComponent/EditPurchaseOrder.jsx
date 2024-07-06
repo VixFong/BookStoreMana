@@ -307,7 +307,7 @@ export const EditPurchaseOrder = () => {
                                 onChange={(e) => setNote(e.target.value)}
                             />
                             {/* {note.length} */}
-                            <Form.Text muted> / 500</Form.Text>
+                            <Form.Text muted> {note != null ? note.length : 0}/ 500</Form.Text>
                         </Form.Group>
                     </Col>
                 </Row>

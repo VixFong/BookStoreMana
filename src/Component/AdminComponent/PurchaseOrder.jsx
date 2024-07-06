@@ -85,11 +85,11 @@ export const PurchaseOrder = () => {
     }
   };
 
-  const handleSearch = () => {
-    console.log('Searching for', searchValue);
+  // const handleSearch = () => {
+  //   console.log('Searching for', searchValue);
 
-    fetchOrders(page, size, searchValue);
-  };
+  //   fetchOrders(page, size, searchValue);
+  // };
 
   const handleCheckboxChange = (orderId) => {
     setSelectedOrderIds(prevSelectedOrderIds => 
@@ -126,6 +126,8 @@ export const PurchaseOrder = () => {
       setShowModal(false);
       console.log(response.data)
       setSelectedOrderIds([]);
+      handleSelectAll();
+      // setAllSelected([]);
       // const url = window.URL.createObjectURL(new Blob([response.data]));
       // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const blob = new Blob([response.data]);
@@ -193,7 +195,7 @@ const handleUpload = async () => {
   setShowModal(true); 
   const formData = new FormData();
   formData.append('file', file);
-  console.log(file)
+  // console.log(file)
   try {
       const response = await axios.post('api/orders/import', formData, {
           headers: {
@@ -326,7 +328,7 @@ const handleUpload = async () => {
               <Dropdown.Item onClick={() => setDateRange('Yesterday')}>Yesterday</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Last 7 days')}>Last 7 days</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Last 30 days')}>Last 30 days</Dropdown.Item>
-              <Dropdown.Item onClick={() => setDateRange('Custom Dates')}>Custom Dates</Dropdown.Item>
+              {/* <Dropdown.Item onClick={() => setDateRange('Custom Dates')}>Custom Dates</Dropdown.Item> */}
             </DropdownButton>
           </Form.Group>
         </Col>
@@ -335,7 +337,7 @@ const handleUpload = async () => {
             <Form.Label>Select Status</Form.Label>
             <DropdownButton id="dropdown-basic-button" title={status}>
               <Dropdown.Item onClick={() => setStatus('PENDING')}>Pending</Dropdown.Item>
-              <Dropdown.Item onClick={() => setStatus('Delivering')}>Delivering</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatus('DELIVERING')}>Delivering</Dropdown.Item>
             </DropdownButton>
           </Form.Group>
         </Col>
@@ -378,14 +380,14 @@ const handleUpload = async () => {
               <Dropdown.Item onClick={handleImportClick}>Import Purchase Orders</Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item onClick={handleExportSelected}>Export Selected</Dropdown.Item>
-              <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item>
+              {/* <Dropdown.Item onClick={handleExportSelected}>Export All</Dropdown.Item> */}
           </DropdownButton>
           <Button variant="success"  href='/addpurchase'>+ Add Order</Button>
         </Col>
       </Row>
       ) : null}
 
-      {status === 'Delivering' ? (
+      {status === 'DELIVERING' ? (
 
         <Row className="align-items-center mt-3">
           {/* <Col className="d-flex justify-content-end"> */}
@@ -450,7 +452,7 @@ const handleUpload = async () => {
                       </Button>
                     ) : null}
 
-                    {status === 'Delivering' ? (
+                    {status === 'DELIVERING' ? (
                       <Button 
                         variant="warning" 
                         // href='onthewayedit' 
