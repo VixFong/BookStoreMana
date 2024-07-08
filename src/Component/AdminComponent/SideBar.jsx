@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaUser, FaChevronDown, FaChevronUp, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaChevronDown, FaChevronUp, FaSignOutAlt, FaBell } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
@@ -21,8 +21,6 @@ export const Sidebar = () => {
 
     const navigate = useNavigate();
     const token = localStorage.getItem('authToken');
-
-
 
     const toggleUserMenu = () => {
         setUserMenu(!UserMenu);

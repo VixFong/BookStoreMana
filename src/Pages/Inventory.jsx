@@ -1,6 +1,7 @@
 import React from 'react'
 import Sidebar from '../Component/AdminComponent/SideBar'
 import { InventoryManagement } from '../Component/AdminComponent/InventoryManagement';
+import NotificationBell from '../Component/AdminComponent/NotificationBell';
 
 
 export const Inventory = () => {
@@ -9,6 +10,7 @@ export const Inventory = () => {
             <Sidebar/>
             <div className="content-container flex-grow-1">
               <InventoryManagement/>
+              <NotificationBell/>
             </div>
         </div>
     );

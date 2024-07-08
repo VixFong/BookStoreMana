@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthorManagement from '../Component/AdminComponent/AuthorManagement';
 import PublisherManagement from '../Component/AdminComponent/PublisherManagement';
 import Management from '../Component/AdminComponent/Management';
+import NotificationBell from '../Component/AdminComponent/NotificationBell';
 
 export const Category = () => {
   return (
@@ -12,6 +13,7 @@ export const Category = () => {
         <Sidebar/>
         <div className="content-container flex-grow-1">
           <Management/>
+          <NotificationBell/>
         </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react'
 import Sidebar from '../Component/AdminComponent/SideBar';
 import PurchaseOrder from '../Component/AdminComponent/PurchaseOrder';
+import NotificationBell from '../Component/AdminComponent/NotificationBell';
 
 export const DaftOrder = () => {
     return (
@@ -8,6 +9,7 @@ export const DaftOrder = () => {
             <Sidebar/>
             <div className="content-container flex-grow-1">
               <PurchaseOrder/>
+              <NotificationBell/>
             </div>
         </div>
     );
