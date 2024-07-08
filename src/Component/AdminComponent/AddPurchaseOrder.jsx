@@ -698,6 +698,7 @@ export const AddPurchaseOrder = () => {
             setShowAlert(true);
             return;
         }
+        
         try {
             setShowLoadingModal(true);
             const orderItems = selectedItems.map(item => ({

@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+{/* NOTIFICATION */}
+
+    import React, { useEffect, useState, useRef } from 'react';
+    import { FaBell } from 'react-icons/fa';
+{/* NOTIFICATION */}
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './SideBar';
 import axios from 'axios';
@@ -22,7 +26,73 @@ export const UserManagement = () => {
 
     const token = localStorage.getItem('authToken');
     const navigate = useNavigate();
+{/* NOTIFICATION */}
 
+    const [notifications, setNotifications] = useState([]);
+    const [showAll, setShowAll] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+    useEffect(() => {
+        if (showAll) {
+            fetchAllNotifications();
+        } else {
+            fetchLatestNotifications();
+        }
+    }, [showAll]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+    const fetchLatestNotifications = async () => {
+        try {
+            const response = await axios.get('/api/notifications/latest',{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setNotifications(response.data.data);
+        } catch (error) {
+            console.error('Error fetching latest notifications', error);
+        }
+    };
+
+    const fetchAllNotifications = async () => {
+        try {
+            const response = await axios.get('/api/notifications',{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setNotifications(response.data.data);
+        } catch (error) {
+            console.error('Error fetching all notifications', error);
+        }
+    };
+    console.log(notifications);
+    // const latestNotifications = notifications.slice(0, 4);
+
+
+    const formatMessage = (message) => {
+        const parts = message.split(', ');
+        const orderInfo = parts[0].split(': ')[1];
+        const orderEvent = parts[0].split(': ')[0];
+        const numItems = parts[1];
+        const dateCreated = new Date(parts[2]).toLocaleString();
+        return `${orderEvent}: ${orderInfo} with ${numItems} item(s) created on ${dateCreated}`;
+    };
+{/* NOTIFICATION */}
+
+    const formatTimestamp = (timestamp) => {
+        return new Date(timestamp).toLocaleString();
+    };
     useEffect(() => {
         if(!token){
             navigate('/');
@@ -153,6 +223,33 @@ export const UserManagement = () => {
             <Sidebar />
             <div className="flex-grow-1 p-3">
                 <h4 className="mb-3">User Management</h4>
+              
+{/* NOTIFICATION */}
+         <div className="notifications-container ">
+            <button className="notification-icon" onClick={() => setShowDropdown(!showDropdown)}>
+                <FaBell />
+            </button>
+            {showDropdown && (
+                <div className="notifications-dropdown" ref={dropdownRef}>
+                    <ul className="notifications-list">
+                        {notifications.map((notification, index) => (
+                            <li key={index} className="notification-item">
+                                <div className="notification-title">{notification.title}</div>
+                                <div className="notification-message">{formatMessage(notification.message)}</div>
+                                <div className="notification-timestamp">{formatTimestamp(notification.timestamp)}</div>
+                            </li>
+                        ))}
+                    </ul>
+                    {!showAll && (
+                        <button className="show-all-button" onClick={() => setShowAll(true)}>
+                            Show All Notifications
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+{/* NOTIFICATION */}
+
                 <div className='d-flex justify-content-between mb-3'>
                     <button className="btn btn-danger mb-3">
                         <Link to="/add" className='text-light'>Add New User +</Link>
@@ -241,6 +338,77 @@ export const UserManagement = () => {
                             justify-content: center;
                             align-items: center;
                         }
+
+{/* NOTIFICATION */}
+
+ .notifications-container {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-icon {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+}
+
+.notifications-dropdown {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    width: 300px;
+    border: 1px solid #ccc;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notifications-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+}
+
+.notification-title {
+    font-weight: bold;
+}
+
+.notification-message {
+    margin: 5px 0;
+}
+
+.notification-timestamp {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.show-all-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    text-align: center;
+}
+
+.show-all-button:hover {
+    background-color: #0056b3;
+}
+{/* NOTIFICATION */}
+
+}
                     `}
                 </style>
                 {error && <p className="text-danger">{error}</p>}

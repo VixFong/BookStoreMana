@@ -299,6 +299,8 @@ const handleUpload = async () => {
     };
 
     const handleSaveReceiving = (receivingData) => {
+      fetchOrders(page, size, searchValue);
+      setSelectedOrderIds([]);
       setShowReceivingModal(false);
     };
 
