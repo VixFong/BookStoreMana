@@ -1,6 +1,7 @@
 package com.example.orderservice.service;
 
 import com.example.orderservice.dto.request.CreateOrderRequest;
+import com.example.orderservice.dto.request.SendOrder_NotificationRequest;
 import com.example.orderservice.dto.request.UpdateOrderRequest;
 import com.example.orderservice.dto.request.UpdateReceiveQtyRequest;
 import com.example.orderservice.dto.response.OrderResponse;
@@ -12,6 +13,7 @@ import com.example.orderservice.model.OrderItem;
 import com.example.orderservice.repo.OrderItemRepository;
 import com.example.orderservice.repo.OrderRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.example.orderservice.config.RabbitMQConfig.ORDER_QUEUE;
+
 @Service
 public class OrderService {
     @Autowired
@@ -33,9 +37,14 @@ public class OrderService {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
+    @Autowired
+    private OrderEventProducer orderEventProducer;
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
 
     public OrderResponse create(CreateOrderRequest request){
@@ -48,6 +57,15 @@ public class OrderService {
         order.setStatus(Order.STATUS_PROCESSING);
 
         System.out.println("item req" + request.getOrderItems());
+
+        SendOrder_NotificationRequest sendOrderNotificationRequest = SendOrder_NotificationRequest.builder()
+                .orderCode(order.getOrderCode())
+                .numItems(order.getNumItems())
+                .dateCreated(order.getDateCreated())
+                .build();
+//        orderEventProducer.sendOrderCreatedEvent(sendOrderNotificationRequest);
+        System.out.println(sendOrderNotificationRequest.getDateCreated());
+        rabbitTemplate.convertAndSend(ORDER_QUEUE, sendOrderNotificationRequest);
 
         return orderMapper.toOrderResponse(orderRepository.save(order));
 
