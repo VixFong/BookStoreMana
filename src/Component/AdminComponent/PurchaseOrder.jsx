@@ -126,6 +126,10 @@ export const PurchaseOrder = () => {
           // responseType: 'arraybuffer'
               responseType: 'blob'
       });
+
+      const event = new CustomEvent('updateNotification');
+      window.dispatchEvent(event);
+
       setShowModal(false);
       console.log(response.data)
       setSelectedOrderIds([]);
@@ -245,6 +249,10 @@ const handleUpload = async () => {
               Authorization: `Bearer ${token}`
             }
           });
+
+          const event = new CustomEvent('updateNotification');
+          window.dispatchEvent(event);
+
           setShowModal(false);
           setShowCancelModal(false);
           setOrderToDelete(null);
@@ -279,6 +287,11 @@ const handleUpload = async () => {
                 Authorization: `Bearer ${token}`
             }
         });
+
+        const event = new CustomEvent('updateNotification');
+        window.dispatchEvent(event);
+
+
         setShowModal(false);
         fetchOrders(page, size, searchValue);
         console.log(response.data)
@@ -320,7 +333,7 @@ const handleUpload = async () => {
         <Col md={2}>
           <Form.Group  controlId="timeFilter" >
             <Form.Label>Select Time</Form.Label>
-            <DropdownButton id="dropdown-basic-button" title={timeFilter}>
+            <DropdownButton id="dropdown-basic-button" variant="secondary" title={timeFilter}>
               <Dropdown.Item onClick={() => setTimeFilter('Create Time')} >Create Time</Dropdown.Item>
               <Dropdown.Item onClick={() => setTimeFilter('Update Time')} >Update Time</Dropdown.Item>
             </DropdownButton>
@@ -330,7 +343,7 @@ const handleUpload = async () => {
         <Col md={2} className='date-range'>
           <Form.Group controlId="dateRange">
             <Form.Label>Date Range</Form.Label>
-            <DropdownButton id="dropdown-basic-button" title={dateRange}>
+            <DropdownButton id="dropdown-basic-button" variant="secondary" title={dateRange}>
               <Dropdown.Item onClick={() => setDateRange('All')}>All</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Today')}>Today</Dropdown.Item>
               <Dropdown.Item onClick={() => setDateRange('Yesterday')}>Yesterday</Dropdown.Item>
@@ -343,7 +356,7 @@ const handleUpload = async () => {
         <Col md={3}>
           <Form.Group controlId="status">
             <Form.Label>Select Status</Form.Label>
-            <DropdownButton id="dropdown-basic-button" title={status}>
+            <DropdownButton id="dropdown-basic-button" variant="secondary"  title={status}>
               <Dropdown.Item onClick={() => setStatus('PROCESSING')}>Processing</Dropdown.Item>
               <Dropdown.Item onClick={() => setStatus('DELIVERING')}>Delivering</Dropdown.Item>
               <Dropdown.Item onClick={() => setStatus('COMPLETE')}>Complete</Dropdown.Item>
@@ -631,10 +644,10 @@ const handleUpload = async () => {
 export default PurchaseOrder;
 
 const styles = `
-  .btn-primary{
-  background-color: #6c757d;
-  color: white !important;
-}
+//   .btn-primary{
+//   background-color: #6c757d;
+//   color: white !important;
+// }
 
 // .custom-dropdown-item-create {
 //   background-color: red !important;

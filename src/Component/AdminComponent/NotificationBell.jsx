@@ -11,6 +11,8 @@ const NotificationBell = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [filter, setFilter] = useState('All');
+    // const [unreadCount, setUnreadCount] = useState(0);
+
     const dropdownRef = useRef(null);
     const token = localStorage.getItem('authToken');
 
@@ -19,8 +21,13 @@ const NotificationBell = () => {
             fetchAllNotifications();
         } else {
             fetchLatestNotifications();
+
+           
         }
     }, [showAll]);
+
+  
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -38,6 +45,14 @@ const NotificationBell = () => {
         filterNotifications(filter);
     }, [filter, notifications]);
 
+
+    // useEffect(() => {
+    //     // Đếm số lượng thông báo chưa đọc
+    //     const unreadCount = notifications.filter(notification => !notification.read).length;
+    //     // setUnreadCount(unreadCount);
+    // }, [notifications]);
+
+  
     const fetchLatestNotifications = async () => {
         try {
             const response = await axios.get('/api/notifications/latest', {
@@ -45,7 +60,9 @@ const NotificationBell = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
+            
             setNotifications(response.data.data);
+            // console.log("noti ", response.data.data);
         } catch (error) {
             console.error('Error fetching latest notifications', error);
         }
@@ -63,6 +80,17 @@ const NotificationBell = () => {
             console.error('Error fetching all notifications', error);
         }
     };
+
+    useEffect(() => {
+        const handleOrderChange = () => {
+            fetchLatestNotifications();
+        };
+        console.log("even listener");
+        window.addEventListener('updateNotification', handleOrderChange);
+        return () => {
+            window.removeEventListener('updateNotification', handleOrderChange);
+        };
+    }, []);
 
     const filterNotifications = (filter) => {
         const now = new Date();
@@ -93,6 +121,7 @@ const NotificationBell = () => {
     };
 
     const formatMessage = (message) => {
+        console.log("message ", message);
         const parts = message.split(', ');
         const orderInfo = parts[0].split(': ')[1];
         const orderEvent = parts[0].split(': ')[0];
@@ -101,13 +130,37 @@ const NotificationBell = () => {
         return `${orderEvent}: ${orderInfo} with ${numItems} item(s) created on ${dateCreated}`;
     };
 
-    const notificationCount = notifications.length > 99 ? '99+' : notifications.length;
+    const markAsRead = async (notificationId) => {
+        console.log('id', notificationId)
+        try {
+            const response = await axios.put(`/api/notifications/mark-as-read/${notificationId}`,{}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
+            console.log(response.data.data)
+            // Sau khi đánh dấu đã đọc thành công, cập nhật lại danh sách thông báo
+            if (showAll) {
+                fetchAllNotifications();
+            } else {
+                fetchLatestNotifications();
+            }
+        } catch (error) {
+            console.error('Error marking notification as read', error);
+        }
+    };
+    const notificationCount = notifications.filter(notification => notification.status === 'UNREAD').length > 99 ? '99+' : notifications.filter(notification => notification.status === 'UNREAD').length;
+    
+    
+    // const notificationCount = notifications.length > 99 ? '99+' : notifications.length;
+    // console.log('unread count ', unreadCount);
     return (
         <NotificationContainer>
             <NotificationButton onClick={() => setShowDropdown(!showDropdown)}>
                 <FaBell />
-                {notifications.length > 0 && <NotificationCount>{notificationCount}</NotificationCount>}
+                {notificationCount > 0 && <NotificationCount>{notificationCount}</NotificationCount>}
+              
             </NotificationButton>
             {showDropdown && (
                 <NotificationDropdown ref={dropdownRef}>
@@ -117,6 +170,10 @@ const NotificationBell = () => {
                                 <NotificationTitle>{notification.title}</NotificationTitle>
                                 <NotificationMessage>{formatMessage(notification.message)}</NotificationMessage>
                                 <NotificationTimestamp>{new Date(notification.timestamp).toLocaleString()}</NotificationTimestamp>
+                            
+                                {notification.status === 'UNREAD' && (
+                                    <MarkAsReadButton onClick={() => markAsRead(notification.id)}>Mark as Read</MarkAsReadButton>
+                                )}
                             </NotificationItem>
                         ))}
                     </NotificationList>
@@ -148,6 +205,9 @@ const NotificationBell = () => {
                                 <NotificationTitle>{notification.title}</NotificationTitle>
                                 <NotificationMessage>{formatMessage(notification.message)}</NotificationMessage>
                                 <NotificationTimestamp>{new Date(notification.timestamp).toLocaleString()}</NotificationTimestamp>
+                                {notification.status === 'UNREAD' && (
+                                    <MarkAsReadButton onClick={() => markAsRead(notification.id)}>Mark as Read</MarkAsReadButton>
+                                )}
                             </NotificationItem>
                         ))}
                     </NotificationList>
@@ -163,6 +223,7 @@ const NotificationBell = () => {
 };
 
 const bounce = keyframes`
+
     0%, 20%, 50%, 80%, 100% {
         transform: translateY(0);
     }
@@ -182,12 +243,13 @@ const NotificationContainer = styled.div`
 `;
 
 const NotificationButton = styled.button`
-    background: none;
+    background-color: #808080;
     border: none;
     font-size: 24px;
     cursor: pointer;
     position: relative;
     animation: ${bounce} 2s infinite;
+    
 `;
 
 const NotificationCount = styled.span`
@@ -239,6 +301,14 @@ const NotificationTimestamp = styled.div`
     font-size: 0.9em;
 `;
 
+const MarkAsReadButton = styled.button`
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+`;
 const ShowAllButton = styled.button`
     display: block;
     width: 100%;
