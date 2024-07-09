@@ -32,6 +32,7 @@ import EditPurchaseOrder from './Component/AdminComponent/EditPurchaseOrder.jsx'
 import { CompleteOrder } from './Pages/CompleteOrder.jsx'
 import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
 import { OrderManagement } from './Pages/OrderManagement.jsx'
+import { Checkout } from './Pages/Checkout.jsx'
 
   const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ import { OrderManagement } from './Pages/OrderManagement.jsx'
     {
         path: 'CategoryClient',
         element: <CategoryCli/>,
+    },
+    {
+        path: 'checkout',
+        element: <Checkout/>,
     },
     {
         path: 'AdminPage',

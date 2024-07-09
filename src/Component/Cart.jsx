@@ -36,7 +36,7 @@ export const Cart = ({ show, onClose, cartItems, handleRemove, handleQuantityCha
                     <h5>Subtotal:</h5>
                     <h5>${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</h5>
                 </div>
-                <button className="btn btn-success w-100">Checkout</button>
+                <button className="btn btn-success w-100"><a className='text-light' href='/checkout'>Checkout</a></button>
             </div>
         </div>
     );
