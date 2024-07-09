@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,9 +37,6 @@ public class OrderService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private OrderEventProducer orderEventProducer;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -62,6 +60,7 @@ public class OrderService {
                 .orderCode(order.getOrderCode())
                 .numItems(order.getNumItems())
                 .dateCreated(order.getDateCreated())
+                .messageType("NEW_ORDER")
                 .build();
 //        orderEventProducer.sendOrderCreatedEvent(sendOrderNotificationRequest);
         System.out.println(sendOrderNotificationRequest.getDateCreated());
@@ -88,13 +87,13 @@ public class OrderService {
     }
 
     
-    public Page<OrderResponse> searchOrders(String keyword, String status, int page, int size){
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Order> ordersPage = orderRepository.findByOrderCodeOrPublisherAndStatus(keyword, status, pageable);
-
-        return ordersPage.map(orderMapper::toOrderResponse);
-    }
+//    public Page<OrderResponse> searchOrders(String keyword, String status, int page, int size){
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        Page<Order> ordersPage = orderRepository.findByOrderCodeOrPublisherAndStatus(keyword, status, pageable);
+//
+//        return ordersPage.map(orderMapper::toOrderResponse);
+//    }
 
     public Page<OrderResponse> searchOrders2(String keyword, String status, String timeFilter, String dateRange, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -188,8 +187,20 @@ public class OrderService {
             order.setStatus(Order.STATUS_DELIVERING);
             order.setDateUpdated(LocalDateTime.now());
             orderRepository.save(order);
+
+            SendOrder_NotificationRequest sendOrderNotificationRequest = SendOrder_NotificationRequest.builder()
+                    .orderCode(order.getOrderCode())
+                    .numItems(order.getNumItems())
+                    .dateCreated(order.getDateUpdated())
+                    .messageType("UPDATE_STATUS")
+                    .build();
+
+            System.out.println(sendOrderNotificationRequest.getDateCreated());
+            rabbitTemplate.convertAndSend(ORDER_QUEUE, sendOrderNotificationRequest);
         }
     }
+
+
 
     public void updateReceivedQuantity(String orderId, List<UpdateReceiveQtyRequest> requests){
         System.out.println("update item");
@@ -226,8 +237,38 @@ public class OrderService {
         return orders;
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkAndNotifyArrivalDateOrders() {
+        LocalDate today = LocalDate.now();
+        List<Order> orders = orderRepository.findByEstimatedArrivalDate(today);
+
+        for (Order order : orders) {
+            SendOrder_NotificationRequest sendOrderNotificationRequest = SendOrder_NotificationRequest.builder()
+                    .orderCode(order.getOrderCode())
+                    .numItems(order.getNumItems())
+                    .dateCreated(order.getDateCreated())
+                    .messageType("ARRIVAL_DATE_REACHED")
+                    .build();
+
+            rabbitTemplate.convertAndSend(ORDER_QUEUE, sendOrderNotificationRequest);
+        }
+    }
+
+
     public void delete(String id){
+        var order = orderRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
         orderRepository.deleteById(id);
+        SendOrder_NotificationRequest sendOrderNotificationRequest = SendOrder_NotificationRequest.builder()
+                .orderCode(order.getOrderCode())
+                .numItems(order.getNumItems())
+                .dateCreated(order.getDateUpdated())
+                .messageType("DELETE_ORDER")
+                .build();
+
+        System.out.println(sendOrderNotificationRequest.getDateCreated());
+        rabbitTemplate.convertAndSend(ORDER_QUEUE, sendOrderNotificationRequest);
     }
 
 

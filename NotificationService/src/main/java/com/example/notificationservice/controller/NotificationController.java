@@ -5,10 +5,8 @@ import com.example.notificationservice.dto.response.ApiResponse;
 import com.example.notificationservice.model.Notification;
 import com.example.notificationservice.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +22,23 @@ public class NotificationController {
                 .data(notificationService.getAllNotifications())
                 .build();
     }
+
+    @PutMapping("/mark-as-read/{id}")
+    public ApiResponse<Notification> markAsRead(@PathVariable String id) {
+        return ApiResponse.<Notification>builder()
+                .data(notificationService.markAsRead(id))
+                .build();
+    }
+//    @GetMapping
+//    public ApiResponse<Page<Notification>> getNotifications(
+//            @RequestParam String dateRange,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        return ApiResponse.<Page<Notification>>builder()
+//                .data(notificationService.listNotifications(dateRange, page, size))
+//                .build();
+//    }
     @GetMapping("/latest")
     public ApiResponse<List<Notification>> getLatestNotifications() {
         return ApiResponse.<List<Notification>>builder()

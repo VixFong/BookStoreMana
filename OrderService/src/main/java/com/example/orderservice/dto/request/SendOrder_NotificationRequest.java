@@ -17,4 +17,5 @@ public class SendOrder_NotificationRequest {
     private String orderCode;
     private Integer numItems;
     private LocalDateTime dateCreated;
+    private String messageType;
 }

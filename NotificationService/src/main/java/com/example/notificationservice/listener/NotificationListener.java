@@ -17,7 +17,8 @@ public class NotificationListener {
 
     @RabbitListener(queues = ORDER_QUEUE)
     public void receiveOrderEvent(SendOrder_NotificationRequest request) {
-//        Notification notification = new Notification("Order event", "Order event received: " + request.toString());
         notificationService.create(request);
     }
+
+
 }
