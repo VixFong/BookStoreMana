@@ -209,7 +209,7 @@ export const CheckoutForm = () => {
                   )}
                 </Form.Group>
               </PaymentSection>
-              <Button variant="primary" className="w-100 mt-3">Place order</Button>
+              <Button variant="primary" className="w-100 mt-3"><a className='text-light'href='orderreceived'>Place order</a></Button>
             </Card.Body>
           </Card>
         </Col>

@@ -33,6 +33,7 @@ import { CompleteOrder } from './Pages/CompleteOrder.jsx'
 import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
 import { OrderManagement } from './Pages/OrderManagement.jsx'
 import { Checkout } from './Pages/Checkout.jsx'
+import { OrderReceived } from './Pages/OrderReceived.jsx'
 
   const router = createBrowserRouter([
     {
@@ -62,6 +63,10 @@ import { Checkout } from './Pages/Checkout.jsx'
     {
         path: 'checkout',
         element: <Checkout/>,
+    },
+    {
+        path: 'orderreceived',
+        element: <OrderReceived/>,
     },
     {
         path: 'AdminPage',
