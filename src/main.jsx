@@ -34,6 +34,7 @@ import { DetailCompleteOrder } from './Pages/DetailCompleteOrder.jsx'
 import { OrderManagement } from './Pages/OrderManagement.jsx'
 import { Checkout } from './Pages/Checkout.jsx'
 import { OrderReceived } from './Pages/OrderReceived.jsx'
+import { Dashboard } from './Pages/Dashboard.jsx'
 
   const router = createBrowserRouter([
     {
@@ -217,6 +218,14 @@ import { OrderReceived } from './Pages/OrderReceived.jsx'
         element: (
             <ProtectedRoute>
                 <OrderManagement/>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: 'dashboardmanagement',
+        element: (
+            <ProtectedRoute>
+                <Dashboard/>
             </ProtectedRoute>
         ),
     },
