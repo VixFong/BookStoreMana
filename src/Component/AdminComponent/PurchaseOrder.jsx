@@ -134,9 +134,7 @@ export const PurchaseOrder = () => {
       console.log(response.data)
       setSelectedOrderIds([]);
       handleSelectAll();
-      // setAllSelected([]);
-      // const url = window.URL.createObjectURL(new Blob([response.data]));
-      // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+     
       const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

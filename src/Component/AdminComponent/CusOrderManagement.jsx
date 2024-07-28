@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled from 'styled-components';
-import { Container, Table, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Modal, Spinner, Form, Button, Dropdown, DropdownButton, Table, Card, ToastContainer, Toast } from 'react-bootstrap';
 import OrderDetail from './OrderDetail';
-
+import axios from 'axios';
 export const CusOrderManagement = () => {
   // Example const array of orders
   const exampleOrders = [
@@ -67,11 +67,54 @@ export const CusOrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(12);
+  const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+
+  const [totalPages, setTotalPages] = useState(0);
+
+  const token =  localStorage.getItem('authToken');
 
   useEffect(() => {
     // Simulate fetching orders
-    setOrders(exampleOrders);
-  }, []);
+    fetchOrders(page,size, search)
+    // setOrders(exampleOrders);
+  }, [search]);
+
+  const fetchOrders = async(page, size, search) => {
+    try {
+        // console.log(search);
+        // console.log('status ' , status);
+        // setShowModal(true);
+        const response = await axios.get('/api/orders/search_cus',{
+            params: {
+              keyword:search, 
+              page, 
+              size
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log('search',response.data.data)
+        setOrders(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
+        setTotalElements(response.data.data.totalElements);
+
+        // const bookIds = books.map(book => book.bookId);
+        // fetchInventoryStatus(bookIds);
+        // setShowModal(false);
+
+
+    } catch (error) {
+        console.log(error);
+        // setShowModal(false);
+        setError(error.response?.data?.message);
+        // setShowErrorModal(true);
+        
+    }
+  };
 
   const handleViewClick = (order) => {
     setSelectedOrder(order);
@@ -82,6 +125,21 @@ export const CusOrderManagement = () => {
     setShowModal(false);
     setSelectedOrder(null);
   };
+  const formatDate = (dateString) => {
+    if(dateString != null){
+        
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}-${month}-${year}  ${hour}:${minute}` ;
+    }
+    return;
+  };
 
   return (
     <StyledContainer className="mt-5">
@@ -89,7 +147,7 @@ export const CusOrderManagement = () => {
       <StyledTable striped bordered hover className="mt-3">
         <thead>
           <tr>
-            <th>Order Id</th>
+            <th>Order Code</th>
             <th>Customer</th>
             <th>Order Date</th>
             <th>Status</th>
@@ -99,9 +157,12 @@ export const CusOrderManagement = () => {
         <tbody>
           {orders.map(order => (
             <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.customerName}</td>
-              <td>{order.orderDate}</td>
+              <td>{order.orderCode}</td>
+              <td>{order.email}</td>
+              <td>
+                <div>Create Time: {formatDate(order.dateCreated)}</div>
+                <div>Update Time: {formatDate(order.dateUpdated)}</div>
+              </td>
               <td>
                 <StyledButton 
                   variant={order.status === 'Confirmed' ? 'primary' : 'success'}

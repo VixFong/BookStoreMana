@@ -415,7 +415,7 @@ export const EditProd = () => {
                                 <Form.Label>Author</Form.Label>
                                 <Select
                                     options={authorOptions}
-                                    // isMulti
+                              
                                     value={selectedAuthors}
                                     onChange={(selectedOptions) => setSelectedAuthors(selectedOptions)}
                                     isLoading={!authorOptions.length}

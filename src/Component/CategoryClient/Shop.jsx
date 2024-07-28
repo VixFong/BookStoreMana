@@ -37,17 +37,7 @@ export const Shop = ({ searchKeyword }) => {
         fetchPublishers();
     }, []);
 
-    // useEffect(() => {
-
-    //     const queryParams = new URLSearchParams(location.search);
-    //     const searchKeyword = queryParams.get('keyword');
-    //     if (searchKeyword) {
-    //         setKeyword(searchKeyword);
-    //     }
-    //     fetchBooks(sortOption);
-    // }, [page, selectedCategories, selectedAuthors, selectedPublishers, sortOption, keyword, location.search]);
-
-
+    
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const searchKeyword = queryParams.get('keyword');
@@ -89,7 +79,9 @@ export const Shop = ({ searchKeyword }) => {
     const fetchPublishers = async () => {
         try {
             setShowModal(true);
+
             const response = await axios.get('/api/products/publishers/publisherData', {});
+            // console.log(response);
             setPublishers(response.data.data); 
             setShowModal(false);
         } catch (error) {
@@ -109,8 +101,8 @@ export const Shop = ({ searchKeyword }) => {
             sortField = "price";
             sortDirection = "desc";
         }
-        console.log('price ',priceRange);
-        console.log('key ',searchKeyword);
+        // console.log('price ',priceRange);
+        // console.log('key ',searchKeyword);
         
         try {
             setShowModal(true);
@@ -131,8 +123,38 @@ export const Shop = ({ searchKeyword }) => {
                 }
             });
 
-            setProducts(response.data.data.content);
-            console.log(products) 
+            
+            const productData = response.data.data.content;
+            // console.log('product data ', productData);
+
+            // Lấy ra toàn bộ bookId
+            const bookIds = productData.map(item => item.bookId);
+            // console.log('bookIds ', bookIds);
+
+            const inventoryResponse = await axios.post(`/api/inventory/stock`,{
+                bookId: bookIds
+            })
+
+            const inventoryData = inventoryResponse.data.data;
+            // console.log('inventory data ', inventoryData);
+
+            const updatedProduct = productData.map(item => {
+                const inventoryItem = inventoryData.find(inventory => inventory.bookId === item.bookId);
+    
+                return {
+                    bookId: item.bookId,
+                    title: item ? item.title : '',
+                    price: item ? item.price : 0,
+                    discount: item ? item.discount : 0,
+                    image: item ? item.image : '',
+                    priceDiscount: item ? item.priceDiscount : 0,
+                    receivedQuantity: inventoryItem ? inventoryItem.receivedQuantity : 0
+                };
+            });
+         
+
+            // setProducts(response.data.data.content);
+            setProducts(updatedProduct);
             setTotalPages(response.data.data.totalPages);
             setTotalElements(response.data.data.totalElements);
             setShowModal(false);
@@ -142,6 +164,9 @@ export const Shop = ({ searchKeyword }) => {
             setShowErrorModal(true);
         }
     };
+
+   
+
 
     const handleSortChange = (eventKey) => {
         setSortOption(eventKey);
@@ -179,6 +204,67 @@ export const Shop = ({ searchKeyword }) => {
     const handleFilterClick = () => {
         fetchBooks(sortOption);
     };
+
+    const handleAddItemToCart = async(bookId, image, title, price) =>{
+        setShowModal(true);
+        const token =  localStorage.getItem('authToken');
+        if(token == null){
+            setShowModal(false); 
+            // console.log(error);
+            setError('Login first!!!');
+            setShowErrorModal(true);
+        }
+        try {
+
+            const response = await axios.post('/api/identity/auth/introspect', { token });
+            const isValid = response.data.data.valid;
+            console.log('valid', isValid);
+            if(isValid){
+                await axios.post('/api/cart/items',{
+                    bookId,
+                    image,
+                    title,
+                    price
+                },{
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                const event = new CustomEvent('updateCart');
+                window.dispatchEvent(event);
+                // console.log(response.data);
+            }
+            else{
+                setShowModal(false);
+                setError("Login first!");
+                setShowErrorModal(true);
+                
+            }
+            setShowModal(false);
+            
+        } catch (error) {
+            // setError(error.response?.data?.message || 'An error occurred');
+            setShowModal(false); 
+            console.log(error);
+            setError(error);
+            setShowErrorModal(true);
+
+        }
+        // try {
+        //     const response = await axios.post('/api/cart/item',{
+        //         image,
+        //         title,
+        //         price
+        //     },{
+        //         headers: {
+        //             Authorization: `Bearer ${token}`
+        //         }
+        //     })
+        //     console.log(response.data.data);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    }
 
     return (
         <Container className="mt-5">
@@ -283,7 +369,9 @@ export const Shop = ({ searchKeyword }) => {
                                             ) : (
                                                 <strong className="product-price">{product.price}$</strong>
                                             )}
+
                                         </Card.Text>
+                                          {product.receivedQuantity > 0 && <Button variant="success" onClick={()=>handleAddItemToCart(product.bookId, product.image, product.title, product.priceDiscount > 0? product.priceDiscount: product.price)}>Add to Cart</Button>}  
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -318,7 +406,7 @@ export const Shop = ({ searchKeyword }) => {
                         </svg>
                         </div>
                         <h4>Error</h4>
-                        <p>Something wrong!</p>
+                        <p>Something went wrong!</p>
                         <Button variant="danger" onClick={() => setShowErrorModal(false)}>Close</Button>
                     </Modal.Body>
                 </Modal>
