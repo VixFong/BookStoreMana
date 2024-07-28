@@ -12,6 +12,7 @@ export const Sidebar = () => {
     const [InventoryMenu, setInventoryMenu] = useState(false);
     const [ItemOrderMenu, setItemOrderMenu] = useState(false);
     const [CustomerOrderMenu, setCustomerOrderMenu] = useState(false);
+    const [DashboardMenu, setDashboardMenu] = useState(false);
     // const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
 
@@ -44,6 +45,10 @@ export const Sidebar = () => {
 
     const toggleCustomerOrderMenu = () => {
         setCustomerOrderMenu(!CustomerOrderMenu);
+    }
+
+    const toggleDashboardMenu = () => {
+        setDashboardMenu(!DashboardMenu);
     }
 
     const handleLogout = async () => {
@@ -239,6 +244,21 @@ export const Sidebar = () => {
                             <ul className="nav flex-column ms-3">
                                 <li className="nav-item">
                                     <Link className="nav-link text-white" to="/ordermanagement">Order Management</Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link text-white d-flex justify-content-between align-items-center" href="#" onClick={toggleDashboardMenu}>
+                            <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+                            <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
+                            </svg> Dashboard</span>
+                            <span>{ItemOrderMenu ? <FaChevronUp /> : <FaChevronDown />}</span>
+                        </a>
+                        <div className={`collapse ${DashboardMenu ? 'show' : ''}`}>
+                            <ul className="nav flex-columx`n ms-3">
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" to="/dashboardmanagement">Graph</Link>
                                 </li>
                             </ul>
                         </div>
