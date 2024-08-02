@@ -5,25 +5,27 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 export const OrderDetail = ({ order }) => {
-  const exampleOrderItems = [
-    {
-      image: 'https://via.placeholder.com/50',
-      name: 'Áo sơ mi có nơ cà vạt dài tay',
-      price: '149,000đ',
-      quantity: 2,
-      total: '298,000đ'
-    },
-    {
-      image: 'https://via.placeholder.com/50',
-      name: 'Áo Polo xơ dừa có phối kẻ C9POL504M',
-      price: '211,650đ',
-      quantity: 6,
-      total: '1,269,900đ'
-    },
-  ];
+  // const exampleOrderItems = [
+  //   {
+  //     image: 'https://via.placeholder.com/50',
+  //     name: 'Áo sơ mi có nơ cà vạt dài tay',
+  //     price: '149,000đ',
+  //     quantity: 2,
+  //     total: '298,000đ'
+  //   },
+  //   {
+  //     image: 'https://via.placeholder.com/50',
+  //     name: 'Áo Polo xơ dừa có phối kẻ C9POL504M',
+  //     price: '211,650đ',
+  //     quantity: 6,
+  //     total: '1,269,900đ'
+  //   },
+  // ];
   console.log('order ', order);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
+  const [status, setStatus] = useState(order.status);
+
   const token =  localStorage.getItem('authToken');
   useEffect(() => {
     fetchCustomer();
@@ -47,6 +49,8 @@ export const OrderDetail = ({ order }) => {
         const user = response.data.data;
         setFullName(user.fullName);
         setPhone(user.phone);
+        console.log('status', status);
+        // setStatus()
         
 
         // const bookIds = books.map(book => book.bookId);
@@ -56,10 +60,8 @@ export const OrderDetail = ({ order }) => {
 
     } catch (error) {
         console.log(error);
-        // setShowModal(false);
-        // setError(error.response?.data?.message);
-        // setShowErrorModal(true);
-        
+       
+     
     }
   };
   const exportPDF = () => {
@@ -67,25 +69,77 @@ export const OrderDetail = ({ order }) => {
     const statusDropdown = document.getElementById('status-dropdown');
     const buttonContainer = document.getElementById('button-container');
 
-    // Hide the elements that should not be included in the PDF
+    const imageHeader = document.getElementById('image-header');
+    const imageColumns = document.getElementsByClassName('image-column');
+    
+    const noteContainer = document.getElementById('note-container');
+    if (imageHeader) imageHeader.style.display = 'none';
+    for (let i = 0; i < imageColumns.length; i++) {
+      imageColumns[i].style.display = 'none';
+    }
+
+    if (statusDropdown) statusDropdown.style.display = 'none';
+    if (buttonContainer) buttonContainer.style.display = 'none';
+    if (noteContainer) noteContainer.style.display = 'none';
+
+
     statusDropdown.style.display = 'none';
     buttonContainer.style.display = 'none';
 
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgWidth = pdf.internal.pageSize.getWidth();
-      const imgHeight = canvas.height * imgWidth / canvas.width;
 
-      pdf.setFontSize(22);
-      pdf.text('Order Invoice', imgWidth / 2, 15, null, null, 'center');
+    
+
+      html2canvas(input).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        
+        pdf.setFontSize(22);
+        pdf.text('Order Invoice', imgWidth / 2, 15, null, null, 'center');
+        
+        pdf.addImage(imgData, 'PNG', 0, 30, imgWidth, imgHeight);
+        pdf.save(`${order.id}_order_detail.pdf`);
+        if (imageHeader) imageHeader.style.display = 'table-cell';
+        
+        for (let i = 0; i < imageColumns.length; i++) {
+          imageColumns[i].style.display = 'table-cell';
+        }
+
+        if (statusDropdown) statusDropdown.style.display = 'block';
+        if (buttonContainer) buttonContainer.style.display = 'block';
+        if (noteContainer) noteContainer.style.display = 'block';
+
+        statusDropdown.style.display = 'block';
+        buttonContainer.style.display = 'block';
+      });
+    
+  };
+
+  const updateOrderStatus = async (newStatus) => {
+    
+ 
+
+    try {
+      const updateStock = order.orderItems.map(item => ({
+        title: item.title,
+        bookId: item.bookId,
+        purchaseQty: item.purchaseQty,
+      }));
+      console.log('stock ', updateStock);
       
-      pdf.addImage(imgData, 'PNG', 0, 30, imgWidth, imgHeight);
-      pdf.save(`${order.id}_order_detail.pdf`);
-
-      statusDropdown.style.display = 'block';
-      buttonContainer.style.display = 'block';
-    });
+      await axios.put(`/api/orders/edit/customer/status/${order.id}`, updateStock,{ 
+        params:{
+          status: newStatus  
+        }, 
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setStatus(newStatus); // Cập nhật trạng thái trong giao diện
+    } catch (error) {
+      console.error('Failed to update order status', error);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -116,27 +170,45 @@ export const OrderDetail = ({ order }) => {
         </CustomerInfo>
 
         <OrderInfo>
-          <p><strong>Payment method</strong></p>
-          <p>COD</p>
-          <p><strong>Shipping method</strong></p>
-          <p>Giao Hàng Tiết Kiệm</p>
+          {/* <p><strong>Payment method</strong></p> */}
+          {/* <p>COD</p> */}
+           <p><strong>Shipping fee</strong></p>
+          <p>$15</p>
           <p><strong>Order Date</strong></p>
           <p>{formatDate(order.dateCreated)}</p>
         </OrderInfo>
 
         <StatusDropdown id="status-dropdown">
           <label><strong>Change Order Status </strong></label>
-          <select defaultValue={order.status}>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Delivered">Delivered</option>
+          <select 
+            className="form-select"
+            value={status}
+            onChange={(e) => updateOrderStatus(e.target.value)}
+          >
+            <option value="PROCESSING">Processing</option>
+            <option value="CONFIRM">Confirm</option>
+            <option value="DELIVERING">Delivering</option>
+            <option value="CANCEL">Cancel</option>
+            <option value="COMPLETE">Complete</option>                                                        
           </select>
         </StatusDropdown>
-
+        {/* <h5>Note</h5> */}
+        <Col>
+                        <Form.Group controlId="note" id="note-container">
+                            <Form.Label><strong>Note</strong> </Form.Label>
+                            <Form.Control 
+                                as="textarea" 
+                                rows={3} 
+                                value={order.note}
+                            />
+                         
+                        </Form.Group>
+                    </Col> 
         <h5>Product Information</h5>
         <StyledTable striped bordered hover>
           <thead>
             <tr>
-              <th>Image</th>
+              <th id="image-header">Image</th>
               <th>Product</th>
               <th>Price</th>
               <th>Qty</th>
@@ -146,7 +218,7 @@ export const OrderDetail = ({ order }) => {
           <tbody>
             {order.orderItems.map((item, index) => (
               <tr key={index}>
-                <td><img src={item.image} alt={item.title} /></td>
+                <td className="image-column"><img src={item.image} alt={item.title} /></td>
                 <td>{item.title}</td>
                 <td>${item.price.toFixed(2)}</td>
                 <td>{item.purchaseQty}</td>
@@ -162,7 +234,7 @@ export const OrderDetail = ({ order }) => {
       </StyledContainer>
 
       <ButtonContainer id="button-container">
-        <Button variant="primary">Export Excel</Button>
+        {/* <Button variant="primary">Export Excel</Button> */}
         <Button variant="danger" onClick={exportPDF}>Export PDF</Button>
       </ButtonContainer>
     </>

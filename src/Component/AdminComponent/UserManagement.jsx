@@ -89,7 +89,7 @@ export const UserManagement = () => {
         const dateCreated = new Date(parts[2]).toLocaleString();
         return `${orderEvent}: ${orderInfo} with ${numItems} item(s) created on ${dateCreated}`;
     };
-{/* NOTIFICATION */}
+
 
     const formatTimestamp = (timestamp) => {
         return new Date(timestamp).toLocaleString();

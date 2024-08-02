@@ -7,17 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const CheckoutForm = () => {
-  // const [billingDetails, setBillingDetails] = useState({
-  //   firstName: '',
-  //   lastName: '',
-  //   companyName: '',
-  //   country: 'United States (US)',
-  //   address: '',
-  //   address2: '',
-  //   city: '',
-  //   phone: '',
-  //   email: '',
-  // });
+
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [user, setUser] = useState('');
@@ -171,7 +161,7 @@ export const CheckoutForm = () => {
               setShowSuccessModal(false);
           }, 1000);
 
-          // navigate('/orderreceived');
+          navigate('/categoryclient');
       } catch (error) {
           console.log(error);
           setShowLoadingModal(false);
@@ -189,7 +179,7 @@ export const CheckoutForm = () => {
                 Authorization: `Bearer ${token}`
             } 
         })
-        // fetchCart();
+        
     } catch (error) {
         console.log(error);
         setError(error.response?.data?.message);
@@ -318,7 +308,12 @@ export const CheckoutForm = () => {
             </Form.Group>
             <Form.Group controlId="formOrderNotes">
               <Form.Label>Order notes (optional)</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Notes about your order, e.g. special notes for delivery." />
+              <Form.Control 
+                as="textarea"
+                rows={3} 
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Notes about your order, e.g. special notes for delivery." 
+              />
             </Form.Group>
           </Form>
         </Col>

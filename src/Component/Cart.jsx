@@ -40,11 +40,10 @@ export const Cart = ({ show, onClose }) => {
 
     const fetchCart = async() =>{
         setShowModal(true);
-        
         try {
             const response = await axios.post('/api/identity/auth/introspect', { token });
             const isValid = response.data.data.valid;
-            console.log('valid', isValid);
+            // console.log('valid', isValid);
             if(isValid){
                 const response = await axios.get('/api/cart',{
                     headers: {
@@ -145,13 +144,11 @@ export const Cart = ({ show, onClose }) => {
                 item.itemId === id ? { ...item, quantity: newQuantity } : item
             )
         );
-        // handleQuantityChange(id, newQuantity);
     }; 
 
     const handleQuantityChange = async(id, newQuantity, inStock)=>{
     
         if (newQuantity > inStock) {
-            // alert(`The maximum quantity available is `, inStock);
             setError(`The maximum quantity available in stock is ${inStock}`);
             setShowErrorModal(true);
             return;
@@ -165,7 +162,7 @@ export const Cart = ({ show, onClose }) => {
                     Authorization: `Bearer ${token}`
                 } 
             })
-            console.log('aaaa');
+    
             fetchCart();
         } catch (error) {
             console.log(error);
@@ -174,11 +171,11 @@ export const Cart = ({ show, onClose }) => {
     }
 
     const handleCheckout = () => {
-        
-        console.log('acasc');
+        if(cart.length ){
         const checkoutData = {
             items: cart.map(item => ({
                 id: item.itemId,
+                bookId: item.bookId,
                 image: item.image,
                 title: item.title,
                 price: item.priceDiscount > 0 ? item.priceDiscount : item.price,
@@ -195,6 +192,11 @@ export const Cart = ({ show, onClose }) => {
     
         // Navigate to checkout page
         navigate('/checkout');
+        }
+        else {
+            setError('Your cart is empty. Please add items to your cart before proceeding to checkout.');
+            setShowErrorModal(true);
+        }
     };  
     return (
         <div className={`offcanvas offcanvas-end ${show ? 'show' : ''}`} tabIndex="-1" style={{ visibility: show ? 'visible' : 'hidden' }}>

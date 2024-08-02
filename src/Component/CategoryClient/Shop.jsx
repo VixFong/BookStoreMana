@@ -127,7 +127,7 @@ export const Shop = ({ searchKeyword }) => {
             const productData = response.data.data.content;
             // console.log('product data ', productData);
 
-            // Lấy ra toàn bộ bookId
+          
             const bookIds = productData.map(item => item.bookId);
             // console.log('bookIds ', bookIds);
 
