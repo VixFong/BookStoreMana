@@ -95,7 +95,7 @@ export const Admin = () => {
         formData.append('fullName', fullName);
         // formData.append('email', email);
         formData.append('phone', phone);
-        formData.append('address', `${address},${ward},${district},${city}`);
+        formData.append('address', `${address}, ${ward}, ${district}, ${city}`);
         // formData.append('role', role);
         if (file) {
             formData.append('file', file);

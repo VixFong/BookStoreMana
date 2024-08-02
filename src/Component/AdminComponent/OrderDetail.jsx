@@ -117,9 +117,6 @@ export const OrderDetail = ({ order }) => {
   };
 
   const updateOrderStatus = async (newStatus) => {
-    
- 
-
     try {
       const updateStock = order.orderItems.map(item => ({
         title: item.title,
@@ -167,12 +164,15 @@ export const OrderDetail = ({ order }) => {
           <p></p>
           <p>{order.email}</p>
           <p>{phone}</p>
+
+          <p><strong>Address</strong></p>
+          <p>{order.address}</p>
         </CustomerInfo>
 
         <OrderInfo>
           {/* <p><strong>Payment method</strong></p> */}
           {/* <p>COD</p> */}
-           <p><strong>Shipping fee</strong></p>
+          <p><strong>Shipping fee</strong></p>
           <p>$15</p>
           <p><strong>Order Date</strong></p>
           <p>{formatDate(order.dateCreated)}</p>
@@ -192,18 +192,18 @@ export const OrderDetail = ({ order }) => {
             <option value="COMPLETE">Complete</option>                                                        
           </select>
         </StatusDropdown>
-        {/* <h5>Note</h5> */}
+  
         <Col>
-                        <Form.Group controlId="note" id="note-container">
-                            <Form.Label><strong>Note</strong> </Form.Label>
-                            <Form.Control 
-                                as="textarea" 
-                                rows={3} 
-                                value={order.note}
-                            />
+            <Form.Group controlId="note" id="note-container">
+              <Form.Label><strong>Note</strong> </Form.Label>
+                <Form.Control 
+                  as="textarea" 
+                  rows={3} 
+                  value={order.note}
+                />
                          
-                        </Form.Group>
-                    </Col> 
+              </Form.Group>
+      </Col> 
         <h5>Product Information</h5>
         <StyledTable striped bordered hover>
           <thead>

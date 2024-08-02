@@ -33,6 +33,7 @@ export const CheckoutForm = () => {
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
   // const [showModal, setShowModal] = useState(false);
   const token = localStorage.getItem('authToken');
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export const CheckoutForm = () => {
   }, [cartTotal]);
 
   useEffect(() => {
-    const fetchAdmins = async () => {
+    const fetchUser = async () => {
         try {
             const response = await axios.get('/api/identity/users/info', {
                 headers: {
@@ -100,18 +101,59 @@ export const CheckoutForm = () => {
         }
     };
 
-    fetchAdmins();
+    fetchUser();
 }, []);
 
   console.log('user ', user);
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setBillingDetails({ ...billingDetails, [name]: value });
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setBillingDetails({ ...billingDetails, [name]: value });
+  // };
 
   const handlePaymentChange = (e) => {
     setPaymentMethod(e.target.id);
   };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    // if (name === 'fullName') setFullName(value);
+    // console.log('name ', fullName);
+    // if (name === 'email') setEmail(value);
+    // if (name === 'phone') setPhone(value);
+    if (name === 'city') setCity(value);
+    if (name === 'district') setDistrict(value);
+    if (name === 'ward') setWard(value);
+    if (name === 'address') setAddress(value);
+  };
+
+
+  const handleCheckboxChange = () => {
+    setShipToDifferentAddress(!shipToDifferentAddress);
+    if (!shipToDifferentAddress) {
+      setCity('');
+      setDistrict('');
+      setWard('');
+      setAddress('');
+    } else {
+      const userData = user;
+      if (userData.address) {
+        const extractAddress = userData.address.split(",");
+        if (extractAddress.length >= 4) {
+          setCity(extractAddress[3]);
+        }
+        if (extractAddress.length >= 3) {
+          setDistrict(extractAddress[2]);
+        }
+        if (extractAddress.length >= 2) {
+          setWard(extractAddress[1]);
+        }
+        if (extractAddress.length >= 1) {
+          setAddress(extractAddress[0]);
+        }
+      }
+    }
+  };
+
+
 
   const calculateTotal = (cartTotal) => {
     const totalPrice = (cartTotal + shipping).toFixed(2);
@@ -122,11 +164,6 @@ export const CheckoutForm = () => {
 
   const checkValidation = async()=>{
 
-      // console.log("city", city);
-      // console.log("ward", ward);
-      // console.log("district", district);
-      // console.log("address", address);
-      // console.log('cart item ', cartItems);
       if(city == '' || ward == '' || district == '' || address == ''){
         setError("Please complete all information");
         setShowErrorModal(true);
@@ -136,9 +173,11 @@ export const CheckoutForm = () => {
         try {
           setShowLoadingModal(true);
           console.log('price ', totalPrice);
-          const response = await axios.post('api/orders/customer', {
+
+          const newAddress = `${address}, ${ward}, ${district}, ${city}`;
+          await axios.post('api/orders/customer', {
              
-              address,
+              address: newAddress,
               numItems: cartItems.length,
               shipFee: shipping,
               totalPrice,
@@ -159,7 +198,7 @@ export const CheckoutForm = () => {
           
           setTimeout(() => {
               setShowSuccessModal(false);
-          }, 1000);
+          }, 2000);
 
           navigate('/categoryclient');
       } catch (error) {
@@ -197,55 +236,22 @@ export const CheckoutForm = () => {
               <Form.Control
                 type="text"
                 placeholder="Full name"
-                name="FullName"
-                // value={billingDetails.firstName}
+                name="fullName"
                 value= {fullName}
-                onChange={handleInputChange}
+                // onChange={handleInputChange}
               />
             </Form.Group>
-            {/* <Form.Group controlId="formLastName">
-              <Form.Label>Last name *</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Last name"
-                name="lastName"
-                value={billingDetails.lastName}
-                onChange={handleInputChange}
-              />
-            </Form.Group> */}
-            {/* <Form.Group controlId="formCompanyName">
-              <Form.Label>Company name (optional)</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Company name"
-                name="companyName"
-                value={billingDetails.companyName}
-                onChange={handleInputChange}
-              />
-            </Form.Group> */}
-            {/* <Form.Group controlId="formCountry">
-              <Form.Label>Country / Region *</Form.Label>
-              <Form.Control as="select" name="country" value={billingDetails.country} onChange={handleInputChange}>
-                <option>United States (US)</option>
-              </Form.Control>
-            </Form.Group> */}
+      
             <Form.Group controlId="formAddress">
               <Form.Label>Street address *</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="House number and street name"
                 name="address"
-                // value={billingDetails.address}
                 value={address}
                 onChange={handleInputChange}
               />
-              {/* <Form.Control
-                type="text"
-                placeholder="Apartment, suite, unit, etc. (optional)"
-                name="address2"
-                value={billingDetails.address2}
-                onChange={handleInputChange}
-              /> */}
+       
             </Form.Group>
             <Form.Group controlId="formCity">
               <Form.Label>Town / City *</Form.Label>
@@ -264,7 +270,6 @@ export const CheckoutForm = () => {
                 type="text"
                 placeholder="Ward"
                 name="ward"
-                // value={billingDetails.city}
                 value={ward}
                 onChange={handleInputChange}
               />
@@ -274,8 +279,7 @@ export const CheckoutForm = () => {
               <Form.Control
                 type="text"
                 placeholder="District"
-                name="distric"
-                // value={billingDetails.city}
+                name="district"
                 value={district}
                 onChange={handleInputChange}
               />
@@ -287,7 +291,7 @@ export const CheckoutForm = () => {
                 placeholder="Phone"
                 name="phone"
                 value={phone}
-                onChange={handleInputChange}
+                // onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group controlId="formEmail">
@@ -297,13 +301,15 @@ export const CheckoutForm = () => {
                 placeholder="Email"
                 name="email"
                 value={email}
-                onChange={handleInputChange}
+                // onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group controlId="formDifferentAddress">
               <Form.Check
                 type="checkbox"
                 label="Ship to a different address?"
+                checked={shipToDifferentAddress}
+                onChange={handleCheckboxChange}
               />
             </Form.Group>
             <Form.Group controlId="formOrderNotes">
