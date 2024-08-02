@@ -1,11 +1,11 @@
 package com.example.orderservice.controller;
 
-import com.example.orderservice.dto.request.CreateOrderRequest;
-import com.example.orderservice.dto.request.UpdateOrderRequest;
-import com.example.orderservice.dto.request.UpdateReceiveQtyRequest;
+import com.example.orderservice.dto.request.*;
 import com.example.orderservice.dto.response.ApiResponse;
+import com.example.orderservice.dto.response.OrderCustomerResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.model.Order;
+import com.example.orderservice.model.OrderCustomer;
 import com.example.orderservice.service.ExcelExportService;
 import com.example.orderservice.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,17 +39,12 @@ public class OrderController {
                 .build();
     }
 
-
-//    @GetMapping("/search")
-//    public ApiResponse<Page<OrderResponse>> searchOrder(
-//            @RequestParam String keyword,
-//            @RequestParam String status,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "4") int size) {
-//        return ApiResponse.<Page<OrderResponse>>builder()
-//                .data(orderService.searchOrders(keyword, status, page, size))
-//                .build();
-//    }
+    @PostMapping("/customer")
+    public ApiResponse<OrderCustomerResponse> createOrderCustomer(@RequestBody CreateOrderCustomerRequest request) {
+        return ApiResponse.<OrderCustomerResponse>builder()
+                .data(orderService.createOrderCustomer(request))
+                .build();
+    }
 
     @GetMapping("/search")
     public ApiResponse<Page<OrderResponse>> searchOrder(
@@ -60,10 +55,20 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size) {
         return ApiResponse.<Page<OrderResponse>>builder()
-                .data(orderService.searchOrders2(keyword, status, timeFilter, dateRange, page, size))
+                .data(orderService.searchOrders(keyword, status, timeFilter, dateRange, page, size))
                 .build();
     }
 
+    @GetMapping("/search_cus")
+    public ApiResponse<Page<OrderCustomerResponse>> searchOrderCustomer(
+            @RequestParam String keyword,
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size) {
+        return ApiResponse.<Page<OrderCustomerResponse>>builder()
+                .data(orderService.searchOrderCustomer(keyword, status, page, size))
+                .build();
+    }
     @PostMapping("/export")
     public ResponseEntity<byte[]> exportExcel(@RequestBody List<String> ids) throws IOException {
         log.info("Received export request with ids: " + ids);
@@ -109,6 +114,17 @@ public class OrderController {
     @PutMapping("edit/status")
     public ApiResponse<Void> updateStatusOrder(@RequestBody List<String> ids){
         orderService.updateStatusOrder(ids);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PutMapping("/edit/customer/status/{id}")
+    public ApiResponse<Void> updateStatusOrderCustomer(@PathVariable String id,
+                                                       @RequestParam String status,
+                                                       @RequestBody List<UpdateStockRequest> request){
+        orderService.updateStatusOrderCustomer(id, status, request);
+
+//        System.out.println("Stock " + request);
         return ApiResponse.<Void>builder()
                 .build();
     }

@@ -15,6 +15,7 @@ import java.util.List;
 public class OrderItemResponse {
 
     private String itemId;
+    private String bookId;
     private String image;
     private String title;
     private int purchaseQty;

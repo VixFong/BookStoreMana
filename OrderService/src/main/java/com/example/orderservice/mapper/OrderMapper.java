@@ -1,10 +1,13 @@
 package com.example.orderservice.mapper;
 
+import com.example.orderservice.dto.request.CreateOrderCustomerRequest;
 import com.example.orderservice.dto.request.CreateOrderRequest;
 import com.example.orderservice.dto.request.UpdateOrderRequest;
+import com.example.orderservice.dto.response.OrderCustomerResponse;
 import com.example.orderservice.dto.response.OrderItemResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.model.Order;
+import com.example.orderservice.model.OrderCustomer;
 import com.example.orderservice.model.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,8 +25,10 @@ public interface OrderMapper {
     @Mapping(target = "orderItems", source = "orderItems")
     OrderResponse toOrderResponse(Order order);
 
-    OrderItem toOrderItem(OrderItemResponse response);
+    OrderCustomer toOrderCustomer(CreateOrderCustomerRequest request);
 
+    @Mapping(target = "orderItems", source = "orderItems")
+    OrderCustomerResponse toOrderCustomerResponse(OrderCustomer orderCustomer);
     OrderItemResponse toOrderItemResponse(OrderItem orderItem);
 
     List<OrderItemResponse> toOrderItemResponseList(List<OrderItem> orderItems);
@@ -31,5 +36,4 @@ public interface OrderMapper {
     @Mapping(target = "orderItems", ignore = true)
     void updateOrder(@MappingTarget Order order, UpdateOrderRequest request);
 
-//    void updateOrderItem(@MappingTarget OrderItem orderItem, )
 }

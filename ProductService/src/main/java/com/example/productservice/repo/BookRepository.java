@@ -22,7 +22,8 @@ public interface BookRepository extends MongoRepository<Book, String> {
     Page<Book> findBooksByIdIn(Set<String> ids, Pageable pageable);
 
 
-//    List<Book> findBooksByIdIn(Set<String> ids);
+    List<Book> findByBookIdIn(List<String> ids);
+
     @Query(value = "{ '_id': ?0 }", fields = "{ 'title': 1, 'images': 1 }")
     Book findBookById(String id);
 

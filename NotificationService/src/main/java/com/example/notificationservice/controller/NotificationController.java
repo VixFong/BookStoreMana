@@ -29,16 +29,7 @@ public class NotificationController {
                 .data(notificationService.markAsRead(id))
                 .build();
     }
-//    @GetMapping
-//    public ApiResponse<Page<Notification>> getNotifications(
-//            @RequestParam String dateRange,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size
-//    ) {
-//        return ApiResponse.<Page<Notification>>builder()
-//                .data(notificationService.listNotifications(dateRange, page, size))
-//                .build();
-//    }
+
     @GetMapping("/latest")
     public ApiResponse<List<Notification>> getLatestNotifications() {
         return ApiResponse.<List<Notification>>builder()

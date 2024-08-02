@@ -1,6 +1,7 @@
 package com.example.productservice.controller;
 
 import com.example.productservice.dto.request.CreateBookRequest;
+import com.example.productservice.dto.request.ListBookClientRequest;
 import com.example.productservice.dto.request.UpdateBookRequest;
 import com.example.productservice.dto.response.*;
 import com.example.productservice.service.BookService;
@@ -37,6 +38,15 @@ public class BookController {
                 .build();
     }
 
+    @PostMapping("/cart")
+    public ApiResponse<List<BookClientResponse>> getBookCart(@RequestBody ListBookClientRequest request){
+        System.out.println("Cart "+ request);
+
+        return ApiResponse.<List<BookClientResponse>>builder()
+                .data(bookService.getBookCart(request))
+                .build();
+    }
+
     @GetMapping("/search")
     public ApiResponse<Page<BookResponse>> searchBook(@RequestParam String keyword, @RequestParam int page, @RequestParam int size){
 //        System.out.println("Controller");
@@ -44,28 +54,6 @@ public class BookController {
                 .data(bookService.searchBook(keyword, page, size))
                 .build();
     }
-
-//    @GetMapping("/search_client")
-//    public ApiResponse<Page<BookClientResponse>> searchBookClient(@RequestParam String keyword, @RequestParam int page, @RequestParam int size){
-//        System.out.println("Controller client");
-//        return ApiResponse.<Page<BookClientResponse>>builder()
-//                .data(bookService.searchBookClient(keyword, page, size))
-//                .build();
-//    }
-
-//    @GetMapping("/search_client")
-//    public ApiResponse<Page<BookClientResponse>> searchBookClient(
-//            @RequestParam String keyword,
-//            @RequestParam int page,
-//            @RequestParam int size,
-//            @RequestParam(defaultValue = "title") String sortField,
-//            @RequestParam(defaultValue = "asc") String sortDirection
-//            ){
-//        System.out.println("Controller client");
-//        return ApiResponse.<Page<BookClientResponse>>builder()
-//                .data(bookService.searchBookClient(keyword, page, size, sortField, sortDirection))
-//                .build();
-//    }
 
     @GetMapping("/search_client")
     public ApiResponse<Page<BookClientResponse>> searchBookClient(

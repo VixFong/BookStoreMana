@@ -1,13 +1,7 @@
 package com.example.inventoryservice.service;
 
-import com.example.inventoryservice.dto.request.CreateInventoryRequest;
-import com.example.inventoryservice.dto.request.SearchInventoryByBookIdRequest;
-import com.example.inventoryservice.dto.request.UpdateInventoryRequest;
-import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
-import com.example.inventoryservice.dto.response.InventoryResponse;
-import com.example.inventoryservice.dto.response.InventoryStatusResponse;
-import com.example.inventoryservice.dto.response.SearchInventoryByBookIdResponse;
-import com.example.inventoryservice.dto.response.SearchInventory_OrderResponse;
+import com.example.inventoryservice.dto.request.*;
+import com.example.inventoryservice.dto.response.*;
 import com.example.inventoryservice.exception.AppException;
 import com.example.inventoryservice.exception.ErrorCode;
 import com.example.inventoryservice.mapper.InventoryMapper;
@@ -22,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import static com.example.inventoryservice.config.RabbitMQConfig.BOOK_QUEUE;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,11 +49,22 @@ public class InventoryService {
         return inventories.stream().map(inventoryMapper::toInventoryResponse).toList();
     }
 
-//    public Page<InventoryResponse> searchBook(String keyword, int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
-////        Page<Inventory> inventoryPage = inventoryRepository.findBookByTitle(keyword, pageable);
-//        return bookPage.map(bookMapper::toBookResponseWithConditionalFields);
-//    }
+    public List<InventoryQuantityResponse> getQuantity(List<String> bookIds){
+
+        List<InventoryQuantityResponse> responseList = new ArrayList<>();
+        for(String id : bookIds ){
+            var inventory = inventoryRepository.findInventoriesByBookId(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_NOT_FOUND));
+
+            InventoryQuantityResponse response = InventoryQuantityResponse.builder()
+                    .bookId(inventory.getBookId())
+                    .receivedQuantity(inventory.getReceivedQuantity())
+                    .build();
+            responseList.add(response);
+
+        }
+        return responseList;
+    }
 
     public Page<InventoryResponse> getAllInventories(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateUpdated"));
@@ -132,6 +138,20 @@ public class InventoryService {
         }
         else{
             inventory.setStatus(Inventory.STATUS_IN_STOCK);
+        }
+    }
+
+    public void updateStockAfterPurchasing(List<UpdateStockRequest> requests){
+        int remainStock = 0;
+        for(UpdateStockRequest data : requests){
+            var inventory = inventoryRepository.findInventoriesByBookId(data.getBookId())
+                    .orElseThrow(()-> new AppException(ErrorCode.INVENTORY_NOT_FOUND));
+
+//            System.out.println("inventory " + inventory.getReceivedQuantity());
+            remainStock = inventory.getReceivedQuantity() - data.getPurchaseQty();
+            inventory.setReceivedQuantity(remainStock);
+
+            inventoryRepository.save(inventory);
         }
     }
 

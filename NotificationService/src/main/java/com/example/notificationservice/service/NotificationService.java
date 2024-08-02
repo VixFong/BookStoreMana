@@ -32,17 +32,19 @@ public class NotificationService {
         if ("NEW_ORDER".equals(request.getMessageType())) {
             message = "New order created: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }
+        else if ("NEW_ORDER_CUSTOMER".equals(request.getMessageType())) {
+            message = "New order customer: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
+        }
         else if ("DELETE_ORDER".equals(request.getMessageType())) {
             message = "Delete order: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }else if ("ARRIVAL_DATE_REACHED".equals(request.getMessageType())) {
             message = "Order arrival date reached: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }
         else if ("UPDATE_STATUS".equals(request.getMessageType())) {
-            message = "Order status updated: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
+            message = "Order is delivering: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         } else {
             message = "Order event: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }
-
 
         Notification notification = Notification.builder()
                 .title("Order")
@@ -59,52 +61,8 @@ public class NotificationService {
         return notificationRepository.findAllByTimestampDesc();
     }
 
-//    public Page<Notification> listNotifications( String dateRange, int page, int size){
-//        Pageable pageable = PageRequest.of(page, size);
-//        LocalDateTime startDate = LocalDateTime.MIN;
-//        LocalDateTime endDate = LocalDateTime.MAX;
-//        if (!"All".equalsIgnoreCase(dateRange)) {
-//            switch (dateRange) {
-//                case "Today":
-//                    startDate = LocalDate.now().atStartOfDay();
-//                    endDate = LocalDate.now().atTime(LocalTime.MAX);
-//                    break;
-//                case "Yesterday":
-//                    startDate = LocalDate.now().minusDays(1).atStartOfDay();
-//                    endDate = LocalDate.now().minusDays(1).atTime(LocalTime.MAX);
-//                    break;
-//                case "Last 7 days":
-//                    startDate = LocalDate.now().minusDays(7).atStartOfDay();
-//                    endDate = LocalDate.now().atTime(LocalTime.MAX);
-//                    break;
-//                case "Last 30 days":
-//                    startDate = LocalDate.now().minusDays(30).atStartOfDay();
-//                    endDate = LocalDate.now().atTime(LocalTime.MAX);
-//                    break;
-//                case "Custom Dates":
-//                    // Implement custom date range logic based on additional parameters, if needed
-//                    break;
-//
-//                default:
-//                    startDate = LocalDateTime.MIN;
-//                    endDate = LocalDateTime.MAX;
-//                    break;
-//
-//
-//            }
-//        }
-//        Page<Notification> notificationPage;
-//        if("All".equalsIgnoreCase(dateRange)){
-//            notificationPage = notificationRepository.findAll(pageable);
-//
-//        } else {
-//            notificationPage = notificationRepository.findByFilter(startDate, endDate, pageable);
-//        }
-//        return notificationPage;
-//    }
 
     public List<Notification> getLatestNotifications() {
-//        return notificationRepository.findTop10ByOrderByTimestampDesc();
 
         return notificationRepository.findAllByStatusOrderByTimestampDesc(Notification.STATUS_UNREAD);
     }

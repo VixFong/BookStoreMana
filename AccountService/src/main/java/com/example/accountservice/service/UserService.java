@@ -13,6 +13,7 @@ import com.example.accountservice.exception.ErrorCode;
 import com.example.accountservice.mapper.UserMapper;
 import com.example.accountservice.model.Role;
 import com.example.accountservice.model.User;
+import com.example.accountservice.repo.CartServiceClient;
 import com.example.accountservice.repo.ImageServiceClient;
 import com.example.accountservice.repo.RoleRepository;
 import com.example.accountservice.repo.UserRepository;
@@ -57,6 +58,8 @@ public class UserService {
     @Autowired
     private ImageServiceClient imageServiceClient;
 
+    @Autowired
+    private CartServiceClient cartServiceClient;
     @PreAuthorize("hasRole('Admin')")
     public UserResponse create(CreateUserRequest request) throws JOSEException, MessagingException {
         if(userRepository.existsUsersByEmail(request.getEmail())){
@@ -147,6 +150,12 @@ public class UserService {
         // Set Profile picture
         user.setProfilePicture("http://res.cloudinary.com/dmdddwb1j/image/upload/v1717317645/profile/tcwclkd3qez4f8aygz5n.jpg");
 
+
+        //Create cart
+        var api = cartServiceClient.createCart(request.getEmail());
+//        System.out.println(api.getCode());
+//        System.out.println("add cart");
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -178,7 +187,10 @@ public class UserService {
         return userMapper.toGetUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
 
+    public GetUserResponse getCustomer(String email){
 
+        return userMapper.toGetUserResponse(userRepository.findByEmail(email).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND)));
+    }
 
     public ProfileResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
@@ -188,11 +200,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toProfileUser(user);
     }
-    public UserResponse getUserByEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        return userMapper.toUserResponse(user);
-    }
 
     public ProfileResponse updateMyInfo(UpdateProfileRequest request) {
         System.out.println("update Info");

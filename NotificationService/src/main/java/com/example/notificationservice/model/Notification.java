@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class Notification {
     public static final String STATUS_UNREAD = "UNREAD";
     public static final String STATUS_READ = "READ";
-//    public static final String STATUS_INCOMPLETE = "INCOMPLETE";
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,8 +25,5 @@ public class Notification {
     private String message;
     private LocalDateTime timestamp;
     private String status;
-    public Notification(String title, String message) {
-        this.title = title;
-        this.message = message;
-    }
+
 }

@@ -2,6 +2,7 @@ package com.example.productservice.service;
 
 import com.example.productservice.dto.request.CreateBookRequest;
 import com.example.productservice.dto.request.CreateInventoryRequest;
+import com.example.productservice.dto.request.ListBookClientRequest;
 import com.example.productservice.dto.request.UpdateBookRequest;
 import com.example.productservice.dto.response.*;
 import com.example.productservice.exception.AppException;
@@ -224,33 +225,6 @@ public class BookService {
 
         if(maxPrice != null){
 
-//            var books = bookRepository.findBooksByIdIn(bookIds);
-//            Iterator<String> iterator = bookIds.iterator();
-
-//            Set<String> bookIdPrice = null;
-//            for (String id : bookIds) {
-//                var book = bookRepository.findById(id);
-//                if(book.get().isFlashSale()){
-//                    var bookDiscountPrice = book.get().getPriceDiscount() < maxPrice;
-//                    bookIdPrice.add(book.get().getBookId());
-//                }
-//                else{
-//                    var
-//                }
-//            }
-
-//            var bookIdsPrice = books.stream()
-//                    .filter(
-//                        book ->{
-//                            if(book.isFlashSale())
-//                                return book.getPriceDiscount() <= maxPrice;
-//                            else
-//                                return book.getPrice() <= maxPrice;
-//                        }
-//                    ).map(Book::getBookId).collect(Collectors.toList());
-
-
-//            System.out.println(maxPrice);
             List<SearchBook_InventoryResponse> bookIdByPriceRange = bookRepository.findByIdsAndPriceRange(bookIds, 0, maxPrice);
 //            System.out.println(bookIdByPriceRange.stream().toList());
 
@@ -265,6 +239,27 @@ public class BookService {
 
         return bookPage.map(bookMapper::toBookResponseWithConditionalFieldsClient);
     }
+
+    public List<BookClientResponse> getBookCart(ListBookClientRequest request){
+        List<Book> books = bookRepository.findByBookIdIn(request.getBookId());
+        return books.stream()
+                .map(bookMapper::toBookResponseWithConditionalFieldsClient)
+//                .map(this::convertToBookClientResponse)
+                .collect(Collectors.toList());
+
+    }
+
+//    private BookClientResponse convertToBookClientResponse(Book book) {
+//        var bookClientResponse =  BookClientResponse.builder()
+//                .bookId(book.getBookId())
+//                .title(book.getTitle())
+//                .discount(book.getDiscount())
+//                .image(book.getImages().get(0))
+//                .price(book.getPrice())
+//                .priceDiscount(book.getPriceDiscount())
+//                .build();
+//        return bookMapper.toBookResponseWithConditionalFieldsClient(bookClientResponse);
+//    }
 
     private boolean isBookLocked(String bookId){
         Book book = bookRepository.findById(bookId)

@@ -12,11 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UpdateInventoryRequest {
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    private LocalDateTime dateCreated;
-//
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    private LocalDateTime dateUpdate;
 
     private int orderedQuantity;
     private int receivedQuantity;

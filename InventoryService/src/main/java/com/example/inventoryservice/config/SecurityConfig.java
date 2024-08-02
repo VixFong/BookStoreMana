@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS={"inventory/"};
+    private final String[] PUBLIC_ENDPOINTS={"inventory/stock"};
 
 
     @Autowired
@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(req -> req
 //                .requestMatchers(HttpMethod.POST, ).permitAll()
-                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS ).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS ).permitAll()
                 .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->

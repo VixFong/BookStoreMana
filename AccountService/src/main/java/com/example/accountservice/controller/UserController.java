@@ -62,21 +62,7 @@ public class UserController {
                 .build();
     }
 
-//    @GetMapping
-//    public ApiResponse<List<UserResponse>> getUsers(){
-//        return ApiResponse.<List<UserResponse>>builder()
-//                .data(userService.getUsers())
-//                .build();
-//    }
 
-//    @GetMapping
-//    public ApiResponse<Page<UserResponse>> getPageUsers( @RequestParam int page,
-//                                                         @RequestParam int size){
-//        Page<UserResponse> userPage = userService.getPageUsers(page, size);
-//        return ApiResponse.<Page<UserResponse>>builder()
-//                .data(userPage)
-//                .build();
-//    }
     @GetMapping("/info")
     public ApiResponse<ProfileResponse> getInfo(){
         return ApiResponse.<ProfileResponse>builder()
@@ -110,6 +96,13 @@ public class UserController {
     public ApiResponse<GetUserResponse> getUser(@PathVariable String id){
         return ApiResponse.<GetUserResponse>builder()
                 .data(userService.getUser(id))
+                .build();
+    }
+
+    @GetMapping("/customer/{email}")
+    public ApiResponse<GetUserResponse> getCustomer(@PathVariable String email){
+        return ApiResponse.<GetUserResponse>builder()
+                .data(userService.getCustomer(email))
                 .build();
     }
 

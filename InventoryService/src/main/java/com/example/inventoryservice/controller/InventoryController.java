@@ -1,13 +1,7 @@
 package com.example.inventoryservice.controller;
 
-import com.example.inventoryservice.dto.request.CreateInventoryRequest;
-import com.example.inventoryservice.dto.request.SearchInventoryByBookIdRequest;
-import com.example.inventoryservice.dto.request.UpdateInventoryRequest;
-import com.example.inventoryservice.dto.request.UpdateReceivedQuantityRequest;
-import com.example.inventoryservice.dto.response.ApiResponse;
-import com.example.inventoryservice.dto.response.InventoryResponse;
-import com.example.inventoryservice.dto.response.InventoryStatusResponse;
-import com.example.inventoryservice.dto.response.SearchInventory_OrderResponse;
+import com.example.inventoryservice.dto.request.*;
+import com.example.inventoryservice.dto.response.*;
 import com.example.inventoryservice.model.Inventory;
 import com.example.inventoryservice.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,17 +40,7 @@ public class InventoryController {
 
     }
 
-//    @PostMapping("/search")
-//    public ApiResponse<Page<InventoryResponse>> searchInventory(
-//            @RequestBody List<SearchInventoryByBookIdRequest> request,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        System.out.println(request.get(0));
-//        return ApiResponse.<Page<InventoryResponse>>builder()
-//                .data(inventoryService.searchInventory(request, page, size))
-//                .build();
-//
-//    }
+
 
     @GetMapping("/search")
     public ApiResponse<Page<InventoryResponse>> searchInventory(
@@ -77,6 +61,28 @@ public class InventoryController {
         System.out.println(keyword);
         return ApiResponse.<List<SearchInventory_OrderResponse>>builder()
                 .data(inventoryService.searchInventory_order(keyword))
+                .build();
+
+    }
+
+
+//    @GetMapping("/stock")
+//    public ApiResponse<List<InventoryQuantityResponse>> getQuantity(
+//            @RequestParam List<String> bookIds)
+//    {
+//        System.out.println("stock " + bookIds);
+//        return ApiResponse.<List<InventoryQuantityResponse>>builder()
+//                .data(inventoryService.getQuantity(bookIds))
+//                .build();
+//
+//    }
+    @PostMapping("/stock")
+    public ApiResponse<List<InventoryQuantityResponse>> getQuantity(
+            @RequestBody ListBookClientRequest request)
+    {
+        System.out.println("stock " + request);
+        return ApiResponse.<List<InventoryQuantityResponse>>builder()
+                .data(inventoryService.getQuantity(request.getBookId()))
                 .build();
 
     }

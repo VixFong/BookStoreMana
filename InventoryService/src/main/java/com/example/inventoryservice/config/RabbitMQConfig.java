@@ -12,11 +12,17 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     public static final String BOOK_QUEUE = "bookQueue";
 
+    public static final String UPDATE_STOCK_QUEUE = "updateStockQueue";
+
     @Bean
     public Queue bookQueue() {
         return new Queue(BOOK_QUEUE, false);
     }
 
+    @Bean
+    public Queue updateStockQueue() {
+        return new Queue(UPDATE_STOCK_QUEUE, false);
+    }
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

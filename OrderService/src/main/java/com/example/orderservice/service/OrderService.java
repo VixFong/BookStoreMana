@@ -1,15 +1,15 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.dto.request.CreateOrderRequest;
-import com.example.orderservice.dto.request.SendOrder_NotificationRequest;
-import com.example.orderservice.dto.request.UpdateOrderRequest;
-import com.example.orderservice.dto.request.UpdateReceiveQtyRequest;
+import com.example.orderservice.dto.request.*;
+import com.example.orderservice.dto.response.OrderCustomerResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.exception.AppException;
 import com.example.orderservice.exception.ErrorCode;
 import com.example.orderservice.mapper.OrderMapper;
 import com.example.orderservice.model.Order;
+import com.example.orderservice.model.OrderCustomer;
 import com.example.orderservice.model.OrderItem;
+import com.example.orderservice.repo.OrderCustomerRepository;
 import com.example.orderservice.repo.OrderItemRepository;
 import com.example.orderservice.repo.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,14 +28,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
-import static com.example.orderservice.config.RabbitMQConfig.ORDER_QUEUE;
+import static com.example.orderservice.config.rabbitMQ.RabbitMQConfig.*;
 
 @Service
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderCustomerRepository orderCustomerRepository;
 
     @Autowired
     private OrderItemRepository orderItemRepository;
@@ -54,7 +58,8 @@ public class OrderService {
 
         order.setStatus(Order.STATUS_PROCESSING);
 
-        System.out.println("item req" + request.getOrderItems());
+//        System.out.println("item req" + request.getOrderItems());
+
 
         SendOrder_NotificationRequest sendOrderNotificationRequest = SendOrder_NotificationRequest.builder()
                 .orderCode(order.getOrderCode())
@@ -70,8 +75,36 @@ public class OrderService {
 
     }
 
+    public OrderCustomerResponse createOrderCustomer(CreateOrderCustomerRequest request){
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        System.out.println("note " + request.getNote());
+        OrderCustomer order = orderMapper.toOrderCustomer(request);
+
+
+        order.setDateCreated(LocalDateTime.now());
+
+        order.setEmail(email);
+        order.setOrderCode(generateOrderCode());
+
+        order.setStatus(Order.STATUS_PROCESSING);
+
+        SendOrder_NotificationCustomerRequest sendOrderNotificationCustomerRequest = SendOrder_NotificationCustomerRequest.builder()
+                .orderCode(order.getOrderCode())
+                .email(email)
+                .numItems(order.getNumItems())
+                .dateCreated(order.getDateCreated())
+                .messageType("NEW_ORDER_CUSTOMER")
+                .build();
+        System.out.println(sendOrderNotificationCustomerRequest.getDateCreated());
+        rabbitTemplate.convertAndSend(ORDER_CUSTOMER_QUEUE, sendOrderNotificationCustomerRequest);
+
+        return orderMapper.toOrderCustomerResponse(orderCustomerRepository.save(order));
+
+    }
+
     private String generateOrderCode(){
-//        long timestamp = System.currentTimeMillis() % 1000000;
         Random random = new Random();
         int number = random.nextInt(900000) + 100000; // Generates a 6-digit number
 
@@ -95,7 +128,7 @@ public class OrderService {
 //        return ordersPage.map(orderMapper::toOrderResponse);
 //    }
 
-    public Page<OrderResponse> searchOrders2(String keyword, String status, String timeFilter, String dateRange, int page, int size) {
+    public Page<OrderResponse> searchOrders(String keyword, String status, String timeFilter, String dateRange, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         LocalDateTime startDate = LocalDateTime.MIN;
@@ -131,13 +164,7 @@ public class OrderService {
             }
         }
 
-        System.out.println("date range " + dateRange);
-        System.out.println("time " + timeFilter);
-        System.out.println("start date: " + startDate);
-        System.out.println("end date: " + endDate);
-        System.out.println("status : " + status);
 
-//        Page<Order> ordersPage = orderRepository.findByFilters(keyword, status, timeFilter, startDate, endDate, pageable);
 
         Page<Order> ordersPage;
         if ("All".equalsIgnoreCase(dateRange)) {
@@ -148,6 +175,15 @@ public class OrderService {
         return ordersPage.map(orderMapper::toOrderResponse);
     }
 
+
+    public Page<OrderCustomerResponse> searchOrderCustomer(String keyword, String status, int page, int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateCreated"));
+
+        Page<OrderCustomer> orderCustomerPage = orderCustomerRepository.findByOrderCode(keyword, status, pageable);
+
+        return orderCustomerPage.map(orderMapper::toOrderCustomerResponse);
+
+    }
     public OrderResponse getOrder(String id){
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
@@ -164,13 +200,12 @@ public class OrderService {
         order.setDateUpdated(LocalDateTime.now());
 
         orderMapper.updateOrder(order, request);
-        System.out.println("item req" + request.getOrderItems());
-        System.out.println("item order" + order.getOrderItems());
+
 
         if (request.getOrderItems() != null) {
             order.getOrderItems().clear();
             for (OrderItem item : request.getOrderItems()) {
-                order.addOrderItem(item); // Assuming addOrderItem handles the relationship
+                order.addOrderItem(item);
             }
         }
         return orderMapper.toOrderResponse(orderRepository.save(order));
@@ -199,6 +234,27 @@ public class OrderService {
             rabbitTemplate.convertAndSend(ORDER_QUEUE, sendOrderNotificationRequest);
         }
     }
+
+//    public void updateStatusOrderCustomer(String id, String status, String email){
+//        var orderCustomer = orderCustomerRepository.findById(id)
+//                .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+//
+//        orderCustomer.setStatus(status);
+//
+//        SendOrder_NotificationCustomerRequest sendOrderNotificationCustomerRequest = SendOrder_NotificationCustomerRequest.builder()
+//                .orderCode(orderCustomer.getOrderCode())
+//                .email(email)
+//                .numItems(orderCustomer.getNumItems())
+//                .dateCreated(orderCustomer.getDateUpdated())
+//                .messageType("UPDATE_STATUS")
+//                .build();
+//
+//        System.out.println(sendOrderNotificationCustomerRequest.getDateCreated());
+//        rabbitTemplate.convertAndSend(ORDER_CUSTOMER_QUEUE, sendOrderNotificationCustomerRequest);
+//
+//        orderCustomerRepository.save(orderCustomer);
+//
+//    }
 
 
 
@@ -229,6 +285,19 @@ public class OrderService {
             order.setStatus(Order.STATUS_INCOMPLETE);
         }
         orderRepository.save(order);
+    }
+
+    public void updateStatusOrderCustomer(String id, String status, List<UpdateStockRequest> request){
+        var order = orderCustomerRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+
+        order.setStatus(status);
+        order.setDateUpdated(LocalDateTime.now());
+        if(status.equals(OrderCustomer.STATUS_DELIVERING)){
+            rabbitTemplate.convertAndSend(UPDATE_STOCK_QUEUE, request);
+        }
+        orderCustomerRepository.save(order);
     }
 
 

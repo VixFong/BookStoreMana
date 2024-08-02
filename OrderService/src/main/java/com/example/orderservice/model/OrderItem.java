@@ -19,10 +19,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String itemId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id")
-//    private Order order;
-
+    private String bookId;
     private String image;
     private String title;
     private int purchaseQty;

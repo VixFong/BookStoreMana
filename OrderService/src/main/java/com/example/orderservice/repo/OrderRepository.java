@@ -30,5 +30,4 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     List<Order> findByEstimatedArrivalDate(LocalDate estimatedArrivalDate);
 
-//    void deleteAll(List<OrderItem> itemsToRemove);
 }
