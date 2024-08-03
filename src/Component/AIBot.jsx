@@ -25,7 +25,7 @@ const AIBot = () => {
           temperature: 0.7,
         },
         {
-          headers: {
+          headers: { 
             'Authorization': `Bearer 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`,
             'Content-Type': 'application/json',
           },
