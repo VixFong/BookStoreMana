@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
-export const Login = ({ onClose }) => {
+export const Login = ({ onClose, onLogin }) => {
     const [email, setMail] = useState('');
     const [password, setPass] = useState('');
     const [error, setErr] = useState('');
@@ -35,11 +35,12 @@ export const Login = ({ onClose }) => {
 
                 const { token, roles } = response.data.data;
                 localStorage.setItem('authToken', token); // Lưu token vào localStorage
-                if(roles.includes('Admin') ||roles.includes('Employee')){
-                    window.location.href = '/AdminPage';
-
+                if (onLogin) {
+                    onLogin(email);
                 }
-                else{
+                if (roles.includes('Admin') || roles.includes('Employee')) {
+                    window.location.href = '/AdminPage';
+                } else {
                     window.location.href = '/';
                 }
             }

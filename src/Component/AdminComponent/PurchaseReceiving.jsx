@@ -64,10 +64,10 @@ const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
   console.log('data ',receivingData);
 
   return (
-    <Container className="mt-5">
+    <Container>
       {receivingData.map(order => (
         <div key={order.id} className="order-container mb-4">
-          <h5>Mã đơn đặt hàng: {order.orderCode}</h5>
+          <h5>ID: {order.orderCode}</h5>
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -109,12 +109,12 @@ const PurchaseReceiving = ({ selectedOrders, onSave, onCancel }) => {
           </Table>
         </div>
       ))}
-      <Row className="mt-3">
+      <Row className="mt-3 me-5">
         <Col className="text-end">
-          <Button variant="secondary" onClick={onCancel} className="me-2">
+          <Button variant="secondary" onClick={onCancel} className="me-3">
             Cancel
           </Button>
-          <Button variant="success" onClick={handleSave}>
+          <Button variant="success" onClick={handleSave} className="me-3">
             Save
           </Button>
         </Col>
@@ -127,10 +127,12 @@ export default PurchaseReceiving;
 
 const styles = `
   .order-container {
-    padding: 20px;
+    padding: 10px;
     background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: 5px;
+    margin-right: 150px;
   }
 `;
 

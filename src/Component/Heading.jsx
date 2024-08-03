@@ -8,6 +8,9 @@ export const Heading = ({ onSearch }) => {
     const [showLogin, setShowLogin] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false); 
     const navigate = useNavigate();
 
     const [cartItems, setCartItems] = useState([
@@ -83,6 +86,17 @@ export const Heading = ({ onSearch }) => {
         setCartItems(updatedCartItems);
     };
 
+    const handleLogin = (email) => {
+        setIsLoggedIn(true);
+        setUserEmail(email);
+        setShowLogin(false);
+    };
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUserEmail('');
+    };
+
     useEffect(() => {
         document.body.style.paddingTop = '70px';
         return () => {
@@ -126,7 +140,29 @@ export const Heading = ({ onSearch }) => {
                             />
                             <button className="btn btn-primary" type="button" onClick={handleSearchSubmit}>Search</button>
                         </form>
-                        <button className="btn btn-outline-light ms-2 me-2" onClick={handleLoginClick}>Login</button>
+                        {isLoggedIn ? (
+                            <div className="dropdown">
+                                <button 
+                                    className="btn btn-outline-light dropdown-toggle" 
+                                    type="button" 
+                                    onClick={() => setShowDropdown(!showDropdown)}
+                                >
+                                    {userEmail}
+                                </button>
+                                {showDropdown && (
+                                    <ul className="dropdown-menu dropdown-menu-end" style={{ display: 'block' }}>
+                                        <li>
+                                            <a className="dropdown-item" href="/edit">My Account</a>
+                                        </li>
+                                        <li>
+                                            <a className="dropdown-item" href="#" onClick={handleLogout}>Đăng Xuất</a>
+                                        </li>
+                                    </ul>
+                                )}
+                            </div>
+                        ) : (
+                            <button className="btn btn-outline-light ms-2 me-2" onClick={handleLoginClick}>Login</button>
+                        )}
                         <p className="text-white mt-3" onClick={toggleCart} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cart3" viewBox="0 0 16 16">
                                 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
@@ -138,7 +174,7 @@ export const Heading = ({ onSearch }) => {
                     </div>
                 </div>
             </nav>
-            {showLogin && <Login onClose={handleCloseLogin} />}
+            {showLogin && <Login onClose={handleCloseLogin} onLogin={handleLogin} />}
             <Cart show={showCart} onClose={toggleCart} cartItems={cartItems} handleRemove={handleRemove} handleQuantityChange={handleQuantityChange}/>
         </div>
     );
