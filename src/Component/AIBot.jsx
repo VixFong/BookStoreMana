@@ -18,7 +18,7 @@ const AIBot = () => {
 
     try {
       const response = await axios.post(
-        'https://api.openai.com/v1/engines/davinci-codex/completions',
+        '',
         {
           prompt: generatePrompt([...messages, userMessage]),
           max_tokens: 150,
@@ -26,7 +26,7 @@ const AIBot = () => {
         },
         {
           headers: { 
-            'Authorization': `Bearer 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`,
+            'Authorization': `Bearer `,
             'Content-Type': 'application/json',
           },
         }
