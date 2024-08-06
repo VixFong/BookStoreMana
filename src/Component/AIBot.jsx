@@ -5,6 +5,9 @@ import styled from 'styled-components';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 
+const API_KEY="AIzaSyDtkh5t4GV_07NJS3a7-HEZe22KIEd3vi0";
+
+
 const AIBot = () => {
   const [messages, setMessages] = useState([
     { text: "Hi! How can I assist you today?", sender: "bot" }
@@ -19,7 +22,7 @@ const AIBot = () => {
 
     try {
       const response = await axios.post(
-        '',
+        `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`,
         {
           prompt: generatePrompt([...messages, userMessage]),
           max_tokens: 150,
@@ -27,9 +30,13 @@ const AIBot = () => {
         },
         {
           headers: { 
-            'Authorization': `Bearer `,
+            model: "gemini-1.5-flash",
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            role: "user", 
+            parts: [{ text: userMessage }] 
+          })
         }
       );
       const botResponse = {
@@ -38,7 +45,7 @@ const AIBot = () => {
       };
       setMessages([...messages, userMessage, botResponse]);
     } catch (error) {
-      console.error("Error calling OpenAI API", error);
+      console.error("Error calling API", error);
     }
   };
 

@@ -128,6 +128,58 @@ export const Heading = ({ onSearch }) => {
 
     return (
         <div>
+            <style>
+                {`
+                    .profile-dropdown {
+                        position: relative;
+                        display: inline-block;
+                    }
+
+                    .profile-dropdown-menu {
+                        display: none;
+                        position: absolute;
+                        right: 0;
+                        background-color: white;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                        z-index: 1;
+                        min-width: 160px;
+                    }
+
+                    .profile-dropdown-menu a {
+                        color: black;
+                        padding: 12px 16px;
+                        text-decoration: none;
+                        display: block;
+                    }
+
+                    .profile-dropdown-menu a:hover {
+                        background-color: #ddd;
+                    }
+
+                    .profile-dropdown:hover .profile-dropdown-menu {
+                        display: block;
+                    }
+
+                    .profile-button {
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+                    }
+
+                    .profile-image {
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        margin-right: 10px;
+                    }
+
+                    .profile-name {
+                        color: white;
+                        margin-right: 10px;
+                    }
+
+                `}
+            </style>
             <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
                 <div className="container-fluid">
                     <a className="navbar-brand" href="/">
@@ -163,24 +215,21 @@ export const Heading = ({ onSearch }) => {
                             <button className="btn btn-primary" type="button" onClick={handleSearchSubmit}>Search</button>
                         </form>
                         {isLoggedIn ? (
-                            <div className="dropdown">
-                                <button 
-                                    className="btn btn-outline-light dropdown-toggle" 
-                                    type="button" 
+                            <div className="profile-dropdown">
+                                <div 
+                                    className="profile-button" 
                                     onClick={() => setShowDropdown(!showDropdown)}
                                 >
-                                    {/* {userName} */}
-                                    <a className="nav-link mb-1"><img src={picture} alt="Profile" className="rounded-circle me-2" style={{ width: '25px', height: '25px' }}/><Link to="/administrators" className='text-white '>{userName}</Link></a>
-
-                                </button>
-                                {showDropdown && (
-                                    <ul className="dropdown-menu dropdown-menu-end" style={{ display: 'block' }}>
-                                    
-                                        <li>
-                                            <a className="dropdown-item" href="#" onClick={handleLogout}>Logout</a>
-                                        </li>
-                                    </ul>
-                                )}
+                                <img 
+                                    src={picture} 
+                                    alt="Profile" 
+                                    className="profile-image"
+                                />
+                                <span className="profile-name">{userName}</span>
+                            </div>
+                                <div className={`profile-dropdown-menu ${showDropdown ? 'show' : ''}`}>
+                                    <a href="#" onClick={handleLogout}>Logout</a>
+                                </div>
                             </div>
                         ) : (
                             <button className="btn btn-outline-light ms-2 me-2" onClick={handleLoginClick}>Login</button>
@@ -201,5 +250,6 @@ export const Heading = ({ onSearch }) => {
         </div>
     );
 };
+
 
 export default Heading;
