@@ -1,6 +1,7 @@
 package com.example.orderservice.service;
 
 import com.example.orderservice.dto.request.*;
+import com.example.orderservice.dto.response.MonthlyRevenueResponse;
 import com.example.orderservice.dto.response.OrderCustomerResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.exception.AppException;
@@ -341,4 +342,10 @@ public class OrderService {
     }
 
 
+//    public List<MonthlyRevenueResponse> getMonthlyRevenue(int year) {
+//        var revenue = orderCustomerRepository.findMonthlyRevenueByYear(year);
+//
+//        System.out.println(revenue.toString());
+//        return revenue;
+//    }
 }

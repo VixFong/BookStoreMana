@@ -13,14 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CreateOrderRequest {
-//    private String trackingNumber;
 
     private LocalDate estimatedArrivalDate;
 
     private String publisher;
 
     private Integer numItems;
-//    private String currency;
 
     private Double shipFee;
 
@@ -29,6 +27,8 @@ public class CreateOrderRequest {
     private Double otherFee;
 
     private String note;
+
+    private Double totalPrice;
 
     private List<OrderItem> orderItems;
 }

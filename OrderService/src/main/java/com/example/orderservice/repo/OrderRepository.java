@@ -1,5 +1,6 @@
 package com.example.orderservice.repo;
 
+import com.example.orderservice.dto.response.MonthlyRevenueResponse;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderItem;
 import org.springframework.data.domain.Page;
@@ -26,8 +27,11 @@ public interface OrderRepository extends JpaRepository<Order, String> {
             ":timeFilter = 'Update Time' AND o.dateUpdated BETWEEN :startDate AND :endDate)")
     Page<Order> findByFilters(String keyword, String status, String timeFilter, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
-
-
     List<Order> findByEstimatedArrivalDate(LocalDate estimatedArrivalDate);
 
+    @Query("SELECT new com.example.orderservice.dto.response.MonthlyRevenueResponse(MONTH(o.dateCreated), SUM(o.totalPrice)) " +
+            "FROM Order o " +
+            "WHERE YEAR(o.dateCreated) = :year AND o.status = 'COMPLETE' " +
+            "GROUP BY MONTH(o.dateCreated)")
+    List<MonthlyRevenueResponse> findMonthlyRevenueByYear(int year);
 }

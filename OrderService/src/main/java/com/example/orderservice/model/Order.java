@@ -33,7 +33,6 @@ public class Order {
 
     private String publisher;
 
-//    private String currency;
     private Integer numItems;
     private Double shipFee;
 
@@ -50,6 +49,8 @@ public class Order {
     private LocalDateTime dateUpdated;
 
     private String status;
+
+    private Double totalPrice;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")

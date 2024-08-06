@@ -1,5 +1,6 @@
 package com.example.orderservice.dto.request;
 
+import com.example.orderservice.model.OrderCustomerItem;
 import com.example.orderservice.model.OrderItem;
 import lombok.*;
 
@@ -19,5 +20,5 @@ public class CreateOrderCustomerRequest {
     private Double totalPrice;
     private String note;
 
-    private List<OrderItem> orderItems;
+    private List<OrderCustomerItem> orderItems;
 }

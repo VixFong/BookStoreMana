@@ -29,6 +29,7 @@ public interface OrderMapper {
 
     @Mapping(target = "orderItems", source = "orderItems")
     OrderCustomerResponse toOrderCustomerResponse(OrderCustomer orderCustomer);
+
     OrderItemResponse toOrderItemResponse(OrderItem orderItem);
 
     List<OrderItemResponse> toOrderItemResponseList(List<OrderItem> orderItems);

@@ -32,7 +32,6 @@ public class OrderCustomerResponse {
 
     private String status;
 
-    private List<OrderItemResponse> orderItems;
+    private List<OrderCustomerItemResponse> orderItems;
 
-//    private List<OrderItem> orderItems;
 }

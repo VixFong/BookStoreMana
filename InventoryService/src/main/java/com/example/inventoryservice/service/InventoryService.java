@@ -147,27 +147,26 @@ public class InventoryService {
             var inventory = inventoryRepository.findInventoriesByBookId(data.getBookId())
                     .orElseThrow(()-> new AppException(ErrorCode.INVENTORY_NOT_FOUND));
 
-//            System.out.println("inventory " + inventory.getReceivedQuantity());
             remainStock = inventory.getReceivedQuantity() - data.getPurchaseQty();
             inventory.setReceivedQuantity(remainStock);
-
+//            System.out.println("stock " + inventory.getReceivedQuantity());
             inventoryRepository.save(inventory);
         }
     }
 
-    public InventoryResponse updateQuantity(String id, UpdateReceivedQuantityRequest request){
-        var inventory = inventoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_NOT_FOUND));
-
-        inventory.setReceivedQuantity(request.getReceivedQuantity());
-
-//      Set status of inventory
-        updateStatus(inventory, request.getReceivedQuantity());
-
-        inventory.setDateUpdated(LocalDateTime.now());
-
-        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
-    }
+//    public InventoryResponse updateQuantity(String id, UpdateReceivedQuantityRequest request){
+//        var inventory = inventoryRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.INVENTORY_NOT_FOUND));
+//
+//        inventory.setReceivedQuantity(request.getReceivedQuantity());
+//
+////      Set status of inventory
+//        updateStatus(inventory, request.getReceivedQuantity());
+//
+//        inventory.setDateUpdated(LocalDateTime.now());
+//
+//        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
+//    }
 
     public String delete(String bookId){
         var inventory = inventoryRepository.findInventoriesByBookId(bookId)

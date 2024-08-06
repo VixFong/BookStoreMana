@@ -19,7 +19,6 @@ import java.util.List;
 public class OrderCustomer {
     public static final String STATUS_PROCESSING = "PROCESSING";
     public static final String STATUS_CONFIRM = "CONFIRM";
-
     public static final String STATUS_DELIVERING = "DELIVERING";
     public static final String STATUS_INCOMPLETE = "INCOMPLETE";
     public static final String STATUS_CANCEL = "CANCEL";
@@ -49,11 +48,6 @@ public class OrderCustomer {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    private List<OrderItem> orderItems;
-
-    public void addOrderItem(OrderItem item) {
-        orderItems.add(item);
-//        item.setOrder(this);
-    }
+    private List<OrderCustomerItem> orderItems;
 
 }

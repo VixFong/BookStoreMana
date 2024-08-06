@@ -74,6 +74,8 @@ public class AuthService {
 
         return LoginUserResponse.builder()
                 .token(token)
+                .fullName(user.getFullName())
+                .profilePicture(user.getProfilePicture())
                 .authenticated(true)
                 .roles(roles)
                 .build();

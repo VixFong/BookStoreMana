@@ -2,6 +2,7 @@ package com.example.orderservice.controller;
 
 import com.example.orderservice.dto.request.*;
 import com.example.orderservice.dto.response.ApiResponse;
+import com.example.orderservice.dto.response.MonthlyRevenueResponse;
 import com.example.orderservice.dto.response.OrderCustomerResponse;
 import com.example.orderservice.dto.response.OrderResponse;
 import com.example.orderservice.model.Order;
@@ -144,6 +145,15 @@ public class OrderController {
         return ApiResponse.<Void>builder()
                 .build();
     }
+
+//    @GetMapping("/revenue/{year}")
+//    public ApiResponse<List<MonthlyRevenueResponse>> getMonthlyRevenue(@PathVariable int year) {
+//
+//        System.out.println("revenure" + year);
+//        return ApiResponse.<List<MonthlyRevenueResponse>>builder()
+//                .data(orderService.getMonthlyRevenue(year))
+//                .build();
+//    }
 
 //    @PostMapping("/export")
 //    public ResponseEntity<ApiResponse<byte[]>> exportExcel(@RequestBody List<String> ids) throws IOException {
