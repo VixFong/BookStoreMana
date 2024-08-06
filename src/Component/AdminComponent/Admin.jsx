@@ -147,7 +147,14 @@ export const Admin = () => {
     };
 
     const handleCancel = () => {
-        navigate('/UserManagement');
+
+        if(role == "Customer"){
+            navigate('/');
+
+        }
+        else{
+            navigate('/UserManagement');
+        }
     };
 
     return (

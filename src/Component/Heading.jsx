@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Login } from './Login';
 import { Cart } from './Cart';
 
@@ -9,10 +9,13 @@ export const Heading = ({ onSearch }) => {
     const [showCart, setShowCart] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userEmail, setUserEmail] = useState('');
+    const [userName, setUserName] = useState('');
+    const [picture, setPicture] = useState('');
     const [showDropdown, setShowDropdown] = useState(false); 
     const navigate = useNavigate();
 
+    const token =  localStorage.getItem('authToken');
+    
     const [cartItems, setCartItems] = useState([
         {
             image: 'https://via.placeholder.com/100',
@@ -47,6 +50,14 @@ export const Heading = ({ onSearch }) => {
             quantity: 1
         }
     ]);
+
+    useEffect(() => {
+        if (token) {
+            setIsLoggedIn(true);
+            setUserName(localStorage.getItem('name'));
+            setPicture(localStorage.getItem('profilePicture'));
+        }
+    }, [token]);
 
     const handleLoginClick = () => {
         setShowLogin(true);
@@ -86,15 +97,26 @@ export const Heading = ({ onSearch }) => {
         setCartItems(updatedCartItems);
     };
 
-    const handleLogin = (email) => {
+    const handleLogin = (fullName, profilePicture) => {
         setIsLoggedIn(true);
-        setUserEmail(email);
+        setUserName(fullName);
+        setPicture(profilePicture);
+        // localStorage.setItem('name', fullName);
+        // localStorage.setItem('prof', email);
+        
+
         setShowLogin(false);
     };
 
     const handleLogout = () => {
         setIsLoggedIn(false);
-        setUserEmail('');
+        setUserName('');
+        setPicture('');
+
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('name'); 
+        localStorage.removeItem('profilePicture'); 
+
     };
 
     useEffect(() => {
@@ -147,15 +169,15 @@ export const Heading = ({ onSearch }) => {
                                     type="button" 
                                     onClick={() => setShowDropdown(!showDropdown)}
                                 >
-                                    {userEmail}
+                                    {/* {userName} */}
+                                    <a className="nav-link mb-1"><img src={picture} alt="Profile" className="rounded-circle me-2" style={{ width: '25px', height: '25px' }}/><Link to="/administrators" className='text-white '>{userName}</Link></a>
+
                                 </button>
                                 {showDropdown && (
                                     <ul className="dropdown-menu dropdown-menu-end" style={{ display: 'block' }}>
+                                    
                                         <li>
-                                            <a className="dropdown-item" href="/edit">My Account</a>
-                                        </li>
-                                        <li>
-                                            <a className="dropdown-item" href="#" onClick={handleLogout}>Đăng Xuất</a>
+                                            <a className="dropdown-item" href="#" onClick={handleLogout}>Logout</a>
                                         </li>
                                     </ul>
                                 )}

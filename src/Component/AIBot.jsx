@@ -67,11 +67,11 @@ const AIBot = () => {
               if (e.key === "Enter") handleSend();
             }}
           />
-          <InputGroup.Append>
+          {/* <InputGroup.Append> */}
             <Button variant="primary" onClick={handleSend}>
               Send
             </Button>
-          </InputGroup.Append>
+          {/* </InputGroup.Append> */}
         </InputGroup>
       </ChatFooter>
     </ChatContainer>

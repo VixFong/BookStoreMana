@@ -33,10 +33,12 @@ export const Login = ({ onClose, onLogin }) => {
             if(response.data && response.data.data){
                 console.log(response.data.data)
 
-                const { token, roles } = response.data.data;
-                localStorage.setItem('authToken', token); // Lưu token vào localStorage
+                const { token, roles, fullName, profilePicture } = response.data.data;
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('name', fullName);
+                localStorage.setItem('profilePicture', profilePicture);
                 if (onLogin) {
-                    onLogin(email);
+                    onLogin(fullName, profilePicture);
                 }
                 if (roles.includes('Admin') || roles.includes('Employee')) {
                     window.location.href = '/AdminPage';
