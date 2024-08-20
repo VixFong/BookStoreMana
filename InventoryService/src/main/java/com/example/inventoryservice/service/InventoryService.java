@@ -96,6 +96,7 @@ public class InventoryService {
 
         return inventoryPage.map(inventoryMapper::toInventoryResponse);
     }
+
     public List<SearchInventory_OrderResponse> searchInventory_order(String keyword){
         var apiResponse = productServiceClient.searchIdsBook(keyword);
 
@@ -133,7 +134,7 @@ public class InventoryService {
         if(receivedQuantity == 0){
             inventory.setStatus(Inventory.STATUS_OUT_OF_STOCK);
         }
-        else if ( receivedQuantity <= inventory.getOrderedQuantity() * 10 / 100  ) {
+        else if(receivedQuantity <= inventory.getOrderedQuantity() * 10 / 100 ) {
             inventory.setStatus(Inventory.STATUS_NEED_REORDER);
         }
         else{

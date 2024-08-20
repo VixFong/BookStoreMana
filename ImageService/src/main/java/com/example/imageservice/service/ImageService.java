@@ -121,7 +121,7 @@ public class ImageService {
 
         }
 
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder",folder ));
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", folder ));
         String imageUrl = uploadResult.get("url").toString();
 
         Image image = new Image();

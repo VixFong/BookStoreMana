@@ -16,7 +16,6 @@ public class AccountService {
 
     public Mono<ApiResponse<IntrospectResponse>> introspect(String token){
 
-
         return accountClient.introspect(
                 IntrospectRequest.builder()
                 .token(token)

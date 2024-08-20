@@ -32,9 +32,9 @@ public class NotificationService {
         if ("NEW_ORDER".equals(request.getMessageType())) {
             message = "New order created: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }
-        else if ("NEW_ORDER_CUSTOMER".equals(request.getMessageType())) {
-            message = "New order customer: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
-        }
+//        else if ("NEW_ORDER_CUSTOMER".equals(request.getMessageType())) {
+//            message = "New order customer: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
+//        }
         else if ("DELETE_ORDER".equals(request.getMessageType())) {
             message = "Delete order: " + request.getOrderCode() + ", " + request.getNumItems() + ", " + request.getDateCreated();
         }else if ("ARRIVAL_DATE_REACHED".equals(request.getMessageType())) {

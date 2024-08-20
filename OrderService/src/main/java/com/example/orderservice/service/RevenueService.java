@@ -21,8 +21,8 @@ public class RevenueService {
         List<MonthlyRevenueResponse> orderRevenue = orderRepository.findMonthlyRevenueByYear(year);
         List<MonthlyRevenueResponse> orderCustomerRevenue = orderCustomerRepository.findMonthlyRevenueByYear(year);
 
-        System.out.println("order "+ orderRevenue.toString());
-        System.out.println("order customer "+ orderCustomerRevenue.toString());
+//        System.out.println("order "+ orderRevenue.toString());
+//        System.out.println("order customer "+ orderCustomerRevenue.toString());
 
 
         return SaleDateResponse.builder()

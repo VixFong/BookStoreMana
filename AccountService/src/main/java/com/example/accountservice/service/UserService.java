@@ -131,7 +131,7 @@ public class UserService {
 
     public UserResponse createCustomer(RegisterCustomerRequest request){
         User user = userMapper.toCustomer(request);
-        System.out.println("customer add");
+//        System.out.println("customer add");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setLock(false);
         user.setActivate(true);

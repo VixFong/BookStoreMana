@@ -54,8 +54,7 @@ public class BookService {
 
     @Autowired
     private AuthorRepository authorRepository;
-//    @Autowired
-//    private AuthorService authorService;
+
 
     @Autowired
     private ImageServiceClient imageServiceClient;
