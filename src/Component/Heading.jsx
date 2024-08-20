@@ -101,8 +101,6 @@ export const Heading = ({ onSearch }) => {
         setIsLoggedIn(true);
         setUserName(fullName);
         setPicture(profilePicture);
-        // localStorage.setItem('name', fullName);
-        // localStorage.setItem('prof', email);
         
 
         setShowLogin(false);
@@ -225,7 +223,8 @@ export const Heading = ({ onSearch }) => {
                                     alt="Profile" 
                                     className="profile-image"
                                 />
-                                <span className="profile-name">{userName}</span>
+                                 <span  className="profile-name"><Link to="/administrators" className='text-white '>{userName}</Link></span>
+                                {/* <span className="profile-name">{userName}</span> */}
                             </div>
                                 <div className={`profile-dropdown-menu ${showDropdown ? 'show' : ''}`}>
                                     <a href="#" onClick={handleLogout}>Logout</a>
